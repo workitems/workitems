@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Violet.WorkItems.Abstractions\Violet.WorkItems.Abstractions.csproj" />
+    <ProjectReference Include="..\Violet.WorkItems.Types\Violet.WorkItems.Types.csproj" />
   </ItemGroup>
 
 </Project>
