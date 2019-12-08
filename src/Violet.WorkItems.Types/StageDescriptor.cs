@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Violet.WorkItems.Types
 {
@@ -14,13 +14,13 @@ namespace Violet.WorkItems.Types
 
             Name = name;
             Condition = condition ?? throw new System.ArgumentNullException(nameof(condition));
-            Commands = commands?.ToImmutableArray() ?? ImmutableArray<CommandDescriptor>.Empty;
-            Properties = properties?.ToImmutableArray() ?? ImmutableArray<StagePropertyDescriptor>.Empty;
+            Commands = commands ?? Array.Empty<CommandDescriptor>();
+            Properties = properties ?? Array.Empty<StagePropertyDescriptor>();
         }
 
         public string Name { get; }
         public ConditionDescriptor Condition { get; }
-        public ImmutableArray<CommandDescriptor> Commands { get; }
-        public ImmutableArray<StagePropertyDescriptor> Properties { get; }
+        public IEnumerable<CommandDescriptor> Commands { get; }
+        public IEnumerable<StagePropertyDescriptor> Properties { get; }
     }
 }

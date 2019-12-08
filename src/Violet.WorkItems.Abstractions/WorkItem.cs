@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Violet.WorkItems
 {
     public class WorkItem
     {
-        public string ProjectCode { get; }
-        public string Id { get; }
-        public string WorkItemType { get; }
-        public ImmutableArray<Property> Properties { get; }
-        public ImmutableArray<LogEntry> Log { get; set; }
+        public string ProjectCode { get; set; }
+        public string Id { get; set; }
+        public string WorkItemType { get; set; }
+        public IEnumerable<Property> Properties { get; set; }
+        public IEnumerable<LogEntry> Log { get; set; }
 
+        public WorkItem() { }
         public WorkItem(string projectCode, string id, string workItemType, IEnumerable<Property> properties, IEnumerable<LogEntry> log)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
@@ -43,8 +43,8 @@ namespace Violet.WorkItems
             ProjectCode = projectCode;
             Id = id;
             WorkItemType = workItemType;
-            Properties = properties.ToImmutableArray();
-            Log = log.ToImmutableArray();
+            Properties = properties;
+            Log = log;
         }
 
         public Property this[string propertyName]

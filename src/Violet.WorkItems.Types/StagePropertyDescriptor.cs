@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Violet.WorkItems.Types
 {
@@ -15,12 +15,12 @@ namespace Violet.WorkItems.Types
             Name = name;
             IsVisible = isVisible;
             IsEditable = isEditable;
-            Validators = validators?.ToImmutableArray() ?? ImmutableArray<ValidatorDescriptor>.Empty;
+            Validators = validators ?? Array.Empty<ValidatorDescriptor>();
         }
 
         public string Name { get; }
         public bool? IsVisible { get; }
         public bool? IsEditable { get; }
-        public ImmutableArray<ValidatorDescriptor> Validators { get; }
+        public IEnumerable<ValidatorDescriptor> Validators { get; }
     }
 }

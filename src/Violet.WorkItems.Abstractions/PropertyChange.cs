@@ -2,9 +2,9 @@ namespace Violet.WorkItems
 {
     public class PropertyChange
     {
-        public string Name { get; }
-        public string OldValue { get; }
-        public string NewValue { get; }
+        public string Name { get; set; }
+        public string OldValue { get; set; }
+        public string NewValue { get; set; }
 
         public PropertyChange(string name, string oldValue, string newValue)
         {

@@ -1,31 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Violet.WorkItems
 {
     public class LogEntry
     {
-        protected LogEntry(DateTimeOffset date, string user, string comment, IEnumerable<PropertyChange> changes)
+        public DateTimeOffset Date { get; set; }
+        public string User { get; set; }
+        public string Comment { get; set; }
+        public IEnumerable<PropertyChange> Changes { get; set; }
+
+        public LogEntry()
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new ArgumentException("user cannot be null or empty", nameof(user));
-            }
-
-            if (changes is null)
-            {
-                throw new ArgumentNullException(nameof(changes));
-            }
-
-            Date = date;
-            User = user;
-            Comment = comment ?? throw new ArgumentNullException(nameof(comment));
-            Changes = changes.ToImmutableArray();
         }
-        public DateTimeOffset Date { get; }
-        public string User { get; }
-        public string Comment { get; }
-        public ImmutableArray<PropertyChange> Changes { get; }
+
+        public LogEntry(DateTimeOffset date, string user, string comment, IEnumerable<PropertyChange> changes)
+        {
+            Date = date;
+            User = user ?? throw new ArgumentNullException(nameof(user));
+            Comment = comment ?? throw new ArgumentNullException(nameof(comment));
+            Changes = changes ?? throw new ArgumentNullException(nameof(changes));
+        }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Violet.WorkItems.Types
 {
@@ -14,13 +14,13 @@ namespace Violet.WorkItems.Types
 
             Name = name;
             Log = log ?? throw new System.ArgumentNullException(nameof(log));
-            Stages = stages.ToImmutableArray();
-            Properties = properties.ToImmutableArray();
+            Stages = stages ?? Array.Empty<StageDescriptor>();
+            Properties = properties ?? Array.Empty<PropertyDescriptor>();
         }
 
         public string Name { get; }
         public LogDescriptor Log { get; }
-        public ImmutableArray<StageDescriptor> Stages { get; }
-        public ImmutableArray<PropertyDescriptor> Properties { get; }
+        public IEnumerable<StageDescriptor> Stages { get; }
+        public IEnumerable<PropertyDescriptor> Properties { get; }
     }
 }
