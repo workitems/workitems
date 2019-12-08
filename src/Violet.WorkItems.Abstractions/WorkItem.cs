@@ -11,9 +11,9 @@ namespace Violet.WorkItems
         public string Id { get; }
         public string WorkItemType { get; }
         public ImmutableArray<Property> Properties { get; }
-        public ImmutableArray<LogEntry> LogEntries { get; set; }
+        public ImmutableArray<LogEntry> Log { get; set; }
 
-        public WorkItem(string projectCode, string id, string workItemType, IEnumerable<Property> properties, IEnumerable<LogEntry> logEntries)
+        public WorkItem(string projectCode, string id, string workItemType, IEnumerable<Property> properties, IEnumerable<LogEntry> log)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -35,16 +35,16 @@ namespace Violet.WorkItems
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            if (logEntries == null)
+            if (log == null)
             {
-                throw new ArgumentNullException(nameof(logEntries));
+                throw new ArgumentNullException(nameof(log));
             }
 
             ProjectCode = projectCode;
             Id = id;
             WorkItemType = workItemType;
             Properties = properties.ToImmutableArray();
-            LogEntries = logEntries.ToImmutableArray();
+            Log = log.ToImmutableArray();
         }
 
         public Property this[string propertyName]
