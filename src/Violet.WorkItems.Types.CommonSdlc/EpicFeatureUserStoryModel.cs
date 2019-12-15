@@ -2,7 +2,7 @@
 
 namespace Violet.WorkItems.Types.CommonSdlc
 {
-    internal static class EpicFeatureUserStoryModel
+    public static class EpicFeatureUserStoryModel
     {
         public static WorkItemDescriptor Epic
             => new WorkItemDescriptor("Epic", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()),

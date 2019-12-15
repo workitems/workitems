@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Violet.WorkItems.Provider.SqlServer\Violet.WorkItems.Provider.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Violet.WorkItems.Types\Violet.WorkItems.Types.csproj" />
+    <ProjectReference Include="..\..\src\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+</Project>
