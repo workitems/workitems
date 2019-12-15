@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Violet.WorkItems.Provider
 {
-    public interface IWorkItemProvider
+    public interface IDataProvider
     {
         Task SaveNewWorkItemAsync(WorkItem workItem);
         Task SaveUpdatedWorkItemAsync(WorkItem workItem);

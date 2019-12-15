@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 
 namespace Violet.WorkItems.Provider.SqlServer
 {
-    public class SqlServerProvider : IWorkItemProvider
+    public class SqlServerDataProvider : IDataProvider
     {
+        public bool AllowLogRewrite { get; } = false;
+
         private readonly WorkItemDbContext _context;
 
-        public SqlServerProvider()
+        public SqlServerDataProvider()
         {
             _context = new WorkItemDbContext();
         }

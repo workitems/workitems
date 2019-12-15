@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\src\Violet.WorkItems.Provider.SqlServer\Violet.WorkItems.Provider.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Violet.WorkItems.Types\Violet.WorkItems.Types.csproj" />
     <ProjectReference Include="..\..\src\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
+    <ProjectReference Include="..\..\src\Violet.WorkItems.Types.CommonSdlc\Violet.WorkItems.Types.CommonSdlc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

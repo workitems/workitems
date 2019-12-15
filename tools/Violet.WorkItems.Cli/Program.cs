@@ -4,17 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Violet.WorkItems.Provider.SqlServer;
+using Violet.WorkItems.Types.CommonSdlc;
 
 namespace Violet.WorkItems.Cli
 {
     class Program
     {
-        private static SqlServerProvider _provider;
+        private static SqlServerDataProvider _provider;
         private static WorkItemManager _manager;
         static Task<int> Main(string[] args)
         {
-            _provider = new SqlServerProvider();
-            _manager = new WorkItemManager(_provider);
+            _provider = new SqlServerDataProvider();
+            _manager = new WorkItemManager(_provider, new CommonSdlcDescriptorProvider());
 
             var app = new CommandLineApplication();
             app.HelpOption();

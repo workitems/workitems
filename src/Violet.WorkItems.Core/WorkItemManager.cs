@@ -4,20 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Violet.WorkItems.Provider;
 using Violet.WorkItems.Types;
-using Violet.WorkItems.Types.CommonSdlc;
 
 namespace Violet.WorkItems
 {
     public class WorkItemManager
     {
-        private readonly IWorkItemProvider _provider;
+        private readonly IDataProvider _dataProvider;
+        private readonly IDescriptorProvider _descriptorProvider;
 
-        public WorkItemManager(IWorkItemProvider provider)
+        public WorkItemManager(IDataProvider dataProvider, IDescriptorProvider descriptorProvider)
         {
-            this._provider = provider;
+            _dataProvider = dataProvider;
+            _descriptorProvider = descriptorProvider;
         }
 
-        public Task<(WorkItem, WorkItemDescriptor)> CreateTemplateAsync(string projectCode, string workItemType)
+        public async Task<(WorkItem, WorkItemDescriptor)> CreateTemplateAsync(string projectCode, string workItemType)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -29,16 +30,16 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(workItemType));
             }
 
-            var wid = GetWorkItemDescription(projectCode, workItemType);
+            var wid = await GetWorkItemDescriptionAsync(projectCode, workItemType);
 
             //TODO: Set default values
 
             var wi = new WorkItem(projectCode, "NEW", workItemType, wid.Properties.Select(pd => new Property(pd.Name, pd.DataType, string.Empty)), Array.Empty<LogEntry>());
 
-            return Task.FromResult((wi, wid));
+            return (wi, wid);
         }
 
-        public async Task<bool> Create(string projectCode, string workItemType, IEnumerable<Property> properties)
+        public async Task<WorkItemCreatedResult> Create(string projectCode, string workItemType, IEnumerable<Property> properties)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -55,23 +56,21 @@ namespace Violet.WorkItems
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            var result = false;
-
             if (properties.Count() > 0)
             {
-                var newIdentifer = await _provider.NextNumberAsync(projectCode);
+                var newIdentifer = (await _dataProvider.NextNumberAsync(projectCode)).ToString();
 
                 //TODO: Check property set completeness to work item descriptor
                 //TODO: Check with validator
 
-                var wi = new WorkItem(projectCode, newIdentifer.ToString(), workItemType, properties.ToArray(), Array.Empty<LogEntry>());
+                var wi = new WorkItem(projectCode, newIdentifer, workItemType, properties.ToArray(), Array.Empty<LogEntry>());
 
-                await _provider.SaveNewWorkItemAsync(wi);
+                await _dataProvider.SaveNewWorkItemAsync(wi);
 
-                result = true;
+                return new WorkItemCreatedResult(true, newIdentifer);
             }
 
-            return result;
+            return new WorkItemCreatedResult(false, null);
         }
 
         public async Task<WorkItem> GetAsync(string projectCode, string id)
@@ -86,7 +85,7 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(id));
             }
 
-            var workItem = await _provider.GetAsync(projectCode, id);
+            var workItem = await _dataProvider.GetAsync(projectCode, id);
 
             return workItem;
         }
@@ -132,20 +131,12 @@ namespace Violet.WorkItems
 
             workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
 
-            await _provider.SaveUpdatedWorkItemAsync(workItem);
+            await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
         }
 
-
-        // TODO: Static for prototyping
-        private static WorkItemDescriptor GetWorkItemDescription(string project, string type)
+        private async Task<WorkItemDescriptor> GetWorkItemDescriptionAsync(string project, string type)
         {
-            var types = new WorkItemDescriptor[] {
-                BugTaskModel.Bug,
-                BugTaskModel.Task,
-                EpicFeatureUserStoryModel.Epic,
-                EpicFeatureUserStoryModel.Feature,
-                EpicFeatureUserStoryModel.UserStory,
-             };
+            var types = await _descriptorProvider.GetAllDescriptorsAsync();
 
             return types.FirstOrDefault(wid => wid.Name == type);
         }
