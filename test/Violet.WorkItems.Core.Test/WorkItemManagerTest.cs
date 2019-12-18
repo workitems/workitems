@@ -24,7 +24,7 @@ namespace Violet.WorkItems.Core.Test
             };
 
             // act
-            var result = await manager.Create("FOO", "BAR", properties);
+            var result = await manager.CreateAsync("FOO", "BAR", properties);
 
             // assert
             Assert.NotNull(result);
@@ -37,15 +37,15 @@ namespace Violet.WorkItems.Core.Test
             Assert.Collection(savedWorkItem.Properties,
                 p =>
                 {
-                    Assert.Equal(p.Name, "A");
-                    Assert.Equal(p.DataType, "String");
-                    Assert.Equal(p.Value, "aa");
+                    Assert.Equal("A", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("aa", p.Value);
                 },
                 p =>
                 {
-                    Assert.Equal(p.Name, "B");
-                    Assert.Equal(p.DataType, "String");
-                    Assert.Equal(p.Value, "bb");
+                    Assert.Equal("B", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("bb", p.Value);
                 }
             );
         }
@@ -59,7 +59,7 @@ namespace Violet.WorkItems.Core.Test
             // act
             await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await manager.Create(null, "FOO", new Property[] { });
+                await manager.CreateAsync(null, "FOO", new Property[] { });
             });
         }
 
@@ -72,7 +72,7 @@ namespace Violet.WorkItems.Core.Test
             // act
             await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await manager.Create("FOO", null, new Property[] { });
+                await manager.CreateAsync("FOO", null, new Property[] { });
             });
         }
 
@@ -84,7 +84,7 @@ namespace Violet.WorkItems.Core.Test
             var manager = new WorkItemManager(providerMock.Object, new CommonSdlcDescriptorProvider());
 
             // act
-            var result = await manager.Create("FOO", "BAR", new Property[] { });
+            var result = await manager.CreateAsync("FOO", "BAR", new Property[] { });
 
             // assert
             Assert.False(result.Success);

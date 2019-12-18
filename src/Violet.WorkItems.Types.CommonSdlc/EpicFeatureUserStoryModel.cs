@@ -17,7 +17,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                 Array.Empty<StageDescriptor>()
             );
         public static WorkItemDescriptor Feature
-            => new WorkItemDescriptor("UserStory", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()),
+            => new WorkItemDescriptor("Feature", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()),
                 new PropertyDescriptor[] {
                     new PropertyDescriptor("Title", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),

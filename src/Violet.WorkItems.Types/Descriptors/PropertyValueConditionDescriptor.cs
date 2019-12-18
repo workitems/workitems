@@ -4,7 +4,7 @@ namespace Violet.WorkItems.Types
 {
     public class PropertyValueConditionDescriptor : ConditionDescriptor
     {
-        public PropertyValueConditionDescriptor(string propertyName, string value)
+        public PropertyValueConditionDescriptor(string propertyName, string expectedValue)
             : base("PropertyValue")
         {
             if (string.IsNullOrWhiteSpace(propertyName))
@@ -13,10 +13,10 @@ namespace Violet.WorkItems.Types
             }
 
             PropertyName = propertyName;
-            Value = value ?? throw new ArgumentNullException(nameof(value));
+            ExpectedValue = expectedValue ?? throw new ArgumentNullException(nameof(expectedValue));
         }
 
         public string PropertyName { get; }
-        public string Value { get; }
+        public string ExpectedValue { get; }
     }
 }

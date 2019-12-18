@@ -159,9 +159,10 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentException("message", nameof(workItemType));
             }
 
-            var (wi, wid) = await _manager.CreateTemplateAsync(projectCode, workItemType);
+            var wi = await _manager.CreateTemplateAsync(projectCode, workItemType);
+            var propertyDescriptors = _manager.DescriptorManager.GetCurrentPropertyDescriptors(wi);
 
-            if (wid == null)
+            if (propertyDescriptors == null)
             {
                 Console.WriteLine($"Cannot find type {workItemType} in project {projectCode}");
 
@@ -169,7 +170,7 @@ namespace Violet.WorkItems.Cli
             }
 
             var propertiesDictionary = new Dictionary<string, string>();
-            foreach (var propertyDescriptor in wid.Properties)
+            foreach (var propertyDescriptor in propertyDescriptors)
             {
                 Console.Write($"{propertyDescriptor.Name}: ");
                 var value = Console.ReadLine();
@@ -192,7 +193,7 @@ namespace Violet.WorkItems.Cli
                 .Where(p => p != null)
                 .ToArray();
 
-            await _manager.Create(projectCode, workItemType, properties);
+            await _manager.CreateAsync(projectCode, workItemType, properties);
 
             return 0;
         }

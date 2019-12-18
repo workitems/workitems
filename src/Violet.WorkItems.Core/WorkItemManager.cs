@@ -10,15 +10,26 @@ namespace Violet.WorkItems
     public class WorkItemManager
     {
         private readonly IDataProvider _dataProvider;
-        private readonly IDescriptorProvider _descriptorProvider;
+        private bool _initialized = false;
+        public DescriptorManager DescriptorManager { get; }
 
         public WorkItemManager(IDataProvider dataProvider, IDescriptorProvider descriptorProvider)
         {
             _dataProvider = dataProvider;
-            _descriptorProvider = descriptorProvider;
+            DescriptorManager = new DescriptorManager(descriptorProvider);
         }
 
-        public async Task<(WorkItem, WorkItemDescriptor)> CreateTemplateAsync(string projectCode, string workItemType)
+        private async Task InitAsync()
+        {
+            if (!_initialized) //TODO: make it thread-safe
+            {
+                await DescriptorManager.LoadAllAsync();
+
+                _initialized = true;
+            }
+        }
+
+        public async Task<WorkItem> CreateTemplateAsync(string projectCode, string workItemType)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -30,16 +41,19 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(workItemType));
             }
 
-            var wid = await GetWorkItemDescriptionAsync(projectCode, workItemType);
+            await InitAsync();
+
+            var propertyDescriptors = DescriptorManager.GetAllPropertyDescriptors(workItemType);
+            var properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, string.Empty));
 
             //TODO: Set default values
 
-            var wi = new WorkItem(projectCode, "NEW", workItemType, wid.Properties.Select(pd => new Property(pd.Name, pd.DataType, string.Empty)), Array.Empty<LogEntry>());
+            var wi = new WorkItem(projectCode, "NEW", workItemType, properties, Array.Empty<LogEntry>());
 
-            return (wi, wid);
+            return wi;
         }
 
-        public async Task<WorkItemCreatedResult> Create(string projectCode, string workItemType, IEnumerable<Property> properties)
+        public async Task<WorkItemCreatedResult> CreateAsync(string projectCode, string workItemType, IEnumerable<Property> properties)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -55,6 +69,8 @@ namespace Violet.WorkItems
             {
                 throw new ArgumentNullException(nameof(properties));
             }
+
+            await InitAsync();
 
             if (properties.Count() > 0)
             {
@@ -102,6 +118,8 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(id));
             }
 
+            await InitAsync();
+
             //TODO: Check property set completeness to work item descriptor
             //TODO: Check with validator
 
@@ -132,13 +150,6 @@ namespace Violet.WorkItems
             workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
 
             await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
-        }
-
-        private async Task<WorkItemDescriptor> GetWorkItemDescriptionAsync(string project, string type)
-        {
-            var types = await _descriptorProvider.GetAllDescriptorsAsync();
-
-            return types.FirstOrDefault(wid => wid.Name == type);
         }
     }
 }
