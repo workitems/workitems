@@ -90,5 +90,59 @@ namespace Violet.WorkItems.Core.Test
             Assert.False(result.Success);
             providerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task WorkItemManager_Update_SimpleWithoutDescriptor()
+        {
+            // arrange
+            var manager = new WorkItemManager(new InMemoryDataProvider(), new CommonSdlcDescriptorProvider());
+
+            var issue = await manager.CreateAsync("FOO", "BAR", new Property[] {
+                new Property("A", "String", "aa"),
+                new Property("B", "String", "bb"),
+            });
+
+            // act
+            var result = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+                new Property("A", "String", "aab"),
+            });
+
+            // assert
+            Assert.NotNull(result);
+            Assert.True(result.Success);
+            Assert.NotNull(result.UpdatedWorkItem);
+
+            Assert.Equal("FOO", result.UpdatedWorkItem.ProjectCode);
+            Assert.Equal("BAR", result.UpdatedWorkItem.WorkItemType);
+
+            Assert.Collection(result.UpdatedWorkItem.Properties,
+                p =>
+                {
+                    Assert.Equal("A", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("aab", p.Value);
+                },
+                p =>
+                {
+                    Assert.Equal("B", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("bb", p.Value);
+                }
+            );
+
+            Assert.Collection(result.UpdatedWorkItem.Log,
+                l =>
+                {
+                    Assert.Collection(l.Changes,
+                        pc =>
+                        {
+                            Assert.Equal("A", pc.Name);
+                            Assert.Equal("aa", pc.OldValue);
+                            Assert.Equal("aab", pc.NewValue);
+                        }
+                    );
+                }
+            );
+        }
     }
 }

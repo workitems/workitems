@@ -1,14 +1,21 @@
+using System.Collections.Generic;
+using Violet.WorkItems.Validation;
+
 namespace Violet.WorkItems
 {
     public class WorkItemCreatedResult
     {
         public bool Success { get; }
-        public string Id { get; }
+        public WorkItem CreatedWorkItem { get; }
+        public IEnumerable<ErrorMessage> Errors { get; }
 
-        public WorkItemCreatedResult(bool success, string id)
+        public string Id => CreatedWorkItem?.Id;
+
+        public WorkItemCreatedResult(bool success, WorkItem createdWorkItem, IEnumerable<ErrorMessage> errors)
         {
             Success = success;
-            Id = id;
+            CreatedWorkItem = createdWorkItem;
+            Errors = errors;
         }
     }
 }

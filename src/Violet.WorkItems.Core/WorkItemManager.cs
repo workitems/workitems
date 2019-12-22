@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Violet.WorkItems.Provider;
 using Violet.WorkItems.Types;
+using Violet.WorkItems.Validation;
 
 namespace Violet.WorkItems
 {
@@ -12,11 +13,13 @@ namespace Violet.WorkItems
         private readonly IDataProvider _dataProvider;
         private bool _initialized = false;
         public DescriptorManager DescriptorManager { get; }
+        public ValidationManager ValidationManager { get; }
 
         public WorkItemManager(IDataProvider dataProvider, IDescriptorProvider descriptorProvider)
         {
             _dataProvider = dataProvider;
             DescriptorManager = new DescriptorManager(descriptorProvider);
+            ValidationManager = new ValidationManager(DescriptorManager);
         }
 
         private async Task InitAsync()
@@ -70,6 +73,8 @@ namespace Violet.WorkItems
                 throw new ArgumentNullException(nameof(properties));
             }
 
+            WorkItemCreatedResult result = null;
+
             await InitAsync();
 
             if (properties.Count() > 0)
@@ -77,16 +82,29 @@ namespace Violet.WorkItems
                 var newIdentifer = (await _dataProvider.NextNumberAsync(projectCode)).ToString();
 
                 //TODO: Check property set completeness to work item descriptor
-                //TODO: Check with validator
 
                 var wi = new WorkItem(projectCode, newIdentifer, workItemType, properties.ToArray(), Array.Empty<LogEntry>());
 
-                await _dataProvider.SaveNewWorkItemAsync(wi);
+                var validationResult = await ValidationManager.ValidateAsync(wi, Array.Empty<PropertyChange>());
 
-                return new WorkItemCreatedResult(true, newIdentifer);
+                if (validationResult.Count() == 0)
+                {
+                    await _dataProvider.SaveNewWorkItemAsync(wi);
+
+                    result = new WorkItemCreatedResult(true, wi, Array.Empty<ErrorMessage>());
+                }
+                else
+                {
+                    result = new WorkItemCreatedResult(false, wi, validationResult);
+                }
+
+            }
+            else
+            {
+                result = new WorkItemCreatedResult(false, null, Array.Empty<ErrorMessage>());
             }
 
-            return new WorkItemCreatedResult(false, null);
+            return result;
         }
 
         public async Task<WorkItem> GetAsync(string projectCode, string id)
@@ -106,7 +124,7 @@ namespace Violet.WorkItems
             return workItem;
         }
 
-        public async Task UpdateAsync(string projectCode, string id, IEnumerable<Property> properties)
+        public async Task<WorkItemUpdatedResult> UpdateAsync(string projectCode, string id, IEnumerable<Property> properties)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -118,10 +136,11 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(id));
             }
 
+            WorkItemUpdatedResult result = null;
+
             await InitAsync();
 
             //TODO: Check property set completeness to work item descriptor
-            //TODO: Check with validator
 
             var workItem = await GetAsync(projectCode, id);
 
@@ -149,7 +168,20 @@ namespace Violet.WorkItems
 
             workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
 
-            await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
+            var errors = await ValidationManager.ValidateAsync(workItem, changes);
+
+            if (errors.Count() == 0)
+            {
+                await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
+
+                result = new WorkItemUpdatedResult(true, workItem, Array.Empty<ErrorMessage>());
+            }
+            else
+            {
+                result = new WorkItemUpdatedResult(false, workItem, errors);
+            }
+
+            return result;
         }
     }
 }
