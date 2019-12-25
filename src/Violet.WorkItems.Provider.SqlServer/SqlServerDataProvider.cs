@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Violet.WorkItems.Provider.SqlServer
 {
@@ -11,9 +12,19 @@ namespace Violet.WorkItems.Provider.SqlServer
 
         private readonly WorkItemDbContext _context;
 
-        public SqlServerDataProvider()
+        public SqlServerDataProvider(string connectionString)
         {
-            _context = new WorkItemDbContext();
+            _context = new WorkItemDbContext(connectionString);
+        }
+
+        public async Task InitAsync()
+        {
+            await _context.Database.MigrateAsync();
+        }
+
+        public async Task DeleteAsync()
+        {
+            await _context.Database.EnsureDeletedAsync(); ;
         }
 
         public async Task SaveNewWorkItemAsync(WorkItem workItem)
@@ -34,7 +45,7 @@ namespace Violet.WorkItems.Provider.SqlServer
                 trackedOne.Properties.First(p => p.Name == property.Name).Value = property.Value;
             }
 
-            var log = (HashSet<LogEntry>)trackedOne.Log;
+            var log = new HashSet<LogEntry>(trackedOne.Log);
 
             var lastLogEntryDate = (log.Count() == 0) ? DateTimeOffset.MinValue : log.Max(l => l.Date);
 
@@ -42,6 +53,8 @@ namespace Violet.WorkItems.Provider.SqlServer
             {
                 log.Add(logEntry);
             }
+
+            trackedOne.Log = log;
 
             await _context.SaveChangesAsync();
         }

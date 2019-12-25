@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
     <ProjectReference Include="..\..\src\Violet.WorkItems.Types.CommonSdlc\Violet.WorkItems.Types.CommonSdlc.csproj" />
+    <ProjectReference Include="..\..\src\Violet.WorkItems.Provider.SqlServer\Violet.WorkItems.Provider.SqlServer.csproj" />
   </ItemGroup>
 
 </Project>

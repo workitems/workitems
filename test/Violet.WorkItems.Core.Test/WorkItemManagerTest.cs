@@ -4,19 +4,48 @@ using Violet.WorkItems.Provider;
 using Xunit;
 using Moq;
 using Violet.WorkItems.Types.CommonSdlc;
+using System.Collections.Generic;
+using Violet.WorkItems.Provider.SqlServer;
 
 namespace Violet.WorkItems.Core.Test
 {
+    public class SqlServerDataProviderFixture : IDisposable
+    {
+        public SqlServerDataProvider SqlServerDataProvider { get; }
+        public SqlServerDataProviderFixture()
+        {
+            SqlServerDataProvider = new SqlServerDataProvider($@"Server=localhost\SQLEXPRESS;Database=workitems_test;Trusted_Connection=True;");
+            SqlServerDataProvider.InitAsync().Wait();
+        }
+        public void Dispose()
+        {
+            SqlServerDataProvider.DeleteAsync().Wait();
+        }
+    }
+
+    [CollectionDefinition("Simple")]
+    public class SqlServerDataProviderCollection : ICollectionFixture<SqlServerDataProviderFixture> { }
+
+    [Collection("Simple")]
     public class WorkItemManagerTest
     {
-        [Fact]
-        public async Task WorkItemManager_Create_SimpleWithoutDescriptor()
+        public WorkItemManagerTest(SqlServerDataProviderFixture fixture) { }
+
+        public static IEnumerable<object[]> GetDataProvider()
+        {
+            yield return new object[] { new InMemoryDataProvider() };
+
+            var db = new SqlServerDataProvider($@"Server=localhost\SQLEXPRESS;Database=workitems_test;Trusted_Connection=True;");
+            db.InitAsync().Wait();
+            yield return new object[] { db };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDataProvider))]
+        public async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
         {
             // arrange
-            WorkItem savedWorkItem = null;
-            var providerMock = new Mock<IDataProvider>();
-            providerMock.Setup(p => p.SaveNewWorkItemAsync(It.IsAny<WorkItem>())).Callback<WorkItem>(wi => { savedWorkItem = wi; });
-            var manager = new WorkItemManager(providerMock.Object, new CommonSdlcDescriptorProvider());
+            var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
 
             var properties = new Property[] {
                 new Property("A", "String", "aa"),
@@ -29,12 +58,12 @@ namespace Violet.WorkItems.Core.Test
             // assert
             Assert.NotNull(result);
             Assert.True(result.Success);
-            Assert.NotNull(savedWorkItem);
+            Assert.NotNull(result.CreatedWorkItem);
 
-            Assert.Equal("FOO", savedWorkItem.ProjectCode);
-            Assert.Equal("BAR", savedWorkItem.WorkItemType);
+            Assert.Equal("FOO", result.CreatedWorkItem.ProjectCode);
+            Assert.Equal("BAR", result.CreatedWorkItem.WorkItemType);
 
-            Assert.Collection(savedWorkItem.Properties,
+            Assert.Collection(result.CreatedWorkItem.Properties,
                 p =>
                 {
                     Assert.Equal("A", p.Name);
@@ -91,11 +120,12 @@ namespace Violet.WorkItems.Core.Test
             providerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task WorkItemManager_Update_SimpleWithoutDescriptor()
+        [Theory]
+        [MemberData(nameof(GetDataProvider))]
+        public async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
         {
             // arrange
-            var manager = new WorkItemManager(new InMemoryDataProvider(), new CommonSdlcDescriptorProvider());
+            var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
 
             var issue = await manager.CreateAsync("FOO", "BAR", new Property[] {
                 new Property("A", "String", "aa"),
@@ -144,5 +174,80 @@ namespace Violet.WorkItems.Core.Test
                 }
             );
         }
+
+        [Theory]
+        [MemberData(nameof(GetDataProvider))]
+        public async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
+        {
+            // arrange
+            var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
+
+            var issue = await manager.CreateAsync("FOO", "BAR", new Property[] {
+                new Property("A", "String", "aa"),
+                new Property("B", "String", "bb"),
+            });
+
+            // act
+            var result1 = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+                new Property("A", "String", "aab"),
+            });
+
+            var result2 = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+                new Property("A", "String", "aabc"),
+            });
+
+            // assert
+            Assert.NotNull(result1);
+            Assert.True(result1.Success);
+            Assert.NotNull(result1.UpdatedWorkItem);
+
+            Assert.NotNull(result2);
+            Assert.True(result2.Success);
+            Assert.NotNull(result2.UpdatedWorkItem);
+
+            Assert.Equal("FOO", result2.UpdatedWorkItem.ProjectCode);
+            Assert.Equal("BAR", result2.UpdatedWorkItem.WorkItemType);
+
+            Assert.Collection(result2.UpdatedWorkItem.Properties,
+                p =>
+                {
+                    Assert.Equal("A", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("aabc", p.Value);
+                },
+                p =>
+                {
+                    Assert.Equal("B", p.Name);
+                    Assert.Equal("String", p.DataType);
+                    Assert.Equal("bb", p.Value);
+                }
+            );
+
+            Assert.Collection(result2.UpdatedWorkItem.Log,
+                l =>
+                {
+                    Assert.Collection(l.Changes,
+                        pc =>
+                        {
+                            Assert.Equal("A", pc.Name);
+                            Assert.Equal("aa", pc.OldValue);
+                            Assert.Equal("aab", pc.NewValue);
+                        }
+                    );
+                },
+                l =>
+                {
+                    Assert.Collection(l.Changes,
+                        pc =>
+                        {
+                            Assert.Equal("A", pc.Name);
+                            Assert.Equal("aab", pc.OldValue);
+                            Assert.Equal("aabc", pc.NewValue);
+                        }
+                    );
+                }
+            );
+        }
+
     }
 }

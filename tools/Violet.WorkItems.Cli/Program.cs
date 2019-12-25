@@ -14,7 +14,7 @@ namespace Violet.WorkItems.Cli
         private static WorkItemManager _manager;
         static Task<int> Main(string[] args)
         {
-            _provider = new SqlServerDataProvider();
+            _provider = new SqlServerDataProvider(@"Server=localhost\SQLEXPRESS;Database=workitems;Trusted_Connection=True;");
             _manager = new WorkItemManager(_provider, new CommonSdlcDescriptorProvider());
 
             var app = new CommandLineApplication();
