@@ -4,7 +4,7 @@ namespace Violet.WorkItems.Types
 {
     public class ValueProviderDescriptor
     {
-        public ValueProviderDescriptor(string type, string configuration)
+        public ValueProviderDescriptor(string type)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -12,10 +12,8 @@ namespace Violet.WorkItems.Types
             }
 
             Type = type;
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public string Type { get; }
-        public string Configuration { get; }
     }
 }

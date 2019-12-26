@@ -19,6 +19,8 @@ namespace Violet.WorkItems.Validation
             var errors = new List<ErrorMessage>();
             var propertyDescriptors = descriptorManager.GetCurrentPropertyDescriptors(workItem);
 
+            var validators = new List<IValidator>();
+
             // validate all properties, even if no change applied. context may change.
             foreach (var pd in propertyDescriptors)
             {
@@ -30,24 +32,44 @@ namespace Violet.WorkItems.Validation
                 }
                 else
                 {
-                    foreach (var vd in pd.Validators)
+                    validators.AddRange(pd.Validators.Select(vd => CreatePropertyValidator(pd, vd)).Where(v => v != null));
+                }
+
+                if (pd.ValueProvider != null)
+                {
+                    var validator = CreateValueProviderValidator(pd, pd.ValueProvider);
+
+                    if (!(validator is null))
                     {
-                        var validator = CreateValidator(pd, vd);
-
-                        var errorsOfProperty = await validator.ValidatePropertyAsync(workItem, appliedChanges);
-
-                        errors.AddRange(errorsOfProperty);
+                        validators.Add(validator);
                     }
                 }
+            }
+
+            foreach (var validator in validators)
+            {
+                var errorsOfProperty = await validator.ValidatePropertyAsync(workItem, appliedChanges);
+
+                errors.AddRange(errorsOfProperty);
             }
 
             return errors;
         }
 
-        private IValidator CreateValidator(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
+        private IValidator CreatePropertyValidator(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
             => validatorDescriptor switch
             {
                 MandatoryValidatorDescriptor mvd => new MandatoryValidator(propertyDescriptor, mvd),
+                _ => null,
+            };
+
+        private IValidator CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor valueProviderDescriptor)
+            => valueProviderDescriptor switch
+            {
+                EnumValueProviderDescriptor evpd => new EnumValidator(propertyDescriptor, evpd),
+                ProjectCollectionValueProviderDescriptor pcvpd => null,
+                ProjectUserValueProviderDescriptor puvpd => null,
+                RelationshipValueProviderDescriptor rvpd => null,
                 _ => null,
             };
     }

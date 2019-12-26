@@ -12,7 +12,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                 new PropertyDescriptor("Description", "String", PropertyType.UserInput, true, true, Array.Empty<ValidatorDescriptor>(), null),
                 new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, new ValueProviderDescriptor("Enum", "Open:Open,Done:Done")),
+                }, new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done")))
             }, Array.Empty<StageDescriptor>());
 
         public static WorkItemDescriptor Task
@@ -23,7 +23,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                 new PropertyDescriptor("Description", "String", PropertyType.UserInput, true, true, Array.Empty<ValidatorDescriptor>(), null),
                 new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, new ValueProviderDescriptor("Enum", "Open:Open,Done:Done")),
+                }, new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
             }, Array.Empty<StageDescriptor>());
     }
 }

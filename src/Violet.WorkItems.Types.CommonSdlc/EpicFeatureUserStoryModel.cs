@@ -12,7 +12,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     }, null),
                     new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, new ValueProviderDescriptor("Enum", "Draft:Draft,Ready:Ready,Open:Open,Done:Done")),
+                    }, new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },
                 Array.Empty<StageDescriptor>()
             );
@@ -24,7 +24,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     }, null),
                     new PropertyDescriptor("Epic", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, new ValueProviderDescriptor("Relationship", "realize:Epic")),
+                    }, new RelationshipValueProviderDescriptor("realize", "Epic")),
                     new PropertyDescriptor("Story", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, null),
@@ -33,7 +33,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     }, null),
                     new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, new ValueProviderDescriptor("Enum", "Draft:Draft,Ready:Ready,Open:Open,Done:Done")),
+                    }, new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },
                 Array.Empty<StageDescriptor>()
             );
@@ -45,7 +45,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     }, null),
                     new PropertyDescriptor("Feature", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, new ValueProviderDescriptor("Relationship", "realize:Feature")),
+                    }, new RelationshipValueProviderDescriptor("realize", "Feature")),
                     new PropertyDescriptor("Story", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, null),
@@ -54,7 +54,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     }, null),
                     new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, new ValueProviderDescriptor("Enum", "Draft:Draft,Ready:Ready,Open:Open,Done:Done")),
+                    }, new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },
                 Array.Empty<StageDescriptor>()
             );
