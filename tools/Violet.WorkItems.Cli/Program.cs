@@ -69,7 +69,7 @@ namespace Violet.WorkItems.Cli
 
                     return await NewWorkItemAsync(project, type);
                 });
-            }, false);
+            });
 
             app.Command("edit", command =>
             {
@@ -127,7 +127,7 @@ namespace Violet.WorkItems.Cli
                 }
             }
 
-            return 0;
+            return (workItem != null) ? 0 : 1;
         }
 
         private static async Task<int> ListWorkItemsAsync(string project, string type)
@@ -193,9 +193,23 @@ namespace Violet.WorkItems.Cli
                 .Where(p => p != null)
                 .ToArray();
 
-            await _manager.CreateAsync(projectCode, workItemType, properties);
+            var result = await _manager.CreateAsync(projectCode, workItemType, properties);
 
-            return 0;
+            if (result.Success)
+            {
+                Console.WriteLine($"Created WorkItem in project {result.CreatedWorkItem.ProjectCode} with id {result.Id}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to create WorkItem");
+
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"{error.Property}: {error.Message}");
+                }
+            }
+
+            return result.Success ? 0 : 1;
         }
 
 
@@ -226,9 +240,23 @@ namespace Violet.WorkItems.Cli
                 }
             }
 
-            await _manager.UpdateAsync(wi.ProjectCode, wi.Id, changedProperties);
+            var result = await _manager.UpdateAsync(wi.ProjectCode, wi.Id, changedProperties);
 
-            return 0;
+            if (result.Success)
+            {
+                Console.WriteLine($"Updated WorkItem in project {result.UpdatedWorkItem.ProjectCode} with id {result.UpdatedWorkItem.Id}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to update WorkItem");
+
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"{error.Property}: {error.Message}");
+                }
+            }
+
+            return result.Success ? 0 : 1;
         }
     }
 }

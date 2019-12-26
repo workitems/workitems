@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Violet.WorkItems.Types;
 
@@ -20,7 +21,9 @@ namespace Violet.WorkItems.Validation
         {
             var result = Array.Empty<ErrorMessage>();
 
-            var hasValue = !string.IsNullOrWhiteSpace(workItem[PropertyDescriptor.Name].Value);
+            var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
+
+            var hasValue = !string.IsNullOrWhiteSpace(property?.Value);
 
             if (!hasValue)
             {
