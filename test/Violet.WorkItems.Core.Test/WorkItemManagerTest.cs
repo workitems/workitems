@@ -10,40 +10,25 @@ using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Core.Test
 {
-    public class SqlServerDataProviderFixture : IDisposable
-    {
-        public SqlServerDataProvider SqlServerDataProvider { get; }
-        public SqlServerDataProviderFixture()
-        {
-            SqlServerDataProvider = new SqlServerDataProvider($@"Server=localhost\SQLEXPRESS;Database=workitems_test;Trusted_Connection=True;");
-            SqlServerDataProvider.InitAsync().Wait();
-        }
-        public void Dispose()
-        {
-            SqlServerDataProvider.DeleteAsync().Wait();
-        }
-    }
-
-    [CollectionDefinition("Simple")]
-    public class SqlServerDataProviderCollection : ICollectionFixture<SqlServerDataProviderFixture> { }
-
-    [Collection("Simple")]
     public class WorkItemManagerTest
     {
-        public WorkItemManagerTest(SqlServerDataProviderFixture fixture) { }
-
-        public static IEnumerable<object[]> GetDataProvider()
+        private static IDataProvider GetSqlServerDataProvider()
         {
-            yield return new object[] { new InMemoryDataProvider() };
-
             var db = new SqlServerDataProvider($@"Server=localhost\SQLEXPRESS;Database=workitems_test;Trusted_Connection=True;");
             db.InitAsync().Wait();
-            yield return new object[] { db };
+            return db;
         }
 
-        [Theory]
-        [MemberData(nameof(GetDataProvider))]
-        public async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
+        [Fact]
+        public Task WorkItemManager_Create_SimpleWithoutDescriptor_OnInMemoryDataProvider()
+            => WorkItemManager_Create_SimpleWithoutDescriptor(new InMemoryDataProvider());
+
+        [Fact]
+        [Trait("OnDataProvider", "SqlServer")]
+        public Task WorkItemManager_Create_SimpleWithoutDescriptor_OnSqlServerDataProvider()
+            => WorkItemManager_Create_SimpleWithoutDescriptor(GetSqlServerDataProvider());
+
+        private async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
         {
             // arrange
             var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
@@ -121,9 +106,17 @@ namespace Violet.WorkItems.Core.Test
             providerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [MemberData(nameof(GetDataProvider))]
-        public async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
+        [Fact]
+
+        public Task WorkItemManager_Update_SimpleWithoutDescriptor_OnInMemoryDataProvider()
+            => WorkItemManager_Update_SimpleWithoutDescriptor(new InMemoryDataProvider());
+
+        [Fact]
+        [Trait("OnDataProvider", "SqlServer")]
+        public Task WorkItemManager_Update_SimpleWithoutDescriptor_OnSqlServerDataProvider()
+            => WorkItemManager_Update_SimpleWithoutDescriptor(GetSqlServerDataProvider());
+
+        private async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
         {
             // arrange
             var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
@@ -176,9 +169,16 @@ namespace Violet.WorkItems.Core.Test
             );
         }
 
-        [Theory]
-        [MemberData(nameof(GetDataProvider))]
-        public async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
+        [Fact]
+        public Task WorkItemManager_Update_TwoTimesWithoutDescriptor_OnInMemoryDataProvider()
+            => WorkItemManager_Update_TwoTimesWithoutDescriptor(new InMemoryDataProvider());
+
+        [Fact]
+        [Trait("OnDataProvider", "SqlServer")]
+        public Task WorkItemManager_Update_TwoTimesWithoutDescriptor_OnSqlServerDataProvider()
+            => WorkItemManager_Update_TwoTimesWithoutDescriptor(GetSqlServerDataProvider());
+
+        private async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
         {
             // arrange
             var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());

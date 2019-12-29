@@ -1,5 +1,6 @@
 # Violet WorkItems
 
+![build](https://github.com/violetgrass/workitems/workflows/Build-CI/badge.svg)
 ![license:MIT](https://img.shields.io/github/license/violetgrass/workitems?style=flat-square)
 ![Nuget](https://img.shields.io/nuget/v/Violet.WorkItems.Core?style=flat-square)
 
