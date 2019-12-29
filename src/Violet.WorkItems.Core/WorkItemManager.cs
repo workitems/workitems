@@ -49,9 +49,7 @@ namespace Violet.WorkItems
             await InitAsync();
 
             var propertyDescriptors = DescriptorManager.GetAllPropertyDescriptors(workItemType);
-            var properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, EmptyValue));
-
-            //TODO: Set default values
+            var properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue));
 
             var wi = new WorkItem(projectCode, "NEW", workItemType, properties, Array.Empty<LogEntry>());
 

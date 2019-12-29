@@ -85,11 +85,10 @@ namespace Violet.WorkItems.Validation
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
                 new WorkItemDescriptor("BAR", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
+                    new PropertyDescriptor("A", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, null),
-                    new PropertyDescriptor("B", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
-                    }, null),
+                    }),
+                    new PropertyDescriptor("B", "String"),
                 }, Array.Empty<StageDescriptor>())
             ));
         }

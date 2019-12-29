@@ -72,6 +72,7 @@ namespace Violet.WorkItems.Types
                         propertyDescriptor.PropertyType,
                         isVisible,
                         isEditable,
+                        propertyDescriptor.InitialValue,
                         validators,
                         propertyDescriptor.ValueProvider);
                 }

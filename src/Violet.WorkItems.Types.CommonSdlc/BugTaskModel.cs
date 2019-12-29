@@ -6,24 +6,24 @@ namespace Violet.WorkItems.Types.CommonSdlc
     {
         public static WorkItemDescriptor Bug
             => new WorkItemDescriptor("Bug", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
-                new PropertyDescriptor("Title", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
+                new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, null),
-                new PropertyDescriptor("Description", "String", PropertyType.UserInput, true, true, Array.Empty<ValidatorDescriptor>(), null),
-                new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
+                }),
+                new PropertyDescriptor("Description", "String"),
+                new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValue, initialValue: "Open", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done")))
+                }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done")))
             }, Array.Empty<StageDescriptor>());
 
         public static WorkItemDescriptor Task
             => new WorkItemDescriptor("Task", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
-                new PropertyDescriptor("Title", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
+                new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, null),
-                new PropertyDescriptor("Description", "String", PropertyType.UserInput, true, true, Array.Empty<ValidatorDescriptor>(), null),
-                new PropertyDescriptor("State", "String", PropertyType.SingleValue, true, true, new ValidatorDescriptor[] {
+                }),
+                new PropertyDescriptor("Description", "String"),
+                new PropertyDescriptor("State", "String", PropertyType.SingleValue, initialValue: "Open", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
-                }, new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
+                }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
             }, Array.Empty<StageDescriptor>());
     }
 }

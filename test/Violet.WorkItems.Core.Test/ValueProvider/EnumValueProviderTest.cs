@@ -65,11 +65,10 @@ namespace Violet.WorkItems.ValueProvider
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
                 new WorkItemDescriptor("BAR", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
+                    new PropertyDescriptor("A", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
-                    }, null),
-                    new PropertyDescriptor("B", "String", PropertyType.UserInput, true, true, new ValidatorDescriptor[] {
-                    }, new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
+                    }),
+                    new PropertyDescriptor("B", "String", valueProvider: new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
                 }, Array.Empty<StageDescriptor>())
             ));
         }

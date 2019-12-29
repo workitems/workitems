@@ -6,6 +6,7 @@ using Moq;
 using Violet.WorkItems.Types.CommonSdlc;
 using System.Collections.Generic;
 using Violet.WorkItems.Provider.SqlServer;
+using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Core.Test
 {
@@ -249,5 +250,35 @@ namespace Violet.WorkItems.Core.Test
             );
         }
 
+        [Fact]
+        public async Task WorkItemManager_CreateTemplate_WithDefaultValues()
+        {
+            // arrange
+            var workItemManager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
+                new WorkItemDescriptor("BAR", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
+                    new PropertyDescriptor("A", "String", initialValue: "a"),
+                    new PropertyDescriptor("B", "String"),
+                }, Array.Empty<StageDescriptor>())
+            ));
+
+            // act
+            var template = await workItemManager.CreateTemplateAsync("FOO", "BAR");
+
+            // assert
+            Assert.NotNull(template);
+            Assert.Equal("BAR", template.WorkItemType);
+            Assert.Collection(template.Properties,
+                p =>
+                {
+                    Assert.Equal("A", p.Name);
+                    Assert.Equal("a", p.Value);
+                },
+                p =>
+                {
+                    Assert.Equal("B", p.Name);
+                    Assert.Equal("", p.Value);
+                }
+            );
+        }
     }
 }
