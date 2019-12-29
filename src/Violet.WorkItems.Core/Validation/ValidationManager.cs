@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Violet.WorkItems.Types;
+using Violet.WorkItems.ValueProvider;
 
 namespace Violet.WorkItems.Validation
 {
@@ -71,7 +72,7 @@ namespace Violet.WorkItems.Validation
         private IValidator CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor valueProviderDescriptor)
             => valueProviderDescriptor switch
             {
-                EnumValueProviderDescriptor evpd => new EnumValidator(propertyDescriptor, evpd),
+                EnumValueProviderDescriptor evpd => new ValueProviderValidator(propertyDescriptor, new EnumValueProvider(evpd)),
                 ProjectCollectionValueProviderDescriptor pcvpd => null,
                 ProjectUserValueProviderDescriptor puvpd => null,
                 RelationshipValueProviderDescriptor rvpd => null,

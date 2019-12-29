@@ -2,7 +2,7 @@
 
 **Behavior**
 
-- ValueProviders are converted into validators
+- ValueProviders are converted into validators (ValueProviderValidator bridges the two domains)
 
 ### EnumValueProvider
 

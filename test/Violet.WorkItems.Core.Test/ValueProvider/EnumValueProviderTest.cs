@@ -51,7 +51,7 @@ namespace Violet.WorkItems.ValueProvider
             Assert.Collection(result.Errors,
                 em =>
                 {
-                    Assert.Equal(nameof(EnumValidator), em.Source);
+                    Assert.Equal(nameof(ValueProviderValidator), em.Source);
                     Assert.Equal(string.Empty, em.ErrorCode);
                     Assert.Equal("FOO", em.ProjectCode);
                     Assert.Equal("1", em.Id);
