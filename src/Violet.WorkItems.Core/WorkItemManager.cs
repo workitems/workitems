@@ -15,6 +15,8 @@ namespace Violet.WorkItems
         public DescriptorManager DescriptorManager { get; }
         public ValidationManager ValidationManager { get; }
 
+        public static readonly string EmptyValue = string.Empty;
+
         public WorkItemManager(IDataProvider dataProvider, IDescriptorProvider descriptorProvider)
         {
             _dataProvider = dataProvider;
@@ -47,7 +49,7 @@ namespace Violet.WorkItems
             await InitAsync();
 
             var propertyDescriptors = DescriptorManager.GetAllPropertyDescriptors(workItemType);
-            var properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, string.Empty));
+            var properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, EmptyValue));
 
             //TODO: Set default values
 
@@ -81,11 +83,12 @@ namespace Violet.WorkItems
             {
                 var newIdentifer = (await _dataProvider.NextNumberAsync(projectCode)).ToString();
 
-                //TODO: Check property set completeness to work item descriptor
-
                 var wi = new WorkItem(projectCode, newIdentifer, workItemType, properties.ToArray(), Array.Empty<LogEntry>());
 
-                var validationResult = await ValidationManager.ValidateAsync(wi, Array.Empty<PropertyChange>());
+                // property changes for all values not identical with an empty template.
+                var propertyChanges = properties.Where(p => p.Value != EmptyValue).Select(p => new PropertyChange(p.Name, EmptyValue, p.Value));
+
+                var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges);
 
                 if (validationResult.Count() == 0)
                 {
@@ -139,8 +142,6 @@ namespace Violet.WorkItems
             WorkItemUpdatedResult result = null;
 
             await InitAsync();
-
-            //TODO: Check property set completeness to work item descriptor
 
             var workItem = await GetAsync(projectCode, id);
 
