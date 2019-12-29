@@ -25,7 +25,10 @@ namespace Violet.WorkItems.ValueProvider
                     .Select(ev => new ProvidedValue(ev.Value, ev.DisplayText))
                 );
 
-        public Task<bool> ValueExists(string value)
+        public Task<bool> ValueExistsAsync(string value)
             => Task.FromResult(Descriptor.Values.Any(ev => ev.Value == value));
+
+        public Task<string> GetDefaultValueAsync()
+            => Task.FromResult(Descriptor.Values.FirstOrDefault()?.Value);
     }
 }

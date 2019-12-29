@@ -24,7 +24,7 @@ namespace Violet.WorkItems.Validation
 
             var propertyValue = workItem.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name)?.Value;
 
-            var valueMatchesEnumEntry = await ValueProvider.ValueExists(propertyValue);
+            var valueMatchesEnumEntry = await ValueProvider.ValueExistsAsync(propertyValue);
 
             if (!valueMatchesEnumEntry)
             {

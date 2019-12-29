@@ -5,8 +5,9 @@ namespace Violet.WorkItems.ValueProvider
 {
     public interface IValueProvider
     {
+        Task<string> GetDefaultValueAsync();
         Task<IEnumerable<ProvidedValue>> ProvideAllValuesAsync();
-        Task<bool> ValueExists(string value);
+        Task<bool> ValueExistsAsync(string value);
         Task<IEnumerable<ProvidedValue>> SuggestionsAsync(string input);
     }
 }

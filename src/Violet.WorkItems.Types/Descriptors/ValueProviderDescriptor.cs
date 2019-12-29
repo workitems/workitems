@@ -2,7 +2,7 @@ using System;
 
 namespace Violet.WorkItems.Types
 {
-    public class ValueProviderDescriptor
+    public abstract class ValueProviderDescriptor
     {
         public ValueProviderDescriptor(string type)
         {
