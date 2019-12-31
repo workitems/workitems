@@ -12,7 +12,14 @@ namespace Violet.WorkItems
         public IEnumerable<Property> Properties { get; set; }
         public IEnumerable<LogEntry> Log { get; set; }
 
-        public WorkItem() { }
+        public WorkItem()
+        {
+            ProjectCode = string.Empty;
+            Id = string.Empty;
+            WorkItemType = string.Empty;
+            Properties = Array.Empty<Property>();
+            Log = Array.Empty<LogEntry>();
+        }
         public WorkItem(string projectCode, string id, string workItemType, IEnumerable<Property> properties, IEnumerable<LogEntry> log)
         {
             if (string.IsNullOrWhiteSpace(projectCode))

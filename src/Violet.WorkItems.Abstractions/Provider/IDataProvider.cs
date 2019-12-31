@@ -7,7 +7,7 @@ namespace Violet.WorkItems.Provider
     {
         Task SaveNewWorkItemAsync(WorkItem workItem);
         Task SaveUpdatedWorkItemAsync(WorkItem workItem);
-        Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string workItemType = null);
+        Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? workItemType = null);
         Task<int> NextNumberAsync(string projectCode);
         Task<WorkItem> GetAsync(string projectCode, string id);
     }

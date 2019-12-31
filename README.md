@@ -83,3 +83,7 @@ The WorkItems project follows an onion architecture with re-usable components.
 🏃‍♂️ Contributing Guideline (not yet done)
 
 [MIT licensed](LICENSE.md)
+
+---
+
+Legend: 🏃‍♂️ In Progress, ✅ Done
