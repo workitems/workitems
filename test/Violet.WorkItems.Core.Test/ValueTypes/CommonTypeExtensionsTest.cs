@@ -133,5 +133,36 @@ namespace Violet.WorkItems.ValueTypes
             // assert
             Assert.Equal(x, result);
         }
+
+        [Fact]
+        public void CommonTypeExtensions_Value_Decimal_Roundtrip()
+        {
+            // arrange
+            decimal x = 3.14M;
+            var property = new Property("FOO", nameof(Decimal), string.Empty);
+
+            // act
+            property.Value(x);
+            property.Value(out decimal result);
+
+            // assert
+            Assert.Equal(x, result);
+        }
+
+        [Fact]
+        public void CommonTypeExtensions_Value_DateTimeOffset_Roundtrip()
+        {
+            // arrange
+            DateTimeOffset x = DateTimeOffset.Parse("2019-12-31T14:56:12.123+02:00");
+            var property = new Property("FOO", nameof(DateTimeOffset), string.Empty);
+
+            // act
+            property.Value(x);
+            property.Value(out DateTimeOffset result);
+
+            // assert
+            Assert.Equal(x, result);
+            Assert.Equal("2019-12-31T14:56:12.123+02:00", property.Value);
+        }
     }
 }

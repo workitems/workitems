@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using System.ComponentModel;
-using System.Globalization;
 
 namespace Violet.WorkItems
 {
@@ -11,6 +11,13 @@ namespace Violet.WorkItems
             {
                 { Name: "Nullable" } => IsTypeMatch(propertyType, type.GenericTypeArguments[0]),
                 _ => propertyType == type.Name,
+            };
+
+        private static TypeConverter GetConverter(Type type)
+            => type switch
+            {
+                { Name: "DateTimeOffset" } => new Violet.WorkItems.ValueTypes.DateTimeOffsetConverter(),
+                _ => TypeDescriptor.GetConverter(type),
             };
 
         public static void Value<T>(this Property property, T value)
@@ -26,11 +33,13 @@ namespace Violet.WorkItems
                 throw new InvalidOperationException($"Cannot serialize {type.Name} to property {property.Name} of data type {property.DataType}");
             }
 
-            var tc = TypeDescriptor.GetConverter(type);
+            var tc = GetConverter(type);
             var result = tc.ConvertToInvariantString(value);
 
             property.Value = result;
         }
+
+
         public static void Value<T>(this Property property, out T value)
         {
             if (property is null)
@@ -44,7 +53,7 @@ namespace Violet.WorkItems
                 throw new InvalidOperationException($"Cannot deserialize {type.Name} from property {property.Name} of data type {property.DataType}");
             }
 
-            var tc = TypeDescriptor.GetConverter(type);
+            var tc = GetConverter(type);
             if (tc.IsValid(property.Value))
             {
                 var result = tc.ConvertFromInvariantString(property.Value);
