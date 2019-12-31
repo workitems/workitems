@@ -32,7 +32,7 @@ namespace Violet.WorkItems.Validation
 
         private IEnumerable<IValidator> CreateValidators(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges, List<ErrorMessage> errors)
         {
-            var validators = new List<IValidator>();
+            var validators = new List<IValidator?>();
 
             validators.AddRange(CreateWorkItemValidators(workItem));
 
@@ -47,7 +47,7 @@ namespace Violet.WorkItems.Validation
                 validators.Add(CreateValueProviderValidator(pd, pd.ValueProvider));
             }
 
-            return validators.Where(v => v != null);
+            return validators.Where(v => v != null).Cast<IValidator>();
         }
 
         private IEnumerable<IValidator> CreateWorkItemValidators(WorkItem workItem)
@@ -67,7 +67,7 @@ namespace Violet.WorkItems.Validation
             }
         }
 
-        private IValidator CreatePropertyValidatorByValidatorDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
+        private IValidator? CreatePropertyValidatorByValidatorDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
             => validatorDescriptor switch
             {
                 MandatoryValidatorDescriptor mvd => new MandatoryValidator(propertyDescriptor, mvd),
@@ -75,7 +75,7 @@ namespace Violet.WorkItems.Validation
                 _ => null,
             };
 
-        private IValidator CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor valueProviderDescriptor)
+        private IValidator? CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor valueProviderDescriptor)
             => valueProviderDescriptor switch
             {
                 EnumValueProviderDescriptor evpd => new ValueProviderValidator(propertyDescriptor, new EnumValueProvider(evpd)),

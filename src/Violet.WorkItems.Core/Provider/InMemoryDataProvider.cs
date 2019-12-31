@@ -10,16 +10,16 @@ namespace Violet.WorkItems.Provider
         private string GetKey(string projectCode, string id)
             => $"{projectCode}-{id}";
 
-        public Task<WorkItem> GetAsync(string projectCode, string id)
+        public Task<WorkItem?> GetAsync(string projectCode, string id)
         {
-            WorkItem result = null;
+            WorkItem? result = null;
 
             _data.TryGetValue(GetKey(projectCode, id), out result);
 
-            return Task.FromResult(result);
+            return Task.FromResult<WorkItem?>(result);
         }
 
-        public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string type = null)
+        public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? type = null)
         {
             var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (type is null || wi.WorkItemType == type));
 

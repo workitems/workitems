@@ -73,7 +73,7 @@ namespace Violet.WorkItems
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            WorkItemCreatedResult result = null;
+            WorkItemCreatedResult result;
 
             await InitAsync();
 
@@ -108,7 +108,7 @@ namespace Violet.WorkItems
             return result;
         }
 
-        public async Task<WorkItem> GetAsync(string projectCode, string id)
+        public async Task<WorkItem?> GetAsync(string projectCode, string id)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -137,47 +137,56 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(id));
             }
 
-            WorkItemUpdatedResult result = null;
+            WorkItemUpdatedResult result;
 
             await InitAsync();
 
             var workItem = await GetAsync(projectCode, id);
 
-            var changes = new List<PropertyChange>();
-
-            var newProperties = workItem.Properties
-                .Select(p =>
-                {
-                    var changedValue = properties.FirstOrDefault(changedProperty => changedProperty.Name == p.Name && changedProperty.Value != p.Value);
-
-                    if (changedValue is null)
-                    {
-                        return p;
-                    }
-                    else
-                    {
-                        changes.Add(new PropertyChange(p.Name, p.Value, changedValue.Value));
-
-                        return new Property(p.Name, p.DataType, changedValue.Value);
-                    }
-                })
-                .ToArray();
-
-            var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes) }).ToArray();
-
-            workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
-
-            var errors = await ValidationManager.ValidateAsync(workItem, changes);
-
-            if (errors.Count() == 0)
+            if (workItem != null)
             {
-                await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
+                var changes = new List<PropertyChange>();
 
-                result = new WorkItemUpdatedResult(true, workItem, Array.Empty<ErrorMessage>());
+                var newProperties = workItem.Properties
+                    .Select(p =>
+                    {
+                        var changedValue = properties.FirstOrDefault(changedProperty => changedProperty.Name == p.Name && changedProperty.Value != p.Value);
+
+                        if (changedValue is null)
+                        {
+                            return p;
+                        }
+                        else
+                        {
+                            changes.Add(new PropertyChange(p.Name, p.Value, changedValue.Value));
+
+                            return new Property(p.Name, p.DataType, changedValue.Value);
+                        }
+                    })
+                    .ToArray();
+
+                var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes) }).ToArray();
+
+                workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
+
+                var errors = await ValidationManager.ValidateAsync(workItem, changes);
+
+                if (errors.Count() == 0)
+                {
+                    await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
+
+                    result = new WorkItemUpdatedResult(true, workItem, Array.Empty<ErrorMessage>());
+                }
+                else
+                {
+                    result = new WorkItemUpdatedResult(false, workItem, errors);
+                }
             }
             else
             {
-                result = new WorkItemUpdatedResult(false, workItem, errors);
+                result = new WorkItemUpdatedResult(false, null, new ErrorMessage[] {
+                    new ErrorMessage(nameof(WorkItemManager), string.Empty, $"The work item with id '{id}' in project '{projectCode}' cannot be found.", projectCode, string.Empty, string.Empty),
+                });
             }
 
             return result;

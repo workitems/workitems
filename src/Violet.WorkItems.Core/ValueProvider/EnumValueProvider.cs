@@ -29,6 +29,6 @@ namespace Violet.WorkItems.ValueProvider
             => Task.FromResult(Descriptor.Values.Any(ev => ev.Value == value));
 
         public Task<string> GetDefaultValueAsync()
-            => Task.FromResult(Descriptor.Values.FirstOrDefault()?.Value);
+            => Task.FromResult(Descriptor.Values.FirstOrDefault()?.Value ?? string.Empty);
     }
 }
