@@ -18,7 +18,7 @@ namespace Violet.WorkItems.Validation
             ValueProvider = valueProvider;
         }
 
-        public async Task<IEnumerable<ErrorMessage>> ValidatePropertyAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
         {
             var result = Array.Empty<ErrorMessage>();
 

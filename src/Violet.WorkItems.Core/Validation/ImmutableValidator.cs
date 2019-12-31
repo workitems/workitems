@@ -15,7 +15,7 @@ namespace Violet.WorkItems.Validation
         }
 
 
-        public Task<IEnumerable<ErrorMessage>> ValidatePropertyAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
         {
             if (workItem is null)
             {

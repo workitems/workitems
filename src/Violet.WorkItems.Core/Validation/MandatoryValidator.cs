@@ -1,38 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Validation
 {
-    public class MandatoryValidator : IValidator
+    public class MandatoryValidator : PropertyWithValidatorDescriptorValidatorBase<MandatoryValidatorDescriptor>, IValidator
     {
-        public MandatoryValidatorDescriptor ValidatorDescriptor { get; }
-        public PropertyDescriptor PropertyDescriptor { get; }
-
         public MandatoryValidator(PropertyDescriptor propertyDescriptor, MandatoryValidatorDescriptor validatorDescriptor)
-        {
-            PropertyDescriptor = propertyDescriptor;
-            ValidatorDescriptor = validatorDescriptor;
-        }
+            : base(propertyDescriptor, validatorDescriptor, nameof(MandatoryValidator))
+        { }
 
-        public Task<IEnumerable<ErrorMessage>> ValidatePropertyAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        protected override bool ValidateProperty(Property property, out string code, out string message)
         {
-            var result = Array.Empty<ErrorMessage>();
-
-            var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
+            code = string.Empty;
+            message = string.Empty;
 
             var hasValue = !string.IsNullOrWhiteSpace(property?.Value);
 
             if (!hasValue)
             {
-                result = new ErrorMessage[] {
-                    new ErrorMessage(nameof(MandatoryValidator), string.Empty, $"Property {PropertyDescriptor.Name} cannot be empty", workItem.ProjectCode, workItem.Id, PropertyDescriptor.Name),
-                };
+                code = string.Empty;
+                message = $"Property {PropertyDescriptor.Name} cannot be empty";
             }
 
-            return Task.FromResult((IEnumerable<ErrorMessage>)result);
+            return hasValue;
         }
     }
 }

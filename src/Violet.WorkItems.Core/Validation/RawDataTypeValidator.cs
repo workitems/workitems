@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Validation
 {
@@ -15,7 +14,7 @@ namespace Violet.WorkItems.Validation
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
         }
 
-        public Task<IEnumerable<ErrorMessage>> ValidatePropertyAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
         {
             var result = new List<ErrorMessage>();
 

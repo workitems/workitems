@@ -22,7 +22,7 @@ namespace Violet.WorkItems.Validation
 
             foreach (var validator in validators)
             {
-                var errorsOfProperty = await validator.ValidatePropertyAsync(workItem, appliedChanges);
+                var errorsOfProperty = await validator.ValidateAsync(workItem, appliedChanges);
 
                 errors.AddRange(errorsOfProperty);
             }
@@ -71,6 +71,7 @@ namespace Violet.WorkItems.Validation
             => validatorDescriptor switch
             {
                 MandatoryValidatorDescriptor mvd => new MandatoryValidator(propertyDescriptor, mvd),
+                StringLengthValidatorDescriptor slvd => new StringLengthValidator(propertyDescriptor, slvd),
                 _ => null,
             };
 
