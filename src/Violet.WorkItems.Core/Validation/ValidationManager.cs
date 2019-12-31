@@ -40,9 +40,9 @@ namespace Violet.WorkItems.Validation
             // validate all properties, even if no change applied. context may change.
             foreach (var pd in propertyDescriptors)
             {
-                validators.Add(CreatePropertyValidatorByProperty(pd));
+                validators.AddRange(CreatePropertyValidatorByPropertyDescriptor(pd));
 
-                validators.AddRange(pd.Validators.Select(vd => CreatePropertyValidatorByDescriptor(pd, vd)));
+                validators.AddRange(pd.Validators.Select(vd => CreatePropertyValidatorByValidatorDescriptor(pd, vd)));
 
                 validators.Add(CreateValueProviderValidator(pd, pd.ValueProvider));
             }
@@ -55,14 +55,19 @@ namespace Violet.WorkItems.Validation
             yield return new CompletenessValidator(_descriptorManager.GetCurrentPropertyDescriptors(workItem));
         }
 
-        private IValidator CreatePropertyValidatorByProperty(PropertyDescriptor propertyDescriptor)
-            => propertyDescriptor switch
+        private IEnumerable<IValidator> CreatePropertyValidatorByPropertyDescriptor(PropertyDescriptor propertyDescriptor)
+        {
+            if (propertyDescriptor.IsEditable == false)
             {
-                { IsEditable: false } => new ImmutableValidator(propertyDescriptor),
-                _ => null,
-            };
+                yield return new ImmutableValidator(propertyDescriptor);
+            }
+            if (propertyDescriptor.PropertyType == PropertyType.Raw)
+            {
+                yield return new RawDataTypeValidator(propertyDescriptor.Name);
+            }
+        }
 
-        private IValidator CreatePropertyValidatorByDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
+        private IValidator CreatePropertyValidatorByValidatorDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
             => validatorDescriptor switch
             {
                 MandatoryValidatorDescriptor mvd => new MandatoryValidator(propertyDescriptor, mvd),

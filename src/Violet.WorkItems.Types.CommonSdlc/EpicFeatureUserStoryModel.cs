@@ -10,7 +10,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValue, initialValue: "Open", validators: new ValidatorDescriptor[] {
+                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Open", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },
@@ -22,7 +22,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("Epic", "String", propertyType: PropertyType.SingleValue, initialValue: string.Empty, validators: new ValidatorDescriptor[] {
+                    new PropertyDescriptor("Epic", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: string.Empty, validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new RelationshipValueProviderDescriptor("realize", "Epic")),
                     new PropertyDescriptor("Story", "String", validators:  new ValidatorDescriptor[] {
@@ -31,7 +31,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("AcceptanceCriteria", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValue, initialValue: "Draft", validators: new ValidatorDescriptor[] {
+                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Draft", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },
@@ -43,7 +43,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("Title", "String", validators:  new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("Feature", "String", propertyType: PropertyType.SingleValue, validators: new ValidatorDescriptor[] {
+                    new PropertyDescriptor("Feature", "String", propertyType: PropertyType.SingleValueFromProvider, validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new RelationshipValueProviderDescriptor("realize", "Feature")),
                     new PropertyDescriptor("Story", "String", validators: new ValidatorDescriptor[] {
@@ -52,7 +52,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("AcceptanceCriteria", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValue, initialValue: "Draft", validators: new ValidatorDescriptor[] {
+                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Draft", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
                 },

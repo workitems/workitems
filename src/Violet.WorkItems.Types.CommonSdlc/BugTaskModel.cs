@@ -10,7 +10,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new MandatoryValidatorDescriptor(),
                 }),
                 new PropertyDescriptor("Description", "String"),
-                new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValue, initialValue: "Open", validators: new ValidatorDescriptor[] {
+                new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Open", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
                 }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done")))
             }, Array.Empty<StageDescriptor>());
@@ -21,7 +21,7 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new MandatoryValidatorDescriptor(),
                 }),
                 new PropertyDescriptor("Description", "String"),
-                new PropertyDescriptor("State", "String", PropertyType.SingleValue, initialValue: "Open", validators: new ValidatorDescriptor[] {
+                new PropertyDescriptor("State", "String", PropertyType.SingleValueFromProvider, initialValue: "Open", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
                 }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
             }, Array.Empty<StageDescriptor>());

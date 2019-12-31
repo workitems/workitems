@@ -1,25 +1,11 @@
 using System;
 using System.Collections;
-using System.ComponentModel;
 
 namespace Violet.WorkItems
 {
+
     public static class CommonDataTypesExtensions
     {
-        private static bool IsTypeMatch(string propertyType, Type type)
-            => type switch
-            {
-                { Name: "Nullable" } => IsTypeMatch(propertyType, type.GenericTypeArguments[0]),
-                _ => propertyType == type.Name,
-            };
-
-        private static TypeConverter GetConverter(Type type)
-            => type switch
-            {
-                { Name: "DateTimeOffset" } => new Violet.WorkItems.ValueTypes.DateTimeOffsetConverter(),
-                _ => TypeDescriptor.GetConverter(type),
-            };
-
         public static void Value<T>(this Property property, T value)
         {
             if (property is null)
@@ -28,12 +14,18 @@ namespace Violet.WorkItems
             }
 
             var type = typeof(T);
-            if (!IsTypeMatch(property.DataType, type))
+            if (!ValueTypesManager.IsTypeMatch(property.DataType, type))
             {
                 throw new InvalidOperationException($"Cannot serialize {type.Name} to property {property.Name} of data type {property.DataType}");
             }
 
-            var tc = GetConverter(type);
+            var tc = ValueTypesManager.GetConverter(type);
+
+            if (tc is null)
+            {
+                throw new InvalidOperationException($"No Type Coverter found for type '{type}'.");
+            }
+
             var result = tc.ConvertToInvariantString(value);
 
             property.Value = result;
@@ -48,12 +40,18 @@ namespace Violet.WorkItems
             }
 
             var type = typeof(T);
-            if (!IsTypeMatch(property.DataType, type))
+            if (!ValueTypesManager.IsTypeMatch(property.DataType, type))
             {
                 throw new InvalidOperationException($"Cannot deserialize {type.Name} from property {property.Name} of data type {property.DataType}");
             }
 
-            var tc = GetConverter(type);
+            var tc = ValueTypesManager.GetConverter(type);
+
+            if (tc is null)
+            {
+                throw new InvalidOperationException($"No Type Coverter found for type '{type}'.");
+            }
+
             if (tc.IsValid(property.Value))
             {
                 var result = tc.ConvertFromInvariantString(property.Value);
