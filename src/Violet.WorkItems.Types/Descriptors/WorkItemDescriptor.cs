@@ -5,7 +5,7 @@ namespace Violet.WorkItems.Types
 {
     public class WorkItemDescriptor
     {
-        public WorkItemDescriptor(string name, LogDescriptor log, IEnumerable<PropertyDescriptor> properties, IEnumerable<StageDescriptor> stages)
+        public WorkItemDescriptor(string name, IEnumerable<PropertyDescriptor> properties, IEnumerable<StageDescriptor>? stages = null, LogDescriptor? log = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -13,7 +13,7 @@ namespace Violet.WorkItems.Types
             }
 
             Name = name;
-            Log = log ?? throw new System.ArgumentNullException(nameof(log));
+            Log = log ?? new LogDescriptor(Array.Empty<LogEntryTypeDescriptor>());
             Stages = stages ?? Array.Empty<StageDescriptor>();
             Properties = properties ?? Array.Empty<PropertyDescriptor>();
         }

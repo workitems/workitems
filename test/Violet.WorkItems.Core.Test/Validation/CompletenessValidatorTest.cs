@@ -92,10 +92,10 @@ namespace Violet.WorkItems.Validation
         private static WorkItemManager BuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
+                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
                     new PropertyDescriptor("A", "String"),
                     new PropertyDescriptor("B", "String"),
-                }, Array.Empty<StageDescriptor>())
+                })
             ));
         }
     }

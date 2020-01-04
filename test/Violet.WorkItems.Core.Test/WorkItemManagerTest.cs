@@ -255,10 +255,10 @@ namespace Violet.WorkItems.Core.Test
         {
             // arrange
             var workItemManager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new LogDescriptor(true, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
+                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
                     new PropertyDescriptor("A", "String", initialValue: "a"),
                     new PropertyDescriptor("B", "String"),
-                }, Array.Empty<StageDescriptor>())
+                })
             ));
 
             // act

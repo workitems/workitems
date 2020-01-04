@@ -7,12 +7,6 @@ namespace Violet.WorkItems.Provider
     {
         public WorkItemDescriptor Model
             => new WorkItemDescriptor("GitHubIssues",
-                new LogDescriptor(false, new LogEntryTypeDescriptor[] {
-                    new LogEntryTypeDescriptor("assignmentChange"),
-                    new LogEntryTypeDescriptor("milestoneChange"),
-                    new LogEntryTypeDescriptor("labelChange"),
-                    new LogEntryTypeDescriptor("stateChange"),
-                }),
                 new PropertyDescriptor[] {
                     new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, isEditable: false, initialValue: "Open", valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Closed", "Closed"))),
                     new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
@@ -33,7 +27,13 @@ namespace Violet.WorkItems.Provider
                             new ChangePropertyValueCommandDescriptor("Close", "Close", "State", "Closed"),
                         }
                     ),
-                }
+                },
+                new LogDescriptor(new LogEntryTypeDescriptor[] {
+                    new LogEntryTypeDescriptor("assignmentChange"),
+                    new LogEntryTypeDescriptor("milestoneChange"),
+                    new LogEntryTypeDescriptor("labelChange"),
+                    new LogEntryTypeDescriptor("stateChange"),
+                })
             );
     }
 }

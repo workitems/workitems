@@ -4,7 +4,7 @@ namespace Violet.WorkItems.Types
 {
     public class LogDescriptor
     {
-        public LogDescriptor(bool enabled, IEnumerable<LogEntryTypeDescriptor> types)
+        public LogDescriptor(IEnumerable<LogEntryTypeDescriptor>? types = null)
         { }
     }
 }

@@ -69,7 +69,7 @@ namespace Violet.WorkItems.Types
 
         private static async Task<DescriptorManager> LoadExampleDescriptorManagerAsync()
         {
-            var manager = new DescriptorManager(new InMemoryDescriptorProvider(new WorkItemDescriptor("Foo", new LogDescriptor(false, Array.Empty<LogEntryTypeDescriptor>()), new PropertyDescriptor[] {
+            var manager = new DescriptorManager(new InMemoryDescriptorProvider(new WorkItemDescriptor("Foo", new PropertyDescriptor[] {
                 new PropertyDescriptor("A", "String"),
                 new PropertyDescriptor("State", "String"),
             }, new StageDescriptor[] {

@@ -13,6 +13,7 @@ namespace Violet.WorkItems.Types
         public DescriptorManager(IDescriptorProvider provider)
         {
             _provider = provider;
+            _descriptors = new Dictionary<string, WorkItemDescriptor>();
         }
 
         public async Task LoadAllAsync()
@@ -24,17 +25,10 @@ namespace Violet.WorkItems.Types
         public PropertyDescriptor GetCurrentPropertyDescriptor(WorkItem workItem, string propertyName)
             => GetCurrentPropertyDescriptors(workItem).FirstOrDefault(p => p.Name == propertyName);
 
-        public IEnumerable<PropertyDescriptor> GetAllPropertyDescriptors(string workItemType)
-        {
-            IEnumerable<PropertyDescriptor> result = null;
-
-            if (_descriptors.TryGetValue(workItemType, out var descriptor))
-            {
-                result = descriptor.Properties;
-            }
-
-            return result;
-        }
+        public (bool success, IEnumerable<PropertyDescriptor> propertyDescriptors) GetAllPropertyDescriptors(string workItemType)
+            => _descriptors.TryGetValue(workItemType, out var descriptor)
+                ? (true, descriptor.Properties)
+                : (false, Array.Empty<PropertyDescriptor>());
 
         public IEnumerable<PropertyDescriptor> GetCurrentPropertyDescriptors(WorkItem workItem)
         {

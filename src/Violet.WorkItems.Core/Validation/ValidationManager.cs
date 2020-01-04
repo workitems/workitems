@@ -75,7 +75,7 @@ namespace Violet.WorkItems.Validation
                 _ => null,
             };
 
-        private IValidator? CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor valueProviderDescriptor)
+        private IValidator? CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor? valueProviderDescriptor)
             => valueProviderDescriptor switch
             {
                 EnumValueProviderDescriptor evpd => new ValueProviderValidator(propertyDescriptor, new EnumValueProvider(evpd)),

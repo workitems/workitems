@@ -5,7 +5,7 @@ namespace Violet.WorkItems.Types
 {
     public class PropertyDescriptor
     {
-        public PropertyDescriptor(string name, string dataType, PropertyType propertyType = PropertyType.Raw, bool isVisible = true, bool isEditable = true, string initialValue = null, IEnumerable<ValidatorDescriptor> validators = null, ValueProviderDescriptor valueProvider = null)
+        public PropertyDescriptor(string name, string dataType, PropertyType propertyType = PropertyType.Raw, bool isVisible = true, bool isEditable = true, string initialValue = "", IEnumerable<ValidatorDescriptor>? validators = null, ValueProviderDescriptor? valueProvider = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -33,7 +33,7 @@ namespace Violet.WorkItems.Types
         public bool IsVisible { get; }
         public bool IsEditable { get; }
         public string InitialValue { get; }
-        public ValueProviderDescriptor ValueProvider { get; }
+        public ValueProviderDescriptor? ValueProvider { get; }
         public IEnumerable<ValidatorDescriptor> Validators { get; }
     }
 }
