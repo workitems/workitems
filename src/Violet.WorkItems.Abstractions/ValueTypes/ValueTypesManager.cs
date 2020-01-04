@@ -62,7 +62,7 @@ namespace Violet.WorkItems
             => TryGetConverterType(kv => kv.Key.Name == dataTypeName, out _);
 
 
-        public static bool IsValidateData(string dataTypeName, string value)
+        public static bool IsValidData(string dataTypeName, string value)
             => IsDefaultData(dataTypeName, value) || (GetConverter(dataTypeName)?.IsValid(value) ?? false);
 
         public static bool IsDefaultData(string dataTypeName, string value)

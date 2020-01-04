@@ -17,22 +17,31 @@ namespace Violet.WorkItems.Validation
             Source = source;
         }
 
-        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
         {
             var result = Array.Empty<ErrorMessage>();
 
             var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
 
-            if (!ValidateProperty(property, out var code, out var message))
+            if (property != null)
             {
-                result = new ErrorMessage[] {
-                    new ErrorMessage(Source, code, message, workItem.ProjectCode, workItem.Id, property.Name),
-                };
+                var (success, code, message) = await ValidatePropertyAsync(property);
+
+                if (!success)
+                {
+                    result = new ErrorMessage[] {
+                        new ErrorMessage(Source, code, message, workItem.ProjectCode, workItem.Id, property.Name),
+                    };
+                }
             }
 
-            return Task.FromResult((IEnumerable<ErrorMessage>)result);
+            return result;
         }
 
-        protected abstract bool ValidateProperty(Property property, out string code, out string message);
+        protected virtual Task<(bool success, string code, string message)> ValidatePropertyAsync(Property property)
+            => Task.FromResult(ValidateProperty(property));
+
+        protected virtual (bool success, string code, string message) ValidateProperty(Property property)
+            => (true, string.Empty, string.Empty);
     }
 }

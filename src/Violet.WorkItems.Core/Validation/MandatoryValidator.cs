@@ -8,10 +8,10 @@ namespace Violet.WorkItems.Validation
             : base(propertyDescriptor, validatorDescriptor, nameof(MandatoryValidator))
         { }
 
-        protected override bool ValidateProperty(Property property, out string code, out string message)
+        protected override (bool success, string code, string message) ValidateProperty(Property property)
         {
-            code = string.Empty;
-            message = string.Empty;
+            string code = string.Empty;
+            string message = string.Empty;
 
             var hasValue = !string.IsNullOrWhiteSpace(property?.Value);
 
@@ -21,7 +21,7 @@ namespace Violet.WorkItems.Validation
                 message = $"Property {PropertyDescriptor.Name} cannot be empty";
             }
 
-            return hasValue;
+            return (hasValue, code, message);
         }
     }
 }

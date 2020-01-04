@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace Violet.WorkItems
 {
-
     public static class CommonDataTypesExtensions
     {
         public static void Value<T>(this Property property, T value)

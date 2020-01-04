@@ -7,36 +7,30 @@ using Violet.WorkItems.ValueProvider;
 
 namespace Violet.WorkItems.Validation
 {
-    public class ValueProviderValidator : IValidator
+    public class ValueProviderValidator : PropertyWithPropertyDescriptorValidatorBase, IValidator
     {
-        public PropertyDescriptor PropertyDescriptor { get; }
         public IValueProvider ValueProvider { get; }
 
         public ValueProviderValidator(PropertyDescriptor propertyDescriptor, IValueProvider valueProvider)
+            : base(propertyDescriptor, nameof(ValueProviderValidator))
         {
-            PropertyDescriptor = propertyDescriptor;
             ValueProvider = valueProvider;
         }
 
-        public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        protected override async Task<(bool success, string code, string message)> ValidatePropertyAsync(Property property)
         {
-            var result = Array.Empty<ErrorMessage>();
+            var code = string.Empty;
+            var message = string.Empty;
 
-            var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
+            var valueExists = await ValueProvider.ValueExistsAsync(property.Value);
 
-            if (property != null)
+            if (!valueExists)
             {
-                var valueMatchesEnumEntry = await ValueProvider.ValueExistsAsync(property.Value);
-
-                if (!valueMatchesEnumEntry)
-                {
-                    result = new ErrorMessage[] {
-                        new ErrorMessage(nameof(ValueProviderValidator), string.Empty, $"Property {PropertyDescriptor.Name} value '{property.Value}' does not match one of the allowed values.", workItem.ProjectCode, workItem.Id, PropertyDescriptor.Name),
-                    };
-                }
+                code = string.Empty;
+                message = $"Property {PropertyDescriptor.Name} value '{property.Value}' does not match one of the allowed values.";
             }
 
-            return result;
+            return (valueExists, code, message);
         }
     }
 }

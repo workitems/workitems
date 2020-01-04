@@ -26,7 +26,7 @@ namespace Violet.WorkItems.Validation
                 {
                     result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' is not a recognized property type.", workItem.ProjectCode, workItem.Id, property.Name));
                 }
-                else if (!ValueTypesManager.IsValidateData(property.DataType, property.Value))
+                else if (!ValueTypesManager.IsValidData(property.DataType, property.Value))
                 {
                     result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' does not match property value.", workItem.ProjectCode, workItem.Id, property.Name));
                 }
