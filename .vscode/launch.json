@@ -11,9 +11,9 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/tools/Violet.WorkItems.Cli/bin/Debug/netcoreapp3.1/Violet.WorkItems.Cli.dll",
             "args": [
-                "edit",
+                "detail",
                 "UI",
-                "1235"
+                "1240"
             ],
             "cwd": "${workspaceFolder}/tools/Violet.WorkItems.Cli",
             "console": "integratedTerminal",

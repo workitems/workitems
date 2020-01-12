@@ -71,8 +71,12 @@ namespace Violet.WorkItems.Types
                         propertyDescriptor.ValueProvider);
                 }
             }
-
         }
+
+        public IEnumerable<LogEntryTypeDescriptor> GetCurrentLogEntryTypeDescriptors(WorkItem workItem)
+            => _descriptors.TryGetValue(workItem.WorkItemType, out var descriptor)
+                ? descriptor.Log.Types
+                : Array.Empty<LogEntryTypeDescriptor>();
 
         private IEnumerable<StageDescriptor> EvaluateActiveStages(WorkItem workItem, WorkItemDescriptor descriptor)
             => descriptor.Stages.Where(stage => EvaluateStageCondition(workItem, stage.Condition));

@@ -17,8 +17,8 @@ namespace Violet.WorkItems
             ProjectCode = string.Empty;
             Id = string.Empty;
             WorkItemType = string.Empty;
-            Properties = Array.Empty<Property>();
-            Log = Array.Empty<LogEntry>();
+            Properties = new List<Property>();
+            Log = new List<LogEntry>();
         }
         public WorkItem(string projectCode, string id, string workItemType, IEnumerable<Property> properties, IEnumerable<LogEntry> log)
         {

@@ -15,7 +15,7 @@ namespace Violet.WorkItems
             Date = DateTimeOffset.MinValue;
             User = string.Empty;
             Comment = string.Empty;
-            Changes = Array.Empty<PropertyChange>();
+            Changes = new List<PropertyChange>();
         }
 
         public LogEntry(DateTimeOffset date, string user, string comment, IEnumerable<PropertyChange> changes)

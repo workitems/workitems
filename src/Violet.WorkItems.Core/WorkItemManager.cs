@@ -58,10 +58,10 @@ namespace Violet.WorkItems
             }
             else
             {
-                properties = Array.Empty<Property>();
+                properties = new List<Property>();
             }
 
-            var wi = new WorkItem(projectCode, "NEW", workItemType, properties, Array.Empty<LogEntry>());
+            var wi = new WorkItem(projectCode, "NEW", workItemType, properties, new List<LogEntry>());
 
             return wi;
         }
@@ -91,7 +91,7 @@ namespace Violet.WorkItems
             {
                 var newIdentifer = (await _dataProvider.NextNumberAsync(projectCode)).ToString();
 
-                var wi = new WorkItem(projectCode, newIdentifer, workItemType, properties.ToArray(), Array.Empty<LogEntry>());
+                var wi = new WorkItem(projectCode, newIdentifer, workItemType, new List<Property>(properties), Array.Empty<LogEntry>());
 
                 // property changes for all values not identical with an empty template.
                 var propertyChanges = properties.Where(p => p.Value != EmptyValue).Select(p => new PropertyChange(p.Name, EmptyValue, p.Value));
@@ -129,6 +129,8 @@ namespace Violet.WorkItems
             {
                 throw new ArgumentException("message", nameof(id));
             }
+
+            await InitAsync();
 
             var workItem = await _dataProvider.GetAsync(projectCode, id);
 
@@ -175,7 +177,7 @@ namespace Violet.WorkItems
                     })
                     .ToArray();
 
-                var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes) }).ToArray();
+                var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes) }).ToList();
 
                 workItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, newProperties, newLog);
 

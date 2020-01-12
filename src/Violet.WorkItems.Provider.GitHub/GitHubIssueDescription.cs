@@ -29,10 +29,10 @@ namespace Violet.WorkItems.Provider
                     ),
                 },
                 new LogDescriptor(new LogEntryTypeDescriptor[] {
-                    new LogEntryTypeDescriptor("assignmentChange"),
-                    new LogEntryTypeDescriptor("milestoneChange"),
-                    new LogEntryTypeDescriptor("labelChange"),
-                    new LogEntryTypeDescriptor("stateChange"),
+                    new PropertyChangeLogEntryTypeDescriptor("assignmentChange", "Assignee", "👩", "{user} assigned this to {new}"),
+                    new PropertyChangeLogEntryTypeDescriptor("milestoneChange", "Milestone", "🏁", "{user} added this to the {new} milestone"),
+                    new PropertyChangeLogEntryTypeDescriptor("labelChange", "Label", "🏷", "{user} added the {new} label"),
+                    new PropertyChangeLogEntryTypeDescriptor("stateChange-Closed", "State", "🚫", "{user} closed this", "Closed"),
                 })
             );
     }

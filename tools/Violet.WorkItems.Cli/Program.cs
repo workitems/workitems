@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Violet.WorkItems.Provider.SqlServer;
+using Violet.WorkItems.Text;
 using Violet.WorkItems.Types.CommonSdlc;
 
 namespace Violet.WorkItems.Cli
@@ -16,6 +17,7 @@ namespace Violet.WorkItems.Cli
         {
             _provider = new SqlServerDataProvider(@"Server=localhost\SQLEXPRESS;Database=workitems;Trusted_Connection=True;");
             _manager = new WorkItemManager(_provider, new CommonSdlcDescriptorProvider());
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             var app = new CommandLineApplication();
             app.HelpOption();
@@ -104,6 +106,7 @@ namespace Violet.WorkItems.Cli
             }
 
             var workItem = await _manager.GetAsync(projectCode, id);
+            var logEntryTypeDescriptors = _manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
 
             if (workItem == null)
             {
@@ -111,20 +114,9 @@ namespace Violet.WorkItems.Cli
             }
             else
             {
-                Console.WriteLine($"{workItem.WorkItemType} {workItem.ProjectCode}-{workItem.Id}");
-                foreach (var property in workItem.Properties)
-                {
-                    Console.WriteLine($"> {property.Name}: {property.Value}");
-                }
+                var formatter = new WorkItemFormatter();
 
-                foreach (var logEntry in workItem.Log.OrderByDescending(l => l.Date))
-                {
-                    Console.WriteLine($"Change at {logEntry.Date} by {logEntry.User} with comment: {logEntry.Comment}");
-                    foreach (var change in logEntry.Changes)
-                    {
-                        Console.WriteLine($"> {change.Name}: {change.OldValue} => {change.NewValue}");
-                    }
-                }
+                await formatter.FormatAsync(logEntryTypeDescriptors, workItem, Console.Out);
             }
 
             return (workItem != null) ? 0 : 1;
@@ -139,9 +131,11 @@ namespace Violet.WorkItems.Cli
 
             var items = await _provider.ListWorkItemsAsync(project, type);
 
+            var formatter = new WorkItemFormatter();
+
             foreach (var item in items)
             {
-                Console.WriteLine($"{item.ProjectCode}-{item.Id}: {item.Properties.FirstOrDefault(p => p.Name == "Title")?.Value}");
+                Console.WriteLine(formatter.FormatShortLine(item));
             }
 
             return 0;

@@ -13,7 +13,10 @@ namespace Violet.WorkItems.Types.CommonSdlc
                 new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Open", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
                 }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Done", "Done")))
-            });
+            },
+            log: new LogDescriptor(new LogEntryTypeDescriptor[] {
+                new PropertyChangeLogEntryTypeDescriptor("bug-Done", "State", "✅", "Bug Closed by {user} at {date}", "Done")
+            }));
 
         public static WorkItemDescriptor Task
             => new WorkItemDescriptor("Task", new PropertyDescriptor[] {
