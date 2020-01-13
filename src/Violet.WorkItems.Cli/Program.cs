@@ -100,7 +100,7 @@ namespace Violet.WorkItems.Cli
             return app.ExecuteAsync(args);
         }
 
-        private static WorkItemManager SetupManager(string sourceName)
+        private static WorkItemManager SetupManager(string? sourceName)
         {
             sourceName ??= "default";
 
@@ -122,12 +122,22 @@ namespace Violet.WorkItems.Cli
         {
             var type = Type.GetType(dataSourceDescriptor.Type);
 
+            if (type is null)
+            {
+                throw new ArgumentException("type has to be a valid .NET type", nameof(dataSourceDescriptor));
+            }
+
             var result = Activator.CreateInstance(type, dataSourceDescriptor.ConnectionString) as IDataProvider;
+
+            if (result is null)
+            {
+                throw new ArgumentException($"source type is not a valid {nameof(IDataProvider)}");
+            }
 
             return result;
         }
 
-        private static async Task<int> DetailWorkItemAsync(WorkItemManager manager, string projectCode, string id, TextWriter writer)
+        private static async Task<int> DetailWorkItemAsync(WorkItemManager manager, string? projectCode, string? id, TextWriter writer)
         {
             if (manager is null)
             {
@@ -150,7 +160,6 @@ namespace Violet.WorkItems.Cli
             }
 
             var workItem = await manager.GetAsync(projectCode, id);
-            var logEntryTypeDescriptors = manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
 
             if (workItem == null)
             {
@@ -158,6 +167,8 @@ namespace Violet.WorkItems.Cli
             }
             else
             {
+                var logEntryTypeDescriptors = manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
+
                 var formatter = new WorkItemFormatter();
 
                 await formatter.FormatAsync(logEntryTypeDescriptors, workItem, writer);
@@ -166,7 +177,7 @@ namespace Violet.WorkItems.Cli
             return (workItem != null) ? 0 : 1;
         }
 
-        private static async Task<int> ListWorkItemsAsync(WorkItemManager workItemManager, string project, string type, TextWriter writer)
+        private static async Task<int> ListWorkItemsAsync(WorkItemManager workItemManager, string? project, string? type, TextWriter writer)
         {
             if (workItemManager is null)
             {
@@ -195,7 +206,7 @@ namespace Violet.WorkItems.Cli
             return 0;
         }
 
-        private static async Task<int> NewWorkItemAsync(WorkItemManager manager, string projectCode, string workItemType)
+        private static async Task<int> NewWorkItemAsync(WorkItemManager manager, string? projectCode, string? workItemType)
         {
             if (manager is null)
             {
@@ -250,7 +261,7 @@ namespace Violet.WorkItems.Cli
 
             if (result.Success)
             {
-                Console.WriteLine($"Created WorkItem in project {result.CreatedWorkItem.ProjectCode} with id {result.Id}");
+                Console.WriteLine($"Created WorkItem in project {result.CreatedWorkItem?.ProjectCode} with id {result.Id}");
             }
             else
             {
@@ -266,7 +277,7 @@ namespace Violet.WorkItems.Cli
         }
 
 
-        private static async Task<int> EditWorkItemAsync(WorkItemManager manager, string projectCode, string id)
+        private static async Task<int> EditWorkItemAsync(WorkItemManager manager, string? projectCode, string? id)
         {
             if (manager is null)
             {
@@ -283,38 +294,49 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentException("message", nameof(id));
             }
 
-            var wi = await manager.GetAsync(projectCode, id);
+            int resultCode = 1;
 
-            var changedProperties = new List<Property>();
+            var workItem = await manager.GetAsync(projectCode, id);
 
-            foreach (var property in wi.Properties)
+            if (workItem is null)
             {
-                Console.Write($"{property.Name} [{property.Value}]: ");
-                var value = Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    changedProperties.Add(new Property(property.Name, property.DataType, value));
-                }
-            }
-
-            var result = await manager.UpdateAsync(wi.ProjectCode, wi.Id, changedProperties);
-
-            if (result.Success)
-            {
-                Console.WriteLine($"Updated WorkItem in project {result.UpdatedWorkItem.ProjectCode} with id {result.UpdatedWorkItem.Id}");
+                Console.WriteLine($"Could not find the specified workitem {id} in project {projectCode}");
             }
             else
             {
-                Console.WriteLine($"Failed to update WorkItem");
+                var changedProperties = new List<Property>();
 
-                foreach (var error in result.Errors)
+                foreach (var property in workItem.Properties)
                 {
-                    Console.WriteLine($"{error.Property}: {error.Message}");
+                    Console.Write($"{property.Name} [{property.Value}]: ");
+                    var value = Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        changedProperties.Add(new Property(property.Name, property.DataType, value));
+                    }
                 }
+
+                var result = await manager.UpdateAsync(workItem.ProjectCode, workItem.Id, changedProperties);
+
+                if (result.Success)
+                {
+                    Console.WriteLine($"Updated WorkItem in project {result.UpdatedWorkItem?.ProjectCode} with id {result.UpdatedWorkItem?.Id}");
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to update WorkItem");
+
+                    foreach (var error in result.Errors)
+                    {
+                        Console.WriteLine($"{error.Property}: {error.Message}");
+                    }
+                }
+
+                resultCode = result.Success ? 0 : 1;
             }
 
-            return result.Success ? 0 : 1;
+            return resultCode;
         }
     }
 }
