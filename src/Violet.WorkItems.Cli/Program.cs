@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
-using Violet.WorkItems.Provider.SqlServer;
+using Microsoft.Extensions.Configuration;
+using Violet.WorkItems.Provider;
 using Violet.WorkItems.Text;
 using Violet.WorkItems.Types.CommonSdlc;
 
@@ -11,16 +13,13 @@ namespace Violet.WorkItems.Cli
 {
     class Program
     {
-        private static SqlServerDataProvider _provider;
-        private static WorkItemManager _manager;
         static Task<int> Main(string[] args)
         {
-            _provider = new SqlServerDataProvider(@"Server=localhost\SQLEXPRESS;Database=workitems;Trusted_Connection=True;");
-            _manager = new WorkItemManager(_provider, new CommonSdlcDescriptorProvider());
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             var app = new CommandLineApplication();
             app.HelpOption();
+            var sourceNameOption = app.Option("--source", "Specify the data source used for the commands.", CommandOptionType.SingleOrNoValue, true);
 
             app.Command("detail", command =>
             {
@@ -32,10 +31,12 @@ namespace Violet.WorkItems.Cli
 
                 command.OnExecuteAsync(async (ctx) =>
                 {
+                    var manager = SetupManager(sourceNameOption.Value());
+
                     var project = projectArgument.Value;
                     var id = idArgument.Value;
 
-                    return await DetailWorkItemAsync(project, id);
+                    return await DetailWorkItemAsync(manager, project, id, Console.Out);
                 });
             });
 
@@ -49,10 +50,12 @@ namespace Violet.WorkItems.Cli
 
                 command.OnExecuteAsync(async (ctx) =>
                 {
+                    var manager = SetupManager(sourceNameOption.Value());
+
                     var project = projectArgument.Value;
                     var type = typeArgument.Value;
 
-                    return await ListWorkItemsAsync(project, type);
+                    return await ListWorkItemsAsync(manager, project, type, Console.Out);
                 });
             });
 
@@ -66,10 +69,12 @@ namespace Violet.WorkItems.Cli
 
                 command.OnExecuteAsync(async (ctx) =>
                 {
+                    var manager = SetupManager(sourceNameOption.Value());
+
                     var project = projectArgument.Value;
                     var type = typeArgument.Value;
 
-                    return await NewWorkItemAsync(project, type);
+                    return await NewWorkItemAsync(manager, project, type);
                 });
             });
 
@@ -83,18 +88,52 @@ namespace Violet.WorkItems.Cli
 
                 command.OnExecuteAsync(async (ctx) =>
                 {
+                    var manager = SetupManager(sourceNameOption.Value());
+
                     var project = projectArgument.Value;
                     var id = idArgument.Value;
 
-                    return await EditWorkItemAsync(project, id);
+                    return await EditWorkItemAsync(manager, project, id);
                 });
             });
 
             return app.ExecuteAsync(args);
         }
 
-        private static async Task<int> DetailWorkItemAsync(string projectCode, string id)
+        private static WorkItemManager SetupManager(string sourceName)
         {
+            sourceName ??= "default";
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("wi.config.json", true)
+                .Build();
+
+            var options = configuration.Get<CliOptions>() ?? throw new InvalidOperationException("No Configuration can be read.");
+
+            var provider = BuildProvider(options.Sources.FirstOrDefault(s => s.Name == sourceName));
+
+            var manager = new WorkItemManager(provider, new CommonSdlcDescriptorProvider());
+
+            return manager;
+        }
+
+        private static IDataProvider BuildProvider(DataSourceDescriptor dataSourceDescriptor)
+        {
+            var type = Type.GetType(dataSourceDescriptor.Type);
+
+            var result = Activator.CreateInstance(type, dataSourceDescriptor.ConnectionString) as IDataProvider;
+
+            return result;
+        }
+
+        private static async Task<int> DetailWorkItemAsync(WorkItemManager manager, string projectCode, string id, TextWriter writer)
+        {
+            if (manager is null)
+            {
+                throw new ArgumentNullException(nameof(manager));
+            }
+
             if (string.IsNullOrWhiteSpace(projectCode))
             {
                 throw new ArgumentException("message", nameof(projectCode));
@@ -105,44 +144,64 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentException("message", nameof(id));
             }
 
-            var workItem = await _manager.GetAsync(projectCode, id);
-            var logEntryTypeDescriptors = _manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            var workItem = await manager.GetAsync(projectCode, id);
+            var logEntryTypeDescriptors = manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
 
             if (workItem == null)
             {
-                Console.WriteLine($"Could not find the specified workitem {id} in project {projectCode}");
+                writer.WriteLine($"Could not find the specified workitem {id} in project {projectCode}");
             }
             else
             {
                 var formatter = new WorkItemFormatter();
 
-                await formatter.FormatAsync(logEntryTypeDescriptors, workItem, Console.Out);
+                await formatter.FormatAsync(logEntryTypeDescriptors, workItem, writer);
             }
 
             return (workItem != null) ? 0 : 1;
         }
 
-        private static async Task<int> ListWorkItemsAsync(string project, string type)
+        private static async Task<int> ListWorkItemsAsync(WorkItemManager workItemManager, string project, string type, TextWriter writer)
         {
+            if (workItemManager is null)
+            {
+                throw new ArgumentNullException(nameof(workItemManager));
+            }
+
             if (string.IsNullOrWhiteSpace(project))
             {
                 throw new ArgumentException("message", nameof(project));
             }
 
-            var items = await _provider.ListWorkItemsAsync(project, type);
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
 
             var formatter = new WorkItemFormatter();
 
             foreach (var item in items)
             {
-                Console.WriteLine(formatter.FormatShortLine(item));
+                writer.WriteLine(formatter.FormatShortLine(item));
             }
 
             return 0;
         }
 
-        private static async Task<int> NewWorkItemAsync(string projectCode, string workItemType)
+        private static async Task<int> NewWorkItemAsync(WorkItemManager manager, string projectCode, string workItemType)
         {
+            if (manager is null)
+            {
+                throw new ArgumentNullException(nameof(manager));
+            }
+
             if (string.IsNullOrWhiteSpace(projectCode))
             {
                 throw new ArgumentException("message", nameof(projectCode));
@@ -153,8 +212,8 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentException("message", nameof(workItemType));
             }
 
-            var wi = await _manager.CreateTemplateAsync(projectCode, workItemType);
-            var propertyDescriptors = _manager.DescriptorManager.GetCurrentPropertyDescriptors(wi);
+            var wi = await manager.CreateTemplateAsync(projectCode, workItemType);
+            var propertyDescriptors = manager.DescriptorManager.GetCurrentPropertyDescriptors(wi);
 
             if (propertyDescriptors == null)
             {
@@ -187,7 +246,7 @@ namespace Violet.WorkItems.Cli
                 .Where(p => p != null)
                 .ToArray();
 
-            var result = await _manager.CreateAsync(projectCode, workItemType, properties);
+            var result = await manager.CreateAsync(projectCode, workItemType, properties);
 
             if (result.Success)
             {
@@ -207,8 +266,13 @@ namespace Violet.WorkItems.Cli
         }
 
 
-        private static async Task<int> EditWorkItemAsync(string projectCode, string id)
+        private static async Task<int> EditWorkItemAsync(WorkItemManager manager, string projectCode, string id)
         {
+            if (manager is null)
+            {
+                throw new ArgumentNullException(nameof(manager));
+            }
+
             if (string.IsNullOrWhiteSpace(projectCode))
             {
                 throw new ArgumentException("message", nameof(projectCode));
@@ -219,7 +283,7 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentException("message", nameof(id));
             }
 
-            var wi = await _manager.GetAsync(projectCode, id);
+            var wi = await manager.GetAsync(projectCode, id);
 
             var changedProperties = new List<Property>();
 
@@ -234,7 +298,7 @@ namespace Violet.WorkItems.Cli
                 }
             }
 
-            var result = await _manager.UpdateAsync(wi.ProjectCode, wi.Id, changedProperties);
+            var result = await manager.UpdateAsync(wi.ProjectCode, wi.Id, changedProperties);
 
             if (result.Success)
             {

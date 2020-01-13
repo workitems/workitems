@@ -1,0 +1,9 @@
+{
+    "sources": [
+        {
+            "name": "default",
+            "type": "Violet.WorkItems.Provider.SqlServer.SqlServerDataProvider, Violet.WorkItems.Provider.SqlServer",
+            "connectionString": "Server=localhost\\SQLEXPRESS;Database=workitems;Trusted_Connection=True;"
+        }
+    ]
+}

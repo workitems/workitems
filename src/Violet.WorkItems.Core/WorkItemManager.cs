@@ -10,7 +10,7 @@ namespace Violet.WorkItems
 {
     public class WorkItemManager
     {
-        private readonly IDataProvider _dataProvider;
+        public IDataProvider DataProvider { get; set; }
         private bool _initialized = false;
         public DescriptorManager DescriptorManager { get; }
         public ValidationManager ValidationManager { get; }
@@ -19,7 +19,7 @@ namespace Violet.WorkItems
 
         public WorkItemManager(IDataProvider dataProvider, IDescriptorProvider descriptorProvider)
         {
-            _dataProvider = dataProvider;
+            DataProvider = dataProvider;
             DescriptorManager = new DescriptorManager(descriptorProvider);
             ValidationManager = new ValidationManager(DescriptorManager);
         }
@@ -89,7 +89,7 @@ namespace Violet.WorkItems
 
             if (properties.Count() > 0)
             {
-                var newIdentifer = (await _dataProvider.NextNumberAsync(projectCode)).ToString();
+                var newIdentifer = (await DataProvider.NextNumberAsync(projectCode)).ToString();
 
                 var wi = new WorkItem(projectCode, newIdentifer, workItemType, new List<Property>(properties), Array.Empty<LogEntry>());
 
@@ -100,7 +100,7 @@ namespace Violet.WorkItems
 
                 if (validationResult.Count() == 0)
                 {
-                    await _dataProvider.SaveNewWorkItemAsync(wi);
+                    await DataProvider.SaveNewWorkItemAsync(wi);
 
                     result = new WorkItemCreatedResult(true, wi, Array.Empty<ErrorMessage>());
                 }
@@ -132,7 +132,7 @@ namespace Violet.WorkItems
 
             await InitAsync();
 
-            var workItem = await _dataProvider.GetAsync(projectCode, id);
+            var workItem = await DataProvider.GetAsync(projectCode, id);
 
             return workItem;
         }
@@ -185,7 +185,7 @@ namespace Violet.WorkItems
 
                 if (errors.Count() == 0)
                 {
-                    await _dataProvider.SaveUpdatedWorkItemAsync(workItem);
+                    await DataProvider.SaveUpdatedWorkItemAsync(workItem);
 
                     result = new WorkItemUpdatedResult(true, workItem, Array.Empty<ErrorMessage>());
                 }
