@@ -7,6 +7,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Violet.WorkItems.Provider;
 using Violet.WorkItems.Text;
+using Violet.WorkItems.Types;
 using Violet.WorkItems.Types.CommonSdlc;
 
 namespace Violet.WorkItems.Cli
@@ -109,17 +110,29 @@ namespace Violet.WorkItems.Cli
                 .AddJsonFile("wi.config.json", true)
                 .Build();
 
-            var options = configuration.Get<CliOptions>() ?? throw new InvalidOperationException("No Configuration can be read.");
+            var options = configuration.Get<CliOptions>(options =>
+            {
+                options.BindNonPublicProperties = true;
+            }) ?? throw new InvalidOperationException("No Configuration can be read.");
 
-            var provider = BuildProvider(options.Sources.FirstOrDefault(s => s.Name == sourceName));
+            var selectedSource = options.Sources.FirstOrDefault(s => s.Name == sourceName) ?? throw new InvalidOperationException("No matching source configuration could be found.");
+
+            var provider = BuildProvider(selectedSource);
+
+            var descriptorProvider = new CommonSdlcDescriptorProvider();
 
             var manager = new WorkItemManager(provider, new CommonSdlcDescriptorProvider());
 
             return manager;
         }
 
-        private static IDataProvider BuildProvider(DataSourceDescriptor dataSourceDescriptor)
+        private static IDataProvider BuildProvider(DataSourceDescriptor? dataSourceDescriptor)
         {
+            if (dataSourceDescriptor is null)
+            {
+                throw new ArgumentNullException(nameof(dataSourceDescriptor));
+            }
+
             var type = Type.GetType(dataSourceDescriptor.Type);
 
             if (type is null)
