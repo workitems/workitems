@@ -16,7 +16,12 @@ namespace Violet.WorkItems.Types.CommonSdlc
             },
             log: new LogDescriptor(new LogEntryTypeDescriptor[] {
                 new PropertyChangeLogEntryTypeDescriptor("bug-Done", "State", "✅", "Bug Closed by {user} at {date}", "Done")
-            }));
+            }),
+            stages: new StageDescriptor[] {
+                new StageDescriptor("stage-bug-open", new PropertyValueConditionDescriptor("State", "Open"), commands: new CommandDescriptor[] {
+                    new ChangePropertyValueCommandDescriptor("command-close", "Close", "State", "Done"),
+                })
+            });
 
         public static WorkItemDescriptor Task
             => new WorkItemDescriptor("Task", new PropertyDescriptor[] {

@@ -25,7 +25,7 @@ namespace Violet.WorkItems.Cli
                 command.HelpOption();
                 command.Description = "List all Work Items of the specified type";
 
-                var projectArgument = command.Argument("Project", "The project name in which the issue should be created", false)
+                var projectArgument = command.Argument("Project", "The project name in which work item should be shown", false)
                                             .IsRequired();
                 var idArgument = command.Argument("Id", "The work item id", false)
                                             .IsRequired();
@@ -46,7 +46,7 @@ namespace Violet.WorkItems.Cli
                 command.HelpOption();
                 command.Description = "List all Work Items of the specified type";
 
-                var projectArgument = command.Argument("Project", "The project name in which the issue should be listed", false)
+                var projectArgument = command.Argument("Project", "The project name in which the work item should be listed", false)
                                             .IsRequired();
                 var typeArgument = command.Argument("Type", "The type of work item which should be listed (optional)", false);
 
@@ -66,7 +66,7 @@ namespace Violet.WorkItems.Cli
                 command.HelpOption();
                 command.Description = "Creates a new Work Item of a specified type";
 
-                var projectArgument = command.Argument("Project", "The project name in which the issue should be created", false)
+                var projectArgument = command.Argument("Project", "The project name in which the work item should be created", false)
                                             .IsRequired();
                 var typeArgument = command.Argument("Type", "The type of work item which should be created", false);
 
@@ -86,7 +86,7 @@ namespace Violet.WorkItems.Cli
                 command.HelpOption();
                 command.Description = "Edit a specified work item";
 
-                var projectArgument = command.Argument("Project", "The project name in which the issue should be edited", false)
+                var projectArgument = command.Argument("Project", "The project name in which the work item should be edited", false)
                                             .IsRequired();
                 var idArgument = command.Argument("Id", "The work item id", false)
                                             .IsRequired();
@@ -99,6 +99,34 @@ namespace Violet.WorkItems.Cli
                     var id = idArgument.Value;
 
                     return await EditWorkItemCommand.ExecuteAsync(manager, project, id);
+                });
+            });
+
+            app.Command("command", command =>
+            {
+                command.HelpOption();
+                command.Description = "Execute a command on a givem work item.";
+
+                var projectArgument = command.Argument("Project", "The project name in which the work item's command should be executed", false)
+                                            .IsRequired();
+                var idArgument = command.Argument("Id", "The work item id", false)
+                                            .IsRequired();
+                var commandArgument = command.Argument("Command", "The name or display name of the work item command")
+                                            .IsRequired();
+
+                command.OnExecuteAsync(async (ctx) =>
+                {
+                    var manager = await SetupManagerAsync(sourceNameOption.Value(), configFileOption.Value());
+
+                    var project = projectArgument.Value;
+                    var id = idArgument.Value;
+                    var commandInputValue = commandArgument.Value;
+
+                    var result = await ExecuteCommandWorkItemCommand.ExecuteAsync(manager, project, id, commandInputValue);
+
+                    await DetailWorkItemCommand.ExecuteAsync(manager, project, id, Console.Out);
+
+                    return result;
                 });
             });
 

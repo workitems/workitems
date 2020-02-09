@@ -9,13 +9,21 @@ namespace Violet.WorkItems.Text
 {
     public class WorkItemFormatter
     {
-        public async Task FormatAsync(IEnumerable<LogEntryTypeDescriptor> logEntryTypeDescriptors, WorkItem workItem, TextWriter writer)
+        public async Task FormatAsync(DescriptorManager manager, WorkItem workItem, TextWriter writer)
         {
+            var logEntryTypeDescriptors = manager.GetCurrentLogEntryTypeDescriptors(workItem);
+            var commands = manager.GetCurrentCommands(workItem);
+
             await writer.WriteLineAsync(FormatShortLine(workItem));
 
             foreach (var property in workItem.Properties)
             {
                 await writer.WriteLineAsync($"> {FormatProperty(property)}");
+            }
+
+            if (commands.Count() > 0)
+            {
+                writer.WriteLine($"? Commands: {string.Join(", ", commands.Select(c => c.DisplayName))}");
             }
 
             foreach (var logEntry in workItem.Log.OrderByDescending(l => l.Date))

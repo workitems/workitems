@@ -78,6 +78,11 @@ namespace Violet.WorkItems.Types
                 ? descriptor.Log.Types
                 : Array.Empty<LogEntryTypeDescriptor>();
 
+        public IEnumerable<CommandDescriptor> GetCurrentCommands(WorkItem workItem)
+            => _descriptors.TryGetValue(workItem.WorkItemType, out var descriptor)
+                ? EvaluateActiveStages(workItem, descriptor).SelectMany(stage => stage.Commands)
+                : Array.Empty<CommandDescriptor>();
+
         private IEnumerable<StageDescriptor> EvaluateActiveStages(WorkItem workItem, WorkItemDescriptor descriptor)
             => descriptor.Stages.Where(stage => EvaluateStageCondition(workItem, stage.Condition));
 

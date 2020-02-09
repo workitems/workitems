@@ -5,7 +5,7 @@ namespace Violet.WorkItems.Types
 {
     public class StageDescriptor
     {
-        public StageDescriptor(string name, ConditionDescriptor condition, IEnumerable<StagePropertyDescriptor> properties, IEnumerable<CommandDescriptor> commands)
+        public StageDescriptor(string name, ConditionDescriptor condition, IEnumerable<StagePropertyDescriptor>? properties = null, IEnumerable<CommandDescriptor>? commands = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

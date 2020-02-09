@@ -37,11 +37,9 @@ namespace Violet.WorkItems.Cli
             }
             else
             {
-                var logEntryTypeDescriptors = manager.DescriptorManager.GetCurrentLogEntryTypeDescriptors(workItem);
-
                 var formatter = new WorkItemFormatter();
 
-                await formatter.FormatAsync(logEntryTypeDescriptors, workItem, writer);
+                await formatter.FormatAsync(manager.DescriptorManager, workItem, writer);
             }
 
             return (workItem != null) ? 0 : 1;
