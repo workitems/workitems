@@ -282,5 +282,60 @@ namespace Violet.WorkItems.Core.Test
                 }
             );
         }
+
+        [Fact]
+        public async Task WorkItemManager_ExecuteCommand_NotFound()
+        {
+            // arrange
+            var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
+                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
+                    new PropertyDescriptor("A", "String", initialValue: "a"),
+                    new PropertyDescriptor("B", "String"),
+                })
+            ));
+
+            var issue = await manager.CreateAsync("FOO", "BAR", new Property[] {
+                new Property("A", "String", "aa"),
+                new Property("B", "String", "bb"),
+            });
+
+            // act
+            var result = await manager.ExecuteCommandAsync("FOO", issue.Id, "Close");
+
+            // assert
+            Assert.False(result.Success);
+        }
+
+        [Fact]
+        public async Task WorkItemManager_ExecuteCommand_Invoke()
+        {
+            // arrange
+            var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
+                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
+                    new PropertyDescriptor("A", "String", initialValue: "a"),
+                    new PropertyDescriptor("B", "String"),
+                },
+                stages: new StageDescriptor[]{
+                    new StageDescriptor("stage-aa", new PropertyValueConditionDescriptor("A", "aa"), commands: new CommandDescriptor[] {
+                        new ChangePropertyValueCommandDescriptor("make-bb", "MakeBBC", "B", "bbc")
+                    }),
+                })
+            ));
+
+            var issue = await manager.CreateAsync("FOO", "BAR", new Property[] {
+                new Property("A", "String", "aa"),
+                new Property("B", "String", "bb"),
+            });
+
+            // act
+            var result = await manager.ExecuteCommandAsync("FOO", issue.Id, "make-bb");
+
+            // assert
+            Assert.True(result.Success);
+            Assert.Collection(result.UpdatedWorkItem.Properties,
+                p => { Assert.Equal("aa", p.Value); Assert.Equal("A", p.Name); },
+                p => { Assert.Equal("bbc", p.Value); Assert.Equal("B", p.Name); }
+            );
+        }
     }
 }

@@ -67,6 +67,29 @@ namespace Violet.WorkItems.Types
                 });
         }
 
+        [Fact]
+        public async Task DescriptorManager_GetCurrentCommands_StageAddsCommands()
+        {
+            // arrange
+            var manager = await LoadExampleDescriptorManagerAsync();
+
+            var workItem = new WorkItem("BAR", "1234", "Foo", new Property[] {
+                new Property("A", "String", ""),
+                new Property("State", "String", "Triage"),
+            }, Array.Empty<LogEntry>());
+
+            // act
+            var commands = manager.GetCurrentCommands(workItem);
+
+            // assert
+            Assert.Collection(commands,
+                pd =>
+                {
+                    Assert.Equal("command-close", pd.Name);
+                    Assert.Equal("Close", pd.DisplayName);
+                });
+        }
+
         private static async Task<DescriptorManager> LoadExampleDescriptorManagerAsync()
         {
             var manager = new DescriptorManager(new InMemoryDescriptorProvider(new WorkItemDescriptor("Foo", new PropertyDescriptor[] {
@@ -77,7 +100,9 @@ namespace Violet.WorkItems.Types
                     new StagePropertyDescriptor("A", null, null, new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor()
                     })
-                }, Array.Empty<CommandDescriptor>())
+                }, new CommandDescriptor[] {
+                    new ChangePropertyValueCommandDescriptor("command-close", "Close", "State", "Close")
+                })
             })));
 
             await manager.LoadAllAsync();
