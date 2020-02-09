@@ -96,6 +96,7 @@ namespace Violet.WorkItems.Core.Test
         {
             // arrange
             var providerMock = new Mock<IDataProvider>();
+            providerMock.SetupGet(o => o.Write).Returns(true);
             var manager = new WorkItemManager(providerMock.Object, new CommonSdlcDescriptorProvider());
 
             // act
@@ -103,6 +104,7 @@ namespace Violet.WorkItems.Core.Test
 
             // assert
             Assert.False(result.Success);
+            providerMock.VerifyGet(o => o.Write);
             providerMock.VerifyNoOtherCalls();
         }
 

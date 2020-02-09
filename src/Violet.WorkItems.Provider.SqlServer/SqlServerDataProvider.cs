@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Violet.WorkItems.Provider.SqlServer;
 
-namespace Violet.WorkItems.Provider.SqlServer
+namespace Violet.WorkItems.Provider
 {
     public class SqlServerDataProvider : IDataProvider
     {
@@ -16,6 +17,9 @@ namespace Violet.WorkItems.Provider.SqlServer
         {
             _context = new WorkItemDbContext(connectionString);
         }
+
+        public bool Read => true;
+        public bool Write => true;
 
         public async Task InitAsync()
         {

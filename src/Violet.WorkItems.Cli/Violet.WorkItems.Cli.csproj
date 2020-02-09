@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Violet.WorkItems.Provider.SqlServer\Violet.WorkItems.Provider.SqlServer.csproj" />
+    <ProjectReference Include="..\Violet.WorkItems.Provider.GitHub\Violet.WorkItems.Provider.GitHub.csproj" />
     <ProjectReference Include="..\Violet.WorkItems.Types\Violet.WorkItems.Types.csproj" />
     <ProjectReference Include="..\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
     <ProjectReference Include="..\Violet.WorkItems.Types.CommonSdlc\Violet.WorkItems.Types.CommonSdlc.csproj" />

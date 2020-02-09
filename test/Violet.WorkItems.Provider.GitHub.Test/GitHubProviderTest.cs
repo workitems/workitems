@@ -11,10 +11,10 @@ namespace Violet.WorkItems.Provider.GitHub
         public async Task GitHubProvider_AllWorkItemsAsync_PublicGitHubQuery()
         {
             // arrange
-            var provider = new GitHubProvider("violet-workitems-github-unittest", "violetgrass", "projects");
+            var provider = new GitHubDataProvider("violet-workitems-github-unittest", null);
 
             // act
-            var workItems = await provider.AllWorkItemsAsync();
+            var workItems = await provider.ListWorkItemsAsync("violetgrass/projects");
 
             // assert
             Assert.True(workItems.Count() > 0);
@@ -23,9 +23,9 @@ namespace Violet.WorkItems.Provider.GitHub
 
             var workItem16 = workItems.FirstOrDefault(wi => wi.Id == "16");
             Assert.NotNull(workItem16);
-            Assert.Equal("Migrate to ASP.NET Core 2.0", workItem16[GitHubProvider.TitleProperty].Value);
-            Assert.Equal("", workItem16[GitHubProvider.BodyProperty].Value);
-            Assert.Equal("closed", workItem16[GitHubProvider.StateProperty].Value);
+            Assert.Equal("Migrate to ASP.NET Core 2.0", workItem16[GitHubDataProvider.TitleProperty].Value);
+            Assert.Equal("", workItem16[GitHubDataProvider.BodyProperty].Value);
+            Assert.Equal("closed", workItem16[GitHubDataProvider.StateProperty].Value);
         }
     }
 }

@@ -6,6 +6,9 @@ namespace Violet.WorkItems.Provider
 {
     public class InMemoryDataProvider : IDataProvider
     {
+        public bool Read => true;
+        public bool Write => true;
+
         private Dictionary<string, WorkItem> _data = new Dictionary<string, WorkItem>();
         private string GetKey(string projectCode, string id)
             => $"{projectCode}-{id}";

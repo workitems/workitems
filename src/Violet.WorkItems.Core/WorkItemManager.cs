@@ -83,6 +83,11 @@ namespace Violet.WorkItems
                 throw new ArgumentNullException(nameof(properties));
             }
 
+            if (DataProvider is { Write: false })
+            {
+                throw new InvalidOperationException("DataProvider does not allow write operation");
+            }
+
             WorkItemCreatedResult result;
 
             await InitAsync();
@@ -130,6 +135,11 @@ namespace Violet.WorkItems
                 throw new ArgumentException("message", nameof(id));
             }
 
+            if (DataProvider is { Read: false })
+            {
+                throw new InvalidOperationException("DataProvider does not allow read operations");
+            }
+
             await InitAsync();
 
             var workItem = await DataProvider.GetAsync(projectCode, id);
@@ -147,6 +157,11 @@ namespace Violet.WorkItems
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentException("message", nameof(id));
+            }
+
+            if (DataProvider is { Write: false })
+            {
+                throw new InvalidOperationException("DataProvider does not allow write operations");
             }
 
             WorkItemUpdatedResult result;
