@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,20 +16,24 @@ namespace Violet.WorkItems.Validation
         }
 
 
-        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context)
         {
-            if (workItem is null)
+            if (context is null)
             {
-                throw new System.ArgumentNullException(nameof(workItem));
+                throw new ArgumentNullException(nameof(context));
+            }
+            if (context.WorkItem is null)
+            {
+                throw new ArgumentNullException(nameof(context.WorkItem));
+            }
+            if (context.AppliedChanges is null)
+            {
+                throw new ArgumentNullException(nameof(context.AppliedChanges));
             }
 
-            if (appliedChanges is null)
-            {
-                throw new System.ArgumentNullException(nameof(appliedChanges));
-            }
-
+            var workItem = context.WorkItem;
             var errors = new List<ErrorMessage>();
-            var propertyChange = appliedChanges.FirstOrDefault(c => c.Name == PropertyDescriptor.Name);
+            var propertyChange = context.AppliedChanges.FirstOrDefault(c => c.Name == PropertyDescriptor.Name);
 
             if (!PropertyDescriptor.IsEditable && !(propertyChange is null))
             {

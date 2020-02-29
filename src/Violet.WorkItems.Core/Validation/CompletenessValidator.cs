@@ -14,17 +14,19 @@ namespace Violet.WorkItems.Validation
             PropertyDescriptors = propertyDescriptors ?? throw new System.ArgumentNullException(nameof(propertyDescriptors));
         }
 
-        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context)
         {
-            if (workItem is null)
+            if (context is null || context.WorkItem is null)
             {
-                throw new System.ArgumentNullException(nameof(workItem));
+                throw new System.ArgumentNullException(nameof(context));
             }
+
+            var workItem = context.WorkItem;
 
             var errors = new List<ErrorMessage>();
             foreach (var propertyDescriptor in PropertyDescriptors)
             {
-                var property = workItem.Properties.FirstOrDefault(p => p.Name == propertyDescriptor.Name);
+                var property = context.WorkItem.Properties.FirstOrDefault(p => p.Name == propertyDescriptor.Name);
 
                 if (property is null)
                 {

@@ -17,20 +17,26 @@ namespace Violet.WorkItems.Validation
             ValueProvider = valueProvider;
         }
 
-        protected override async Task<(bool success, string code, string message)> ValidatePropertyAsync(Property property)
+        protected override async Task<(bool success, string code, string message)> ValidatePropertyAsync(PropertyValidationContext context)
         {
+            var success = true;
             var code = string.Empty;
             var message = string.Empty;
 
-            var valueExists = await ValueProvider.ValueExistsAsync(property.Value);
+            var property = context.Property;
 
-            if (!valueExists)
+            if (property.Value != Property.NullValue) // null values are not checked against a value provider. MandatoryValidator is used for that.
             {
-                code = string.Empty;
-                message = $"Property {PropertyDescriptor.Name} value '{property.Value}' does not match one of the allowed values.";
+                success = await ValueProvider.ValueExistsAsync(property.Value);
+
+                if (!success)
+                {
+                    code = string.Empty;
+                    message = $"Property {PropertyDescriptor.Name} value '{property.Value}' does not match one of the allowed values.";
+                }
             }
 
-            return (valueExists, code, message);
+            return (success, code, message);
         }
     }
 }

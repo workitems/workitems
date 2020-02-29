@@ -8,12 +8,14 @@ namespace Violet.WorkItems.Validation
             : base(propertyDescriptor, validatorDescriptor, nameof(StringLengthValidator))
         { }
 
-        protected override (bool success, string code, string message) ValidateProperty(Property property)
+        protected override (bool success, string code, string message) ValidateProperty(PropertyValidationContext context)
         {
             var code = string.Empty;
             var message = string.Empty;
 
             bool result = true;
+
+            var property = context.Property;
 
             if (property.DataType == "String")
             {

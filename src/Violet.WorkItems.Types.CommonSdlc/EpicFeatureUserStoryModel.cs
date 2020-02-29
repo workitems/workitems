@@ -24,9 +24,9 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     new PropertyDescriptor("Epic", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: string.Empty, validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new RelationshipValueProviderDescriptor("realize", "Epic")),
-                    new PropertyDescriptor("Story", "String", validators:  new ValidatorDescriptor[] {
-                        new MandatoryValidatorDescriptor(),
-                    }),
+                    // new PropertyDescriptor("Story", "String", validators:  new ValidatorDescriptor[] {
+                    //     new MandatoryValidatorDescriptor(),
+                    // }),
                     new PropertyDescriptor("AcceptanceCriteria", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),

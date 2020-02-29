@@ -5,6 +5,6 @@ namespace Violet.WorkItems.Validation
 {
     public interface IValidator
     {
-        Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges);
+        Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context);
     }
 }

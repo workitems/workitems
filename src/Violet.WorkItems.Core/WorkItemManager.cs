@@ -21,7 +21,7 @@ namespace Violet.WorkItems
         {
             DataProvider = dataProvider;
             DescriptorManager = new DescriptorManager(descriptorProvider);
-            ValidationManager = new ValidationManager(DescriptorManager);
+            ValidationManager = new ValidationManager(this, DescriptorManager);
         }
 
         private async Task InitAsync()
@@ -54,7 +54,7 @@ namespace Violet.WorkItems
 
             if (success)
             {
-                properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue));
+                properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue)).ToList();
             }
             else
             {

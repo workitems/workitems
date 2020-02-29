@@ -8,10 +8,12 @@ namespace Violet.WorkItems.Validation
 {
     public class ValidationManager
     {
+        private readonly WorkItemManager _workItemManager;
         private readonly DescriptorManager _descriptorManager;
 
-        public ValidationManager(DescriptorManager descriptorManager)
+        public ValidationManager(WorkItemManager workItemManager, DescriptorManager descriptorManager)
         {
+            _workItemManager = workItemManager;
             _descriptorManager = descriptorManager;
         }
 
@@ -22,7 +24,7 @@ namespace Violet.WorkItems.Validation
 
             foreach (var validator in validators)
             {
-                var errorsOfProperty = await validator.ValidateAsync(workItem, appliedChanges);
+                var errorsOfProperty = await validator.ValidateAsync(new ValidationContext(_workItemManager, workItem, appliedChanges));
 
                 errors.AddRange(errorsOfProperty);
             }
@@ -44,7 +46,7 @@ namespace Violet.WorkItems.Validation
 
                 validators.AddRange(pd.Validators.Select(vd => CreatePropertyValidatorByValidatorDescriptor(pd, vd)));
 
-                validators.Add(CreateValueProviderValidator(pd, pd.ValueProvider));
+                validators.Add(CreateValueProviderValidator(workItem, pd, pd.ValueProvider));
             }
 
             return validators.Where(v => v != null).Cast<IValidator>();
@@ -75,13 +77,13 @@ namespace Violet.WorkItems.Validation
                 _ => null,
             };
 
-        private IValidator? CreateValueProviderValidator(PropertyDescriptor propertyDescriptor, ValueProviderDescriptor? valueProviderDescriptor)
+        private IValidator? CreateValueProviderValidator(WorkItem workItem, PropertyDescriptor propertyDescriptor, ValueProviderDescriptor? valueProviderDescriptor)
             => valueProviderDescriptor switch
             {
                 EnumValueProviderDescriptor evpd => new ValueProviderValidator(propertyDescriptor, new EnumValueProvider(evpd)),
                 ProjectCollectionValueProviderDescriptor pcvpd => null,
                 ProjectUserValueProviderDescriptor puvpd => null,
-                RelationshipValueProviderDescriptor rvpd => null,
+                RelationshipValueProviderDescriptor rvpd => new ValueProviderValidator(propertyDescriptor, new RelationshipValueProvider(rvpd, _workItemManager, workItem.ProjectCode)),
                 _ => null,
             };
     }

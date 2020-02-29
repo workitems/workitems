@@ -14,9 +14,11 @@ namespace Violet.WorkItems.Validation
             PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
         }
 
-        public Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context)
         {
             var result = new List<ErrorMessage>();
+
+            var workItem = context.WorkItem;
 
             var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyName);
 
