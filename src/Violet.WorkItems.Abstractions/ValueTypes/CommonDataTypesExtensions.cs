@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace Violet.WorkItems
 {
@@ -29,7 +30,6 @@ namespace Violet.WorkItems
 
             property.Value = result;
         }
-
 
         public static void Value<T>(this Property property, out T value)
         {
@@ -115,7 +115,6 @@ namespace Violet.WorkItems
             }
         }
 
-
         public static void NullableValue<T>(this Property property, out T? value) where T : class
         {
             if (property is null)
@@ -131,6 +130,68 @@ namespace Violet.WorkItems
             {
                 Value<T>(property, out var notNullableValue2);
                 value = notNullableValue2;
+            }
+        }
+
+
+        public static void Values<T>(this Property property, params T[] values)
+        {
+            if (property is null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            var type = typeof(T);
+            if (!ValueTypesManager.IsTypeMatch(property.DataType, type))
+            {
+                throw new InvalidOperationException($"Cannot serialize {type.Name} to property {property.Name} of data type {property.DataType}");
+            }
+
+            var tc = ValueTypesManager.GetConverter(type);
+
+            if (tc is null)
+            {
+                throw new InvalidOperationException($"No Type Coverter found for type '{type}'.");
+            }
+
+            var valuesAsString = values.Select(v => tc.ConvertToInvariantString(v)).ToArray();
+
+            var result = string.Join(",", valuesAsString);
+
+            property.Value = result;
+        }
+
+        public static void Values<T>(this Property property, out T[] values)
+        {
+            if (property is null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            var type = typeof(T);
+            if (!ValueTypesManager.IsTypeMatch(property.DataType, type))
+            {
+                throw new InvalidOperationException($"Cannot deserialize {type.Name} from property {property.Name} of data type {property.DataType}");
+            }
+
+            var tc = ValueTypesManager.GetConverter(type);
+
+            if (tc is null)
+            {
+                throw new InvalidOperationException($"No Type Coverter found for type '{type}'.");
+            }
+
+            var stringValues = property.Value.Split(',');
+
+            if (stringValues.All(v => tc.IsValid(v)))
+            {
+                var result = stringValues.Select(v => tc.ConvertFromInvariantString(v)).Cast<T>().ToArray();
+
+                values = result;
+            }
+            else
+            {
+                throw new ArgumentException($"Property value '{property.Value}' cannot be converted to array of {type.Name}");
             }
         }
     }

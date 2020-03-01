@@ -164,5 +164,51 @@ namespace Violet.WorkItems.ValueTypes
             Assert.Equal(x, result);
             Assert.Equal("2019-12-31T14:56:12.123+02:00", property.Value);
         }
+        [Fact]
+        public void CommonTypeExtensions_Values_SuccessSetWithParams()
+        {
+            // arrange
+            var property = new Property("A", "Int32", "");
+            // act
+            property.Values(1, 2, 3, 4);
+            // assert
+            Assert.Equal("1,2,3,4", property.Value);
+        }
+        [Fact]
+        public void CommonTypeExtensions_Values_SuccessSetWithArray()
+        {
+            // arrange
+            var property = new Property("A", "Int32", "");
+            // act
+            property.Values(new int[] { 1, 2, 3, 4 });
+            // assert
+            Assert.Equal("1,2,3,4", property.Value);
+        }
+        [Fact]
+        public void CommonTypeExtensions_Values_SuccessGet()
+        {
+            // arrange
+            var property = new Property("A", "Int32", "1,2,3,4");
+            // act
+            property.Values(out int[] result);
+            // assert
+            Assert.Collection(result,
+                i => { Assert.Equal(1, i); },
+                i => { Assert.Equal(2, i); },
+                i => { Assert.Equal(3, i); },
+                i => { Assert.Equal(4, i); }
+            );
+        }
+        [Fact]
+        public void CommonTypeExtensions_Values_InvalidData()
+        {
+            // arrange
+            var property = new Property("A", "Int32", "1,2,A,4");
+            // act & assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                property.Values(out int[] result);
+            });
+        }
     }
 }
