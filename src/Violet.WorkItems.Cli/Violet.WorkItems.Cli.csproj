@@ -21,9 +21,6 @@
     <Nullable>enable</Nullable>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>wi</ToolCommandName>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>Git</RepositoryType>
-    <RepositoryUrl>https://github.com/violetgrass/workitems</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
