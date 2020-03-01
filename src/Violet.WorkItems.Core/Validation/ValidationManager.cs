@@ -63,7 +63,7 @@ namespace Violet.WorkItems.Validation
             {
                 yield return new ImmutableValidator(propertyDescriptor);
             }
-            if (propertyDescriptor.PropertyType == PropertyType.Raw)
+            if (propertyDescriptor.PropertyType == PropertyType.SingleRaw)
             {
                 yield return new RawDataTypeValidator(propertyDescriptor.Name);
             }

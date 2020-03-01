@@ -30,5 +30,8 @@ namespace Violet.WorkItems.ValueProvider
 
         public Task<string> GetDefaultValueAsync()
             => Task.FromResult(Descriptor.Values.FirstOrDefault()?.Value ?? string.Empty);
+
+        public bool IsValidEncoding(string value)
+            => true;
     }
 }

@@ -2,7 +2,7 @@ namespace Violet.WorkItems.Types
 {
     public enum PropertyType
     {
-        Raw,
+        SingleRaw,
         SingleValueFromProvider,
         MultipleValueFromProvider,
     }

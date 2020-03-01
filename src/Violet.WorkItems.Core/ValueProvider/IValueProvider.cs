@@ -9,5 +9,6 @@ namespace Violet.WorkItems.ValueProvider
         Task<IEnumerable<ProvidedValue>> ProvideAllValuesAsync();
         Task<bool> ValueExistsAsync(string value);
         Task<IEnumerable<ProvidedValue>> SuggestionsAsync(string input);
+        bool IsValidEncoding(string value);
     }
 }

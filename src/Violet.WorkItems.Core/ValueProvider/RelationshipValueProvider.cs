@@ -47,6 +47,13 @@ namespace Violet.WorkItems.ValueProvider
             return result;
         }
 
+        public bool IsValidEncoding(string value)
+        {
+            var (r, p, id) = DecodeRelationship(value);
+
+            return !string.IsNullOrWhiteSpace(r) && !string.IsNullOrWhiteSpace(p) && !string.IsNullOrWhiteSpace(id);
+        }
+
         public static string EncodeRelationship(string relationShipType, string projectCode, string id)
             => $"{relationShipType}:{projectCode}-{id}";
         public static (string relationshipType, string projectCode, string id) DecodeRelationship(string value)
