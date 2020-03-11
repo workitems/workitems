@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Cli
 {
@@ -37,8 +38,7 @@ namespace Violet.WorkItems.Cli
             var propertiesDictionary = new Dictionary<string, string>();
             foreach (var propertyDescriptor in propertyDescriptors)
             {
-                Console.Write($"{propertyDescriptor.Name}: ");
-                var value = Console.ReadLine();
+                var value = await ValueProviderReadLineAutoCompletion.Readline(manager, wi, propertyDescriptor, string.Empty);
 
                 propertiesDictionary.Add(propertyDescriptor.Name, value);
             }

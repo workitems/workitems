@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Violet.WorkItems.Cli
@@ -33,12 +34,24 @@ namespace Violet.WorkItems.Cli
             }
             else
             {
+                var propertyDescriptors = manager.DescriptorManager.GetCurrentPropertyDescriptors(workItem);
+
                 var changedProperties = new List<Property>();
 
                 foreach (var property in workItem.Properties)
                 {
-                    Console.Write($"{property.Name} [{property.Value}]: ");
-                    var value = Console.ReadLine();
+                    var propertyDescriptor = propertyDescriptors.FirstOrDefault(wi => wi.Name == property.Name);
+
+                    string value;
+                    if (propertyDescriptor is null)
+                    {
+                        Console.Write($"{property.Name} [{property.Value}]: ");
+                        value = Console.ReadLine();
+                    }
+                    else
+                    {
+                        value = await ValueProviderReadLineAutoCompletion.Readline(manager, workItem, propertyDescriptor, property.Value);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(value))
                     {

@@ -33,5 +33,7 @@ namespace Violet.WorkItems.ValueProvider
 
         public bool IsValidEncoding(string value)
             => true;
+
+        public bool IsUserExpierenceEnumerable => true;
     }
 }

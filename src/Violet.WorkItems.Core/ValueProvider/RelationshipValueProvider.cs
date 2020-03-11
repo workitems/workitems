@@ -75,5 +75,8 @@ namespace Violet.WorkItems.ValueProvider
                 return (string.Empty, string.Empty, string.Empty);
             }
         }
+
+
+        public bool IsUserExpierenceEnumerable => false;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,13 +79,16 @@ namespace Violet.WorkItems.Validation
             };
 
         private IValidator? CreateValueProviderValidator(WorkItem workItem, PropertyDescriptor propertyDescriptor, ValueProviderDescriptor? valueProviderDescriptor)
+            => valueProviderDescriptor is null ? null : new ValueProviderValidator(propertyDescriptor, CreateValueProvider(workItem, valueProviderDescriptor));
+
+        public IValueProvider CreateValueProvider(WorkItem workItem, ValueProviderDescriptor valueProviderDescriptor)
             => valueProviderDescriptor switch
             {
-                EnumValueProviderDescriptor evpd => new ValueProviderValidator(propertyDescriptor, new EnumValueProvider(evpd)),
-                ProjectCollectionValueProviderDescriptor pcvpd => null,
-                ProjectUserValueProviderDescriptor puvpd => null,
-                RelationshipValueProviderDescriptor rvpd => new ValueProviderValidator(propertyDescriptor, new RelationshipValueProvider(rvpd, _workItemManager, workItem.ProjectCode)),
-                _ => null,
+                EnumValueProviderDescriptor evpd => new EnumValueProvider(evpd),
+                ProjectCollectionValueProviderDescriptor pcvpd => throw new NotImplementedException(),
+                ProjectUserValueProviderDescriptor puvpd => throw new NotImplementedException(),
+                RelationshipValueProviderDescriptor rvpd => new RelationshipValueProvider(rvpd, _workItemManager, workItem.ProjectCode),
+                _ => throw new NotImplementedException(),
             };
     }
 }
