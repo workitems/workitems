@@ -4,7 +4,7 @@ namespace Violet.WorkItems.Types
 {
     public class LogEntryTypeDescriptor
     {
-        public LogEntryTypeDescriptor(string name)
+        public LogEntryTypeDescriptor(string name, string type)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -12,8 +12,10 @@ namespace Violet.WorkItems.Types
             }
 
             Name = name;
+            Type = type;
         }
 
         public string Name { get; }
+        public string Type { get; }
     }
 }

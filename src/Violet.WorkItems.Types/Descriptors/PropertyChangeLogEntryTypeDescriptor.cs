@@ -3,7 +3,7 @@ namespace Violet.WorkItems.Types
     public class PropertyChangeLogEntryTypeDescriptor : LogEntryTypeDescriptor
     {
         public PropertyChangeLogEntryTypeDescriptor(string name, string propertyName, string emoji, string message, string? targetValue = null)
-            : base(name)
+            : base(name, "PropertyChange")
         {
             PropertyName = propertyName;
             Emoji = emoji;
