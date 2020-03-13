@@ -77,8 +77,8 @@ jobs:
     - name: Upload to GitHub Packages
       run: |
            for f in ./artifacts/*.nupkg
-           do
-             dotnet nuget push $f --source "github"
+            do
+             dotnet nuget push $f --skip-duplicate --source "github"
            done
       shell: bash
   publish-nuget:
@@ -103,6 +103,6 @@ jobs:
       run: |
            for f in ./artifacts/*.nupkg
            do
-#             dotnet nuget push $f --source "nuget"
+             dotnet nuget push $f --skip-duplicate --source "nuget"
            done
       shell: bash
