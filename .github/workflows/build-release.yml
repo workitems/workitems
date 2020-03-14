@@ -20,9 +20,9 @@ jobs:
       run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
     - name: Build Violet WorkItems
       run: dotnet build --configuration Release -p:Version=$RELEASE_VERSION
-    - name: Run Test Suite
+    - name: Test Violet WorkItems
       run: dotnet test --no-build --configuration Release --filter OnDataProvider!=SqlServer
-    - name: Pack
+    - name: Pack Violet WorkItems
       run: dotnet pack --no-build --output ./artifacts --configuration Release -p:Version=$RELEASE_VERSION
     - uses: actions/upload-artifact@v1
       with:
@@ -65,7 +65,7 @@ jobs:
 #    - name: Upload to GitHub Package Registry
 #      run:  dotnet nuget push ./artifacts/**/*.nupkg --skip-duplicate --source "github"
     - name: Upload to GitHub Package Registry
-      run:  dotnet nuget push ./artifacts/**/*.nupkg --skip-duplicate 
+      run:  dotnet nuget push ./artifacts/**/*.nupkg --skip-duplicate -n true
   publish-nuget:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
@@ -79,6 +79,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.100
+        source-url: https://api.nuget.org/v3/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_APIKEY }}
     - uses: actions/download-artifact@v1
       with:
         name: artifacts
@@ -92,4 +95,4 @@ jobs:
 #           done
 #      shell: bash
     - name: Upload to NuGet
-      run:  dotnet nuget push ./artifacts/**/*.nupkg --skip-duplicate -k $NUGET_AUTH_KEY -s https://api.nuget.org/v3/index.json
+      run:  dotnet nuget push ./artifacts/**/*.nupkg --skip-duplicate -n true
