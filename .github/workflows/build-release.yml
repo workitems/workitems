@@ -102,6 +102,6 @@ jobs:
            export NUGET_AUTH_KEY=${{ secrets.NUGET_APIKEY }}
            for f in ./artifacts/*.nupkg
            do
-             dotnet nuget push $f --skip-duplicate --source "nuget"
+             dotnet nuget push $f --skip-duplicate -k $NUGET_AUTH_KEY -s https://api.nuget.org/v3/index.json
            done
       shell: bash
