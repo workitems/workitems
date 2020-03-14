@@ -72,6 +72,7 @@ jobs:
     needs: [ build ]
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_AUTH_TOKEN: ${{ secrets.NUGET_APIKEY }}
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -79,8 +80,6 @@ jobs:
       with:
         dotnet-version: 3.1.100
         source-url: https://api.nuget.org/v3/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_APIKEY }}
     - uses: actions/download-artifact@v1
       with:
         name: artifacts
