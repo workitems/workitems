@@ -97,10 +97,9 @@ jobs:
       with:
         name: artifacts
         path: ./artifacts
-    - name: Setup nuget config
-      run: sed 's/NUGET_APIKEY/${{ secrets.NUGET_APIKEY }}/g' ./build/.nuget.config > nuget.config
     - name: Upload to NuGet
       run: |
+           export NUGET_AUTH_KEY=${{ secrets.NUGET_APIKEY }}
            for f in ./artifacts/*.nupkg
            do
              dotnet nuget push $f --skip-duplicate --source "nuget"
