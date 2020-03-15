@@ -17,11 +17,14 @@ Having Goals is the first step in achieving them 😀
 
 ## Command Line Interface
 ````sh
-# Installation (⚠ this is target state not yet achieved)
+# Installation
 dotnet tool install -g Violet.WorkItems.Cli
 ````
 
 ````sh
+# Setup Project (⚠ this is target state not yet achieved)
+wi init
+
 # Create Work Item
 wi new PROJECT Bug
 
@@ -41,16 +44,16 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 ### Domain Model
 
-1. 🏃‍♂️ Violet.WorkItems.Abstractions
+1. Violet.WorkItems.Abstractions
    - WorkItem, Property, LogEntry, PropertyChange
    - IDataProvider
-1. 🏃‍♂️ Violet.WorkItems.Types
+1. Violet.WorkItems.Types
    - WorkItemDescriptor, PropertyDescriptor
    - StageDescriptor, ...
 
 ### Domain Services
 
-1. 🏃‍♂️ Violet.WorkItems.Core
+1. Violet.WorkItems.Core
    - WorkItemManager (core audit, validation and storage logic)
    - Core Validators (Mandatory, Completeness, Immutable)
    - ValueProvider (Enum)
@@ -60,20 +63,22 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 ### Infrastructure
 
-1. 🏃‍♂️ Violet.WorkItems.Provider.SqlServer
+1. Violet.WorkItems.Provider.SqlServer
    - Traditional Relational Database Backend (read/write)
-1. Violet.WorkItems.Provider.Git
+1. ⌛ Violet.WorkItems.Provider.Git
    - Persist WorkItems and related information in Git (read/write)
-1. Violet.WorkItems.Provider.GitHub
+1. ⌛ Violet.WorkItems.Provider.GitHub
+   - Proxy GitHub
+1. ⌛ VIolet.WorkItems.Provider.Sqlite
 
 ### Applications
 
-1. 🏃‍♂️ Violet.WorkItems.Cli
+1. Violet.WorkItems.Cli
    - Command Line Application to manage work items (create, read, update, delete).
    - Starter for Violet.WorkItems.LocalWebHost
-1. Violet.WorkItems.LocalWebHost
+1. ⌛ Violet.WorkItems.LocalWebHost
    - Locally starting web application to manage tickets (in browser)
-1. Violet.WorkItems.WebHost
+1. 🏃‍♂️ Violet.WorkItems.WebHost
    - Regular web application including authentication provider plugins
 
 # Community, Contributions, License
@@ -86,4 +91,4 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 ---
 
-Legend: 🏃‍♂️ In Progress, ✅ Done
+Legend: 🏃‍♂️ In Progress, ⌛ Not Yet Available
