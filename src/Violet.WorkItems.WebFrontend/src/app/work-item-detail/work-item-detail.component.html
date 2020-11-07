@@ -1,0 +1,19 @@
+<div class="p-d-flex p-flex-column" *ngIf="workItem != null && propertyDescriptors != null">
+
+    <p-breadcrumb class="p-mb-2" [home]="home" [model]="items"></p-breadcrumb>
+
+    <div class="p-d-flex p-mb-2">
+        <p-button icon="pi pi-save" styleClass="p-button-sm p-mr-2"></p-button>
+
+        <span class="p-buttonset p-ml-auto p-button-sm">
+            <p-button *ngFor="let cmd of commandDescriptors" [label]="cmd.label" icon="pi pi-check"
+                styleClass="p-button-sm">
+            </p-button>
+        </span>
+        <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm p-ml-2"></p-button>
+    </div>
+
+    <vwi-work-item-property *ngFor="let descriptor of propertyDescriptors" [propertyDescriptor]="descriptor"
+        [propertyValue]="workItem.properties[descriptor.name]">
+    </vwi-work-item-property>
+</div>
