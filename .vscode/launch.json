@@ -20,6 +20,17 @@
             "stopAtEntry": false
         },
         {
+            "name": ".NET Core Launch (service)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Violet.WorkItems.Service/bin/Debug/netcoreapp3.1/Violet.WorkItems.Service.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Violet.WorkItems.Service",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",

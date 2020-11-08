@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Violet.WorkItems.Cli/Violet.WorkItems.Cli.csproj",
+                "${workspaceFolder}",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

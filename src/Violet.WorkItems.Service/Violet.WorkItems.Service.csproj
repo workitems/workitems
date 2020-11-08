@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
+    <ProjectReference Include="..\Violet.WorkItems.Types\Violet.WorkItems.Types.csproj" />
+    <ProjectReference Include="..\Violet.WorkItems.Abstractions\Violet.WorkItems.Abstractions.csproj" />
+    <ProjectReference Include="..\Violet.WorkItems.Types.CommonSdlc\Violet.WorkItems.Types.CommonSdlc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+
+</Project>
