@@ -31,23 +31,27 @@ export class WorkItemPropertyComponent implements OnInit {
   private determinePropertyComponent(): Type<PropertyComponent> {
     let result: Type<PropertyComponent> = null;
 
-    if (this.propertyDescriptor.dataType == "string" && this.propertyDescriptor.propertyType == "SingleRaw") {
+    if (this.propertyDescriptor.dataType == "String" && this.propertyDescriptor.propertyType == "SingleRaw") {
       result = SingleLineTextPropertyComponent;
+    } else if (this.propertyDescriptor.dataType == "String" && this.propertyDescriptor.propertyType == "SingleValueFromProvider") {
+      result = SingleLineTextPropertyComponent; // TODO
     }
 
     return result;
   }
 
   private loadPropertyComponent(component: Type<PropertyComponent>) {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
+    if (component != null) {
+      const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
 
-    const viewContainerRef = this.propertyHost.viewContainerRef;
-    viewContainerRef.clear();
+      const viewContainerRef = this.propertyHost.viewContainerRef;
+      viewContainerRef.clear();
 
-    const componentRef = viewContainerRef.createComponent<PropertyComponent>(componentFactory);
-    componentRef.instance.workItemDescriptor = this.workItemDescriptor;
-    componentRef.instance.propertyDescriptor = this.propertyDescriptor;
-    componentRef.instance.propertyValue = this.propertyValue;
+      const componentRef = viewContainerRef.createComponent<PropertyComponent>(componentFactory);
+      componentRef.instance.workItemDescriptor = this.workItemDescriptor;
+      componentRef.instance.propertyDescriptor = this.propertyDescriptor;
+      componentRef.instance.propertyValue = this.propertyValue;
+    }
   }
 
 }

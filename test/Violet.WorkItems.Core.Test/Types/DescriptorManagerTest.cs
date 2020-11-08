@@ -86,7 +86,7 @@ namespace Violet.WorkItems.Types
                 pd =>
                 {
                     Assert.Equal("command-close", pd.Name);
-                    Assert.Equal("Close", pd.DisplayName);
+                    Assert.Equal("Close", pd.Label);
                 });
         }
 

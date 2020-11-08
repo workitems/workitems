@@ -242,7 +242,7 @@ namespace Violet.WorkItems
             if (workItem != null)
             {
                 var commands = DescriptorManager.GetCurrentCommands(workItem);
-                var commandDescriptor = commands?.FirstOrDefault(c => c.Name == command || c.DisplayName == command);
+                var commandDescriptor = commands?.FirstOrDefault(c => c.Name == command || c.Label == command);
 
                 if (commandDescriptor != null)
                 {

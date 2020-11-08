@@ -14,6 +14,6 @@
     </div>
 
     <vwi-work-item-property *ngFor="let descriptor of propertyDescriptors" [propertyDescriptor]="descriptor"
-        [propertyValue]="workItem.properties[descriptor.name]">
+        [propertyValue]="propertyWithName(descriptor.name)">
     </vwi-work-item-property>
 </div>

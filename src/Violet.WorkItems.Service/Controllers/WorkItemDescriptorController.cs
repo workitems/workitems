@@ -21,10 +21,12 @@ namespace Violet.WorkItems.Service.Controllers
         }
 
         [HttpGet("api/v1/projects/{projectCode}/workitems/{workItemId}/descriptor")]
+        [ProducesResponseType(typeof(WorkItemDescriptorApiResponse), 200)]
         public async Task<ActionResult> GetDescriptorForWorkItem(string projectCode, string workItemId)
             => InternalGetDescriptorForWorkItem(await _workItemManager.GetAsync(projectCode, workItemId));
 
         [HttpGet("api/v1/projects/{projectCode}/types/{workItemType}/descriptor")]
+        [ProducesResponseType(typeof(WorkItemDescriptorApiResponse), 200)]
         public async Task<ActionResult> GetDescriptorForTemplate(string projectCode, string workItemType)
             => InternalGetDescriptorForWorkItem(await _workItemManager.CreateTemplateAsync(projectCode, workItemType));
 

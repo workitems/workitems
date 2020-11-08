@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { DescriptorManagerService, WorkItemCommandDescriptor, WorkItemPropertyDescriptor } from '../descriptor-manager.service';
-import { WorkItem, WorkItemService } from '../work-item.service';
+import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
 
 @Component({
   selector: 'vwi-work-item-detail',
@@ -10,8 +10,9 @@ import { WorkItem, WorkItemService } from '../work-item.service';
 })
 export class WorkItemDetailComponent implements OnInit {
 
-  @Input() projectCode: string;
-  @Input() id: string;
+  @Input() projectCode: string = '';
+  @Input() id: string = '';
+  @Input() workItemType: string = '';
 
   items: MenuItem[];
   home: MenuItem;
@@ -26,24 +27,48 @@ export class WorkItemDetailComponent implements OnInit {
     this.items = [];
     this.home = { icon: 'pi pi-home', routerLink: '/' };
 
-    this.workItemService.getWorkItem(this.projectCode, this.id)
-      .subscribe(wi => {
-        this.descriptorManagerService.getCurrentPropertyDescriptors(wi).subscribe(descriptors => {
-          this.workItem = wi;
-          this.propertyDescriptors = descriptors;
+    if (this.id !== '') {
+      this.workItemService.getWorkItem(this.projectCode, this.id)
+        .subscribe(wi => {
+          this.descriptorManagerService.getCurrentDescriptor(wi)
+            .subscribe(descriptors => {
+              this.workItem = wi;
+              this.propertyDescriptors = descriptors.properties;
+              this.commandDescriptors = descriptors.commands;
 
-          this.items = [
-            { label: wi.projectCode, url: '/wi/' + wi.projectCode },
-            { label: wi.id, url: '/wi/' + wi.projectCode + '/' + wi.id }
-          ];
-        });
+              console.log(wi, descriptors);
 
-        this.descriptorManagerService.getCurrentCommands(wi).subscribe(commands => {
-          this.commandDescriptors = commands;
+              this.items = [
+                { label: wi.projectCode, url: '/wi/' + wi.projectCode },
+                { label: wi.id, url: '/wi/' + wi.projectCode + '/' + wi.id }
+              ];
+            });
         });
-      });
+    } else if (this.workItemType !== '') {
+      this.workItemService.createTemplate(this.projectCode, this.workItemType)
+        .subscribe(wi => {
+          this.descriptorManagerService.getTemplateDescriptors(this.projectCode, this.workItemType)
+            .subscribe(descriptors => {
+              this.workItem = wi;
+              this.propertyDescriptors = descriptors.properties;
+              this.commandDescriptors = descriptors.commands;
+
+              console.log(wi, descriptors);
+
+
+              this.items = [
+                { label: wi.projectCode, url: '/wi/' + wi.projectCode },
+                { label: wi.id, url: '/wi/' + wi.projectCode + '/' + wi.id }
+              ];
+            });
+        });
+    }
   }
 
   save(): void { }
+
+  propertyWithName(propertyName: string): WorkItemProperty {
+    return this.workItem.properties.filter(p => p.name == propertyName)[0]
+  }
 
 }

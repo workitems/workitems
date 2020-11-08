@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface WorkItemProperty {
   name: string;
@@ -12,7 +14,7 @@ export interface WorkItem {
   id: string;
   workItemType: string;
 
-  properties: { [name: string]: WorkItemProperty }
+  properties: WorkItemProperty[];
 }
 
 export interface ErrorMessage {
@@ -34,39 +36,27 @@ export interface WorkItemUpdatedResult {
   providedIn: 'root'
 })
 export class WorkItemService {
+  constructor(private httpClient: HttpClient) { }
 
-  private data: WorkItem[] = [
-    {
-      projectCode: "ACME",
-      id: "ACME-1",
-      workItemType: "Issue",
-      properties: {
-        "FirstName": {
-          name: "FirstName",
-          dataType: "String",
-          value: null,
-        },
-        "LastName": {
-          name: "LastName",
-          dataType: "String",
-          value: null,
-        }
-      }
-    }
-  ];
+  createTemplate(projectCode: string, workItemType: string): Observable<WorkItem> {
+    const uri = 'https://localhost:5001/api/v1/projects/' + projectCode + '/types/' + workItemType + '/new';
 
-  constructor() { }
+    return this.httpClient.get<any>(uri).pipe(
+      map(response => response.workItem as WorkItem)
+    );
+  }
 
   getWorkItems(projectCode: string, filter: string): Observable<WorkItem[]> {
     return null;
   }
 
   getWorkItem(projectCode: string, id: string): Observable<WorkItem> {
-    let queryResult = this.data.filter(wi => wi.projectCode == projectCode && wi.id == id);
+    // let queryResult = this.data.filter(wi => wi.projectCode == projectCode && wi.id == id);
 
-    let result = queryResult[0];
+    // let result = queryResult[0];
 
-    return of(result);
+    // return of(result);
+    return null;
   }
 
   saveChanges(projectCode: string, id: string, properties: WorkItemProperty[]): Observable<WorkItemUpdatedResult> {

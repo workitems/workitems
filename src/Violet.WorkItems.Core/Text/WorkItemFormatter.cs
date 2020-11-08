@@ -23,7 +23,7 @@ namespace Violet.WorkItems.Text
 
             if (commands.Count() > 0)
             {
-                writer.WriteLine($"? Commands: {string.Join(", ", commands.Select(c => c.DisplayName))}");
+                writer.WriteLine($"? Commands: {string.Join(", ", commands.Select(c => c.Label))}");
             }
 
             foreach (var logEntry in workItem.Log.OrderByDescending(l => l.Date))

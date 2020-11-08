@@ -2,7 +2,7 @@ namespace Violet.WorkItems.Types
 {
     public abstract class CommandDescriptor
     {
-        public CommandDescriptor(string name, string type, string displayName)
+        public CommandDescriptor(string name, string type, string label)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -14,18 +14,18 @@ namespace Violet.WorkItems.Types
                 throw new System.ArgumentException("message", nameof(type));
             }
 
-            if (string.IsNullOrWhiteSpace(displayName))
+            if (string.IsNullOrWhiteSpace(label))
             {
-                throw new System.ArgumentException("message", nameof(displayName));
+                throw new System.ArgumentException("message", nameof(label));
             }
 
             Name = name;
             Type = type;
-            DisplayName = displayName;
+            Label = label;
         }
 
         public string Name { get; }
         public string Type { get; }
-        public string DisplayName { get; }
+        public string Label { get; }
     }
 }

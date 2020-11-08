@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +28,11 @@ namespace Violet.WorkItems.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                    .AddJsonOptions(opts =>
+                    {
+                        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    });
 
             services.AddSwaggerGen();
 
@@ -35,6 +40,11 @@ namespace Violet.WorkItems.Service
                     .AddSingleton<IDescriptorProvider>(serviceProvider => new Violet.WorkItems.Types.CommonSdlc.CommonSdlcDescriptorProvider())
                     .AddSingleton<WorkItemManager>();
 
+            services.AddCors(options => options
+                        .AddDefaultPolicy(builder => builder
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowAnyOrigin()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +58,8 @@ namespace Violet.WorkItems.Service
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

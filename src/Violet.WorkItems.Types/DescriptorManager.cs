@@ -63,6 +63,9 @@ namespace Violet.WorkItems.Types
 
                     yield return new PropertyDescriptor(propertyDescriptor.Name,
                         propertyDescriptor.DataType,
+                        propertyDescriptor.Label,
+                        propertyDescriptor.Hint,
+                        propertyDescriptor.Description,
                         propertyDescriptor.PropertyType,
                         isVisible,
                         isEditable,

@@ -1,9 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { WorkItem } from './work-item.service';
 
 export interface WorkItemDescriptor {
-  properties: PropertyDescriptor[];
+  properties: WorkItemPropertyDescriptor[];
+  commands: WorkItemCommandDescriptor[];
 }
 
 export interface WorkItemPropertyDescriptor {
@@ -29,52 +31,17 @@ export interface WorkItemCommandDescriptor {
 })
 export class DescriptorManagerService {
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  getCurrentPropertyDescriptors(workItem: WorkItem): Observable<WorkItemPropertyDescriptor[]> {
+  getTemplateDescriptors(projectCode: string, workItemType: string): Observable<WorkItemDescriptor> {
+    const uri = 'https://localhost:5001/api/v1/projects/' + projectCode + '/types/' + workItemType + '/descriptor';
 
-    let propertyDescriptors: WorkItemPropertyDescriptor[] = [
-      {
-        name: "FirstName",
-        label: "Firstname",
-        hint: "e.g. Thomas",
-        description: null,
-        dataType: "string",
-        isEditable: true,
-        isVisible: true,
-        propertyType: "SingleRaw",
-        widgetType: null
-      },
-      {
-        name: "LastName",
-        label: "Lastname",
-        hint: "e.g. T.",
-        description: null,
-        dataType: "string",
-        isEditable: true,
-        isVisible: true,
-        propertyType: "SingleRaw",
-        widgetType: null
-      },
-    ];
-
-    return of(propertyDescriptors);
+    return this.httpClient.get<WorkItemDescriptor>(uri);
   }
 
-  getCurrentCommands(workItem: WorkItem): Observable<WorkItemCommandDescriptor[]> {
-    let commandDescriptors: WorkItemCommandDescriptor[] = [
-      {
-        name: "foo",
-        type: "foo",
-        label: "Approve"
-      },
-      {
-        name: "bar",
-        type: "bar",
-        label: "Na!"
-      }
-    ];
+  getCurrentDescriptor(workItem: WorkItem): Observable<WorkItemDescriptor> {
+    const uri = 'https://localhost:5001/api/v1/projects/' + workItem.projectCode + '/workitems/' + workItem.id + '/descriptor';
 
-    return of(commandDescriptors);
+    return this.httpClient.get<WorkItemDescriptor>(uri);
   }
 }
