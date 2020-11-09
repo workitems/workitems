@@ -9,7 +9,7 @@ import { PropertyComponent } from './property';
       <label for="i1" class="p-col-fixed" style="width:100px">{{propertyDescriptor.label}}</label>
       <div class="p-col p-inputgroup">
           <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-          <input id="i1" type="text" pInputText placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value">
+          <input id="i1" type="text" pInputText placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value" [disabled]="propertyDescriptor.isEditable ? null : 'disabled'">
       </div>
     </div>
   `,

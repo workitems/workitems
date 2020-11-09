@@ -35,7 +35,7 @@ namespace Violet.WorkItems.Validation
             var errors = new List<ErrorMessage>();
             var propertyChange = context.AppliedChanges.FirstOrDefault(c => c.Name == PropertyDescriptor.Name);
 
-            if (!PropertyDescriptor.IsEditable && !(propertyChange is null))
+            if (!PropertyDescriptor.IsEditable && !(propertyChange is null) && !context.InternalEdit)
             {
                 errors.Add(new ErrorMessage(nameof(ImmutableValidator), string.Empty, "The field is currently not editable", workItem.ProjectCode, workItem.Id, PropertyDescriptor.Name));
             }

@@ -18,14 +18,14 @@ namespace Violet.WorkItems.Validation
             _descriptorManager = descriptorManager;
         }
 
-        public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges)
+        public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges, bool internalEdit)
         {
             var errors = new List<ErrorMessage>();
             var validators = CreateValidators(workItem, appliedChanges, errors);
 
             foreach (var validator in validators)
             {
-                var errorsOfProperty = await validator.ValidateAsync(new ValidationContext(_workItemManager, workItem, appliedChanges));
+                var errorsOfProperty = await validator.ValidateAsync(new ValidationContext(_workItemManager, workItem, appliedChanges, internalEdit));
 
                 errors.AddRange(errorsOfProperty);
             }

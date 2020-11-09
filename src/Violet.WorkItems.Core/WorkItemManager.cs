@@ -101,7 +101,7 @@ namespace Violet.WorkItems
                 // property changes for all values not identical with an empty template.
                 var propertyChanges = properties.Where(p => p.Value != EmptyValue).Select(p => new PropertyChange(p.Name, EmptyValue, p.Value));
 
-                var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges);
+                var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges, false);
 
                 if (validationResult.Count() == 0)
                 {
@@ -175,7 +175,7 @@ namespace Violet.WorkItems
                 var changes = AnalyzeChanges(workItem.Properties, properties);
                 var newProperties = MergePropertySet(workItem.Properties, properties);
 
-                var (newWorkItem, errors) = await UpdateInternalAsync(workItem, newProperties, changes);
+                var (newWorkItem, errors) = await UpdateInternalAsync(workItem, newProperties, changes, false);
 
                 if (errors.Count() == 0)
                 {
@@ -196,7 +196,7 @@ namespace Violet.WorkItems
             return result;
         }
 
-        private async Task<(WorkItem, IEnumerable<ErrorMessage>)> UpdateInternalAsync(WorkItem workItem, IEnumerable<Property> properties, IEnumerable<PropertyChange> changes)
+        private async Task<(WorkItem, IEnumerable<ErrorMessage>)> UpdateInternalAsync(WorkItem workItem, IEnumerable<Property> properties, IEnumerable<PropertyChange> changes, bool internalEdit)
         {
             properties = ApplyChangesToPropertySet(properties, changes);
 
@@ -204,7 +204,7 @@ namespace Violet.WorkItems
 
             var newWorkItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, properties.ToArray(), newLog);
 
-            var errors = await ValidationManager.ValidateAsync(newWorkItem, changes);
+            var errors = await ValidationManager.ValidateAsync(newWorkItem, changes, internalEdit);
 
             if (errors.Count() == 0)
             {
@@ -248,7 +248,7 @@ namespace Violet.WorkItems
                 {
                     var changes = await ExecutedCommandAsync(workItem, commandDescriptor);
 
-                    var (newWorkItem, errors) = await UpdateInternalAsync(workItem, workItem.Properties, changes);
+                    var (newWorkItem, errors) = await UpdateInternalAsync(workItem, workItem.Properties, changes, true);
 
                     result = new WorkItemCommandExecutedResult(errors.Count() == 0, newWorkItem, errors);
                 }
