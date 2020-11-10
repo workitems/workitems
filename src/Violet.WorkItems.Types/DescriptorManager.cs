@@ -22,7 +22,7 @@ namespace Violet.WorkItems.Types
             _descriptors = list.ToDictionary(item => item.Name);
         }
 
-        public PropertyDescriptor GetCurrentPropertyDescriptor(WorkItem workItem, string propertyName)
+        public PropertyDescriptor? GetCurrentPropertyDescriptor(WorkItem workItem, string propertyName)
             => GetCurrentPropertyDescriptors(workItem).FirstOrDefault(p => p.Name == propertyName);
 
         public (bool success, IEnumerable<PropertyDescriptor> propertyDescriptors) GetAllPropertyDescriptors(string workItemType)

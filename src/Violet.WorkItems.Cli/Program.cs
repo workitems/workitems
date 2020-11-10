@@ -173,7 +173,7 @@ namespace Violet.WorkItems.Cli
 
             if (!fileInfo.Exists)
             {
-                if (fileInfo.Directory.Parent != null)
+                if (fileInfo.Directory?.Parent != null)
                 {
                     return FindFile(fileInfo.Directory.Parent.FullName, configFile);
                 }

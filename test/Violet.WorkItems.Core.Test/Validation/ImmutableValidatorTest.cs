@@ -119,13 +119,15 @@ namespace Violet.WorkItems.Validation
         private static WorkItemManager BuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String"),
-                    new PropertyDescriptor("B", "String", isEditable: false),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String"),
+                    PropertyDescriptor.Create("B", "String", isEditable: false),
                 }, stages: new StageDescriptor[] {
-                    new StageDescriptor("default", new PropertyValueConditionDescriptor("A", "aa"), commands: new CommandDescriptor[] {
-                        new ChangePropertyValueCommandDescriptor("set", "SET B to a", "B", "a")
-                    })
+                    new StageDescriptor("default", new PropertyValueConditionDescriptor("A", "aa"),
+                        Array.Empty<StagePropertyDescriptor>(),
+                        new CommandDescriptor[] {
+                            new ChangePropertyValueCommandDescriptor("set", "SET B to a", "B", "a")
+                        })
                 })
             ));
         }

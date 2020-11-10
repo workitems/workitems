@@ -99,6 +99,8 @@ namespace Violet.WorkItems.Text
                 {
                     property.Value(out result);
 
+                    result ??= string.Empty;
+
                     break;
                 }
             }

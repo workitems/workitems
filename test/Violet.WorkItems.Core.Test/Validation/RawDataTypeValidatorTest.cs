@@ -113,9 +113,9 @@ namespace Violet.WorkItems.Validation
         private static WorkItemManager BuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String"),
-                    new PropertyDescriptor("B", "Int32"),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String"),
+                    PropertyDescriptor.Create("B", "Int32"),
                 })
             ));
         }
@@ -123,9 +123,9 @@ namespace Violet.WorkItems.Validation
         private static WorkItemManager FaultyBuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String"),
-                    new PropertyDescriptor("B", "X"),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String"),
+                    PropertyDescriptor.Create("B", "X"),
                 })
             ));
         }

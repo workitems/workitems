@@ -84,11 +84,11 @@ namespace Violet.WorkItems.Validation
         private static WorkItemManager BuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", validators: new ValidatorDescriptor[] {
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("B", "String"),
+                    PropertyDescriptor.Create("B", "String"),
                 })
             ));
         }

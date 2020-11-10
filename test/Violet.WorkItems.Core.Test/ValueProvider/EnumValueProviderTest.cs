@@ -141,13 +141,13 @@ namespace Violet.WorkItems.ValueProvider
         private static WorkItemManager BuildManager()
         {
             return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", validators: new ValidatorDescriptor[] {
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("B", "String", valueProvider: new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
+                    PropertyDescriptor.Create("B", "String", valueProvider: new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
 
-                    new PropertyDescriptor("C", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
+                    PropertyDescriptor.Create("C", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new EnumValueProviderDescriptor(new EnumValue("d", "D"), new EnumValue("c", "C"))),
                 })
             ));
         }

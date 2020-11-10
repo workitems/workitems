@@ -54,7 +54,7 @@ namespace Violet.WorkItems
             Log = log;
         }
 
-        public Property this[string propertyName]
+        public Property? this[string propertyName]
             => Properties.FirstOrDefault(property => property.Name == propertyName);
     }
 }

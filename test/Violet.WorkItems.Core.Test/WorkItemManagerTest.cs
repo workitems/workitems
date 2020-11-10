@@ -257,9 +257,9 @@ namespace Violet.WorkItems.Core.Test
         {
             // arrange
             var workItemManager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", initialValue: "a"),
-                    new PropertyDescriptor("B", "String"),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String", initialValue: "a"),
+                    PropertyDescriptor.Create("B", "String"),
                 })
             ));
 
@@ -288,9 +288,9 @@ namespace Violet.WorkItems.Core.Test
         {
             // arrange
             var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", initialValue: "a"),
-                    new PropertyDescriptor("B", "String"),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String", initialValue: "a"),
+                    PropertyDescriptor.Create("B", "String"),
                 })
             ));
 
@@ -311,14 +311,16 @@ namespace Violet.WorkItems.Core.Test
         {
             // arrange
             var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-                new WorkItemDescriptor("BAR", new PropertyDescriptor[] {
-                    new PropertyDescriptor("A", "String", initialValue: "a"),
-                    new PropertyDescriptor("B", "String"),
+                WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+                    PropertyDescriptor.Create("A", "String", initialValue: "a"),
+                    PropertyDescriptor.Create("B", "String"),
                 },
                 stages: new StageDescriptor[]{
-                    new StageDescriptor("stage-aa", new PropertyValueConditionDescriptor("A", "aa"), commands: new CommandDescriptor[] {
-                        new ChangePropertyValueCommandDescriptor("make-bb", "MakeBBC", "B", "bbc")
-                    }),
+                    new StageDescriptor("stage-aa", new PropertyValueConditionDescriptor("A", "aa"),
+                        Array.Empty<StagePropertyDescriptor>(),
+                        new CommandDescriptor[] {
+                            new ChangePropertyValueCommandDescriptor("make-bb", "MakeBBC", "B", "bbc")
+                        }),
                 })
             ));
 

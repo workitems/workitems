@@ -8,17 +8,17 @@ namespace Violet.WorkItems.Provider
         public WorkItemDescriptor Model
             => new WorkItemDescriptor("GitHubIssues",
                 new PropertyDescriptor[] {
-                    new PropertyDescriptor("State", "String", propertyType: PropertyType.SingleValueFromProvider, isEditable: false, initialValue: "Open", valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Closed", "Closed"))),
-                    new PropertyDescriptor("Title", "String", validators: new ValidatorDescriptor[] {
+                    PropertyDescriptor.Create("State", "String", propertyType: PropertyType.SingleValueFromProvider, isEditable: false, initialValue: "Open", valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Closed", "Closed"))),
+                    PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                         new StringLengthValidatorDescriptor(3, 1000),
                         new MandatoryValidatorDescriptor(),
                     }),
-                    new PropertyDescriptor("Description", "String", validators: new ValidatorDescriptor[] {
+                    PropertyDescriptor.Create("Description", "String", validators: new ValidatorDescriptor[] {
                         new StringLengthValidatorDescriptor(0, 4000),
                     }),
-                    new PropertyDescriptor("Label", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectCollectionValueProviderDescriptor("labels")),
-                    new PropertyDescriptor("Milestone", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectCollectionValueProviderDescriptor("milestones")),
-                    new PropertyDescriptor("Assignee", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectUserValueProviderDescriptor(string.Empty)),
+                    PropertyDescriptor.Create("Label", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectCollectionValueProviderDescriptor("labels")),
+                    PropertyDescriptor.Create("Milestone", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectCollectionValueProviderDescriptor("milestones")),
+                    PropertyDescriptor.Create("Assignee", "String", propertyType: PropertyType.MultipleValueFromProvider, valueProvider: new ProjectUserValueProviderDescriptor(string.Empty)),
                 },
                 new StageDescriptor[] {
                     new StageDescriptor("stage-Open", new PropertyValueConditionDescriptor("State", "Open"),
