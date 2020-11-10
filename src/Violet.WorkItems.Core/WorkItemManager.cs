@@ -66,7 +66,7 @@ namespace Violet.WorkItems
             return wi;
         }
 
-        public async Task<WorkItemCreatedResult> CreateAsync(string projectCode, string workItemType, IEnumerable<Property> properties)
+        public async Task<WorkItemCreatedResult> CreateAsync(string projectCode, string workItemType, IEnumerable<Property> properties, bool autoCompleteFromTemplate = true)
         {
             if (string.IsNullOrWhiteSpace(projectCode))
             {
@@ -96,10 +96,20 @@ namespace Violet.WorkItems
             {
                 var newIdentifer = (await DataProvider.NextNumberAsync(projectCode)).ToString();
 
-                var wi = new WorkItem(projectCode, newIdentifer, workItemType, new List<Property>(properties), Array.Empty<LogEntry>());
-
                 // property changes for all values not identical with an empty template.
+                var template = autoCompleteFromTemplate ? await CreateTemplateAsync(projectCode, workItemType) : null;
+
                 var propertyChanges = properties.Where(p => p.Value != EmptyValue).Select(p => new PropertyChange(p.Name, EmptyValue, p.Value));
+                var newProperties = properties;
+
+                if (template != null && template.Properties.Count() > 0)
+                {
+                    propertyChanges = AnalyzeChanges(template.Properties, properties);
+                    newProperties = MergePropertySet(template.Properties, properties);
+                    newProperties = ApplyChangesToPropertySet(newProperties, propertyChanges);
+                }
+
+                var wi = new WorkItem(projectCode, newIdentifer, workItemType, new List<Property>(newProperties), Array.Empty<LogEntry>());
 
                 var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges, false);
 

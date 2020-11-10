@@ -14,6 +14,8 @@ export class WorkItemDetailComponent implements OnInit {
   @Input() id: string = '';
   @Input() workItemType: string = '';
 
+  mode: "Creation" | "Editing";
+
   items: MenuItem[];
   home: MenuItem;
 
@@ -27,7 +29,9 @@ export class WorkItemDetailComponent implements OnInit {
     this.items = [];
     this.home = { icon: 'pi pi-home', routerLink: '/' };
 
-    if (this.id !== '') {
+    this.mode = this.id == '' ? "Creation" : "Editing";
+
+    if (this.mode == "Editing") {
       this.workItemService.getWorkItem(this.projectCode, this.id)
         .subscribe(wi => {
           this.descriptorManagerService.getCurrentDescriptor(wi)
@@ -44,7 +48,7 @@ export class WorkItemDetailComponent implements OnInit {
               ];
             });
         });
-    } else if (this.workItemType !== '') {
+    } else if (this.mode == "Creation" && this.workItemType !== '') {
       this.workItemService.createTemplate(this.projectCode, this.workItemType)
         .subscribe(wi => {
           this.descriptorManagerService.getTemplateDescriptors(this.projectCode, this.workItemType)
@@ -65,10 +69,28 @@ export class WorkItemDetailComponent implements OnInit {
     }
   }
 
-  save(): void { }
+  save(): void {
+    if (this.mode == "Editing") {
+
+    } else if (this.mode == "Creation") {
+      const properties = this.getPropertiesForCreation();
+      this.workItemService.createWorkItem(this.workItem.projectCode, this.workItem.workItemType, properties).subscribe(wi => {
+        console.log("Created: ", wi);
+
+        this.id == wi.workItem.id;
+        this.mode == "Editing";
+
+        this.ngOnInit();
+
+      });
+    }
+  }
 
   propertyWithName(propertyName: string): WorkItemProperty {
     return this.workItem.properties.filter(p => p.name == propertyName)[0]
   }
 
+  getPropertiesForCreation(): WorkItemProperty[] {
+    return this.workItem.properties.filter(p => this.propertyDescriptors.filter(pd => pd.name == p.name && pd.isEditable == true).length > 0);
+  }
 }

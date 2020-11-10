@@ -3,7 +3,7 @@
     <p-breadcrumb class="p-mb-2" [home]="home" [model]="items"></p-breadcrumb>
 
     <div class="p-d-flex p-mb-2">
-        <p-button icon="pi pi-save" styleClass="p-button-sm p-mr-2"></p-button>
+        <p-button icon="pi pi-save" styleClass="p-button-sm p-mr-2" (click)="save()"></p-button>
 
         <span class="p-buttonset p-ml-auto p-button-sm">
             <p-button *ngFor="let cmd of commandDescriptors" [label]="cmd.label" icon="pi pi-check"

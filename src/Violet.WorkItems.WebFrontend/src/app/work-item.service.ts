@@ -28,7 +28,7 @@ export interface ErrorMessage {
 
 export interface WorkItemUpdatedResult {
   success: boolean;
-  updatedWorkItem?: WorkItem;
+  workItem?: WorkItem;
   errors: ErrorMessage[];
 }
 
@@ -36,10 +36,13 @@ export interface WorkItemUpdatedResult {
   providedIn: 'root'
 })
 export class WorkItemService {
+
+  private baseUri: string = 'https://localhost:5001/';
+
   constructor(private httpClient: HttpClient) { }
 
   createTemplate(projectCode: string, workItemType: string): Observable<WorkItem> {
-    const uri = 'https://localhost:5001/api/v1/projects/' + projectCode + '/types/' + workItemType + '/new';
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/types/' + workItemType + '/new';
 
     return this.httpClient.get<any>(uri).pipe(
       map(response => response.workItem as WorkItem)
@@ -57,6 +60,20 @@ export class WorkItemService {
 
     // return of(result);
     return null;
+  }
+
+  createWorkItem(projectCode: string, workItemType: string, properties: WorkItemProperty[]): Observable<WorkItemUpdatedResult> {
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/workitems';
+
+    const request = {
+      projectCode: projectCode,
+      workItemType: workItemType,
+      properties: properties,
+    };
+
+    return this.httpClient.post<any>(uri, request).pipe(
+      map(response => response as WorkItemUpdatedResult)
+    );
   }
 
   saveChanges(projectCode: string, id: string, properties: WorkItemProperty[]): Observable<WorkItemUpdatedResult> {
