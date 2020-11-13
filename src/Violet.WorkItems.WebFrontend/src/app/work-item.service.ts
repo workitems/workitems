@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { WorkItemCommandDescriptor } from './descriptor-manager.service';
 
 export interface WorkItemProperty {
   name: string;
@@ -28,8 +29,17 @@ export interface ErrorMessage {
 
 export interface WorkItemUpdatedResult {
   success: boolean;
+  projectCode: string;
+  id: string;
   workItem?: WorkItem;
   errors: ErrorMessage[];
+}
+
+export interface WorkItemResponse {
+  success: boolean;
+  projectCode: string;
+  workItemId: string;
+  workItem?: WorkItem;
 }
 
 @Injectable({
@@ -44,7 +54,7 @@ export class WorkItemService {
   createTemplate(projectCode: string, workItemType: string): Observable<WorkItem> {
     const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/types/' + workItemType + '/new';
 
-    return this.httpClient.get<any>(uri).pipe(
+    return this.httpClient.get<WorkItemResponse>(uri).pipe(
       map(response => response.workItem as WorkItem)
     );
   }
@@ -54,12 +64,11 @@ export class WorkItemService {
   }
 
   getWorkItem(projectCode: string, id: string): Observable<WorkItem> {
-    // let queryResult = this.data.filter(wi => wi.projectCode == projectCode && wi.id == id);
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/workitems/' + id;
 
-    // let result = queryResult[0];
-
-    // return of(result);
-    return null;
+    return this.httpClient.get<WorkItemResponse>(uri).pipe(
+      map(response => response.workItem)
+    );
   }
 
   createWorkItem(projectCode: string, workItemType: string, properties: WorkItemProperty[]): Observable<WorkItemUpdatedResult> {
@@ -77,6 +86,27 @@ export class WorkItemService {
   }
 
   saveChanges(projectCode: string, id: string, properties: WorkItemProperty[]): Observable<WorkItemUpdatedResult> {
-    return null;
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/workitems/' + id;
+
+    const request = {
+      projectCode: projectCode,
+      workItemId: id,
+      comment: "Web App Change",
+      properties: properties
+    };
+
+    return this.httpClient.post<WorkItemUpdatedResult>(uri, request);
+  }
+
+  executeCommand(projectCode: string, id: string, commandName: string): Observable<WorkItemUpdatedResult> {
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/workitems/' + id + '/commands';
+
+    const request = {
+      projectCode: projectCode,
+      workItemId: id,
+      command: commandName,
+    };
+
+    return this.httpClient.post<WorkItemUpdatedResult>(uri, request);
   }
 }

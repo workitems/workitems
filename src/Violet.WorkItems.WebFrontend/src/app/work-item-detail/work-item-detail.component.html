@@ -7,13 +7,13 @@
 
         <span class="p-buttonset p-ml-auto p-button-sm">
             <p-button *ngFor="let cmd of commandDescriptors" [label]="cmd.label" icon="pi pi-check"
-                styleClass="p-button-sm">
+                styleClass="p-button-sm" (click)="executeCommand(cmd)">
             </p-button>
         </span>
         <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm p-ml-2"></p-button>
     </div>
 
-    <vwi-work-item-property *ngFor="let descriptor of propertyDescriptors" [propertyDescriptor]="descriptor"
-        [propertyValue]="propertyWithName(descriptor.name)">
+    <vwi-work-item-property *ngFor="let property of workItem.properties"
+        [propertyDescriptor]="getDescriptor(property.name)" [propertyValue]="property">
     </vwi-work-item-property>
 </div>
