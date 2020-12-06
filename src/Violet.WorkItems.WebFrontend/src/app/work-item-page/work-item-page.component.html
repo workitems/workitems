@@ -1,0 +1,6 @@
+<vwi-work-item-detail *ngIf="mode == 'new'" [projectCode]="projectCode" [workItemType]="workItemType"
+    (completed)="onCompleted($event)" (closed)="onClosed()">
+</vwi-work-item-detail>
+<vwi-work-item-detail *ngIf="mode == 'edit'" [projectCode]="projectCode" [id]="workItemId"
+    (completed)="onCompleted($event)" (closed)="onClosed()">
+</vwi-work-item-detail>

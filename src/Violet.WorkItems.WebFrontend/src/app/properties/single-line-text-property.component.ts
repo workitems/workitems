@@ -5,9 +5,9 @@ import { PropertyComponent } from './property';
 
 @Component({
   template: `
-    <div class="p-field p-grid">
-      <label for="i1" class="p-col-fixed" style="width:100px">{{propertyDescriptor.label}}</label>
-      <div class="p-col p-inputgroup">
+    <div class="p-field">
+      <label for="i1" class="p-m-0">{{propertyDescriptor.label}} <small>{{propertyDescriptor.description}}</small></label>
+      <div class="p-col p-inputgroup p-p-0">
           <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
           <input id="i1" type="text" pInputText placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value" [disabled]="propertyDescriptor.isEditable ? null : 'disabled'">
       </div>

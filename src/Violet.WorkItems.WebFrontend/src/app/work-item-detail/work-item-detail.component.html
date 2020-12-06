@@ -1,4 +1,5 @@
-<div class="p-d-flex p-flex-column" *ngIf="workItem != null && propertyDescriptors != null">
+<div class="p-d-flex p-flex-column" *ngIf="workItem != null && propertyDescriptors != null"
+    style="max-width: 768px;margin-left:auto;margin-right:auto">
 
     <p-breadcrumb class="p-mb-2" [home]="home" [model]="items"></p-breadcrumb>
 
@@ -10,7 +11,7 @@
                 styleClass="p-button-sm" (click)="executeCommand(cmd)">
             </p-button>
         </span>
-        <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm p-ml-2"></p-button>
+        <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm p-ml-2" (click)="close()"></p-button>
     </div>
 
     <vwi-work-item-property *ngFor="let property of workItem.properties"

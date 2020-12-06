@@ -16,6 +16,8 @@ import { SingleLineTextPropertyComponent } from './properties/single-line-text-p
 import { WorkItemPropertyComponent } from './properties/work-item-property.component';
 import { WorkItemPropertyDirective } from './properties/work-item-property.directive';
 import { FormsModule } from '@angular/forms';
+import { WorkItemPageComponent } from './work-item-page/work-item-page.component';
+import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-page.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { FormsModule } from '@angular/forms';
     WorkItemDetailComponent,
     SingleLineTextPropertyComponent,
     WorkItemPropertyComponent,
-    WorkItemPropertyDirective
+    WorkItemPropertyDirective,
+    WorkItemPageComponent,
+    WorkItemListPageComponent
   ],
   imports: [
     BrowserModule,

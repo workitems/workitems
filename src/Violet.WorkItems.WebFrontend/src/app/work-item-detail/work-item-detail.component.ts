@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { DescriptorManagerService, WorkItemCommandDescriptor, WorkItemPropertyDescriptor } from '../descriptor-manager.service';
 import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
@@ -13,6 +13,9 @@ export class WorkItemDetailComponent implements OnInit {
   @Input() projectCode: string = '';
   @Input() id: string = '';
   @Input() workItemType: string = '';
+
+  @Output() completed = new EventEmitter<WorkItem>();
+  @Output() closed = new EventEmitter<void>();
 
   mode: "Creation" | "Editing";
 
@@ -85,6 +88,8 @@ export class WorkItemDetailComponent implements OnInit {
         if (result.success) {
           console.log("Save completed", result);
           this.renderWorkItem(result.workItem);
+
+          this.completed.emit(result.workItem);
         }
       });
     } else if (this.mode == "Creation") {
@@ -96,8 +101,14 @@ export class WorkItemDetailComponent implements OnInit {
         this.mode = "Editing";
 
         this.initExistingWorkItem();
+
+        this.completed.emit(wi.workItem);
       });
     }
+  }
+
+  close(): void {
+    this.closed.emit();
   }
 
   executeCommand(command: WorkItemCommandDescriptor): void {
