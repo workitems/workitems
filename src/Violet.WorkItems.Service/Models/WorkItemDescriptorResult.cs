@@ -54,7 +54,7 @@ namespace Violet.WorkItems.Service.Models
         public WorkItem WorkItem { get; set; }
     }
 
-    public class WorkItemListApiResult
+    public class WorkItemListApiResponse
     {
         public bool Success { get; set; }
 

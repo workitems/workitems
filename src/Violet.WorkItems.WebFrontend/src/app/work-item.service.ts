@@ -42,6 +42,11 @@ export interface WorkItemResponse {
   workItem?: WorkItem;
 }
 
+export interface WorkItemListApiResponse {
+  success: boolean;
+  workItems: WorkItem[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,7 +65,11 @@ export class WorkItemService {
   }
 
   getWorkItems(projectCode: string, filter: string): Observable<WorkItem[]> {
-    return null;
+    const uri = this.baseUri + 'api/v1/projects/' + projectCode + '/workitems';
+
+    return this.httpClient.get<WorkItemListApiResponse>(uri).pipe(
+      map(response => response.workItems as WorkItem[])
+    );
   }
 
   getWorkItem(projectCode: string, id: string): Observable<WorkItem> {

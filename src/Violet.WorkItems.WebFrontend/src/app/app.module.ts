@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -10,6 +11,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { TableModule } from 'primeng/table';
 
 import { WorkItemDetailComponent } from './work-item-detail/work-item-detail.component';
 import { SingleLineTextPropertyComponent } from './properties/single-line-text-property.component';
@@ -18,6 +20,7 @@ import { WorkItemPropertyDirective } from './properties/work-item-property.direc
 import { FormsModule } from '@angular/forms';
 import { WorkItemPageComponent } from './work-item-page/work-item-page.component';
 import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-page.component';
+import { WorkItemListComponent } from './work-item-list/work-item-list.component';
 
 @NgModule({
   declarations: [
@@ -27,10 +30,12 @@ import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-
     WorkItemPropertyComponent,
     WorkItemPropertyDirective,
     WorkItemPageComponent,
-    WorkItemListPageComponent
+    WorkItemListPageComponent,
+    WorkItemListComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
@@ -39,7 +44,8 @@ import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-
     BreadcrumbModule,
     CheckboxModule,
     InputTextModule,
-    SplitButtonModule
+    SplitButtonModule,
+    TableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

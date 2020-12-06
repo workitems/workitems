@@ -1,1 +1,5 @@
-<p>work-item-list-page works!</p>
+<div class="p-d-flex p-mb-2">
+    <p-button icon="pi pi-file" styleClass="p-button-sm p-mr-2" (click)="new()"></p-button>
+</div>
+
+<vwi-work-item-list [projectCode]="projectCode" (selected)="onSelected($event)"></vwi-work-item-list>
