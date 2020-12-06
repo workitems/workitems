@@ -8,18 +8,22 @@ on:
       - '!v*'
   pull_request:
 
+env:
+  # Set the DOTNET_SKIP_FIRST_TIME_EXPERIENCE environment variable to stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
-    - name: Build Violet WorkItems
+    - name: Build .NET
       run: dotnet build --configuration Release
-    - name: Test Violet WorkItems
+    - name: Test .NET
       run: dotnet test --no-build --configuration Release --filter OnDataProvider!=SqlServer
