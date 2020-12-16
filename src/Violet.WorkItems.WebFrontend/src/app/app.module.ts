@@ -3,6 +3,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
+import { OAuthModule } from 'angular-oauth2-oidc';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -39,6 +41,13 @@ import { WorkItemListComponent } from './work-item-list/work-item-list.component
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: ['https://localhost:5001/'],
+        sendAccessToken: true
+      }
+    }),
 
     ButtonModule,
     BreadcrumbModule,

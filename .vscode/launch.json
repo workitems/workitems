@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Violet.WorkItems.Cli/bin/Debug/netcoreapp3.1/Violet.WorkItems.Cli.dll",
+            "program": "${workspaceFolder}/src/Violet.WorkItems.Cli/bin/Debug/net5.0/Violet.WorkItems.Cli.dll",
             "args": [
                 "detail",
                 "UI",
@@ -24,11 +24,14 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Violet.WorkItems.Service/bin/Debug/netcoreapp3.1/Violet.WorkItems.Service.dll",
+            "program": "${workspaceFolder}/src/Violet.WorkItems.Service/bin/Debug/net5.0/Violet.WorkItems.Service.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Violet.WorkItems.Service",
             "console": "integratedTerminal",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         },
         {
             "name": ".NET Core Attach",
