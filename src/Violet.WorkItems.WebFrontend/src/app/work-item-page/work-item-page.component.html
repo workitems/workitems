@@ -1,3 +1,5 @@
+<p-breadcrumb class="p-mb-2" [home]="home" [model]="items"></p-breadcrumb>
+
 <vwi-work-item-detail *ngIf="mode == 'new'" [projectCode]="projectCode" [workItemType]="workItemType"
     (completed)="onCompleted($event)" (closed)="onClosed()">
 </vwi-work-item-detail>
