@@ -1,7 +1,15 @@
-<p-breadcrumb [home]="home" [model]="items"></p-breadcrumb>
+<mat-card
+    style="margin: 8px 0px 8px 0px;padding:0px 8px 0px 8px;max-width: 768px;margin-left:auto;margin-right:auto; display:flex;align-items: baseline;">
+    <button mat-icon-button>
+        <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="new()">
+        <mat-icon>add</mat-icon>
+    </button>
 
-<div class="p-d-flex p-mb-2 p-mt-2">
-    <p-button icon="pi pi-file" styleClass="p-button-sm p-mr-2" (click)="new()"></p-button>
-</div>
-
+    <mat-form-field appearance="standard" style="margin:-8px 0px -8px 0px;flex-grow: 1;">
+        <input matInput placeholder="Use WIQL" disabled="disabled" value="project:{{projectCode}}">
+        <mat-icon matSuffix>done_all</mat-icon>
+    </mat-form-field>
+</mat-card>
 <vwi-work-item-list [projectCode]="projectCode" (selected)="onSelected($event)"></vwi-work-item-list>

@@ -17,6 +17,7 @@
     "@angular/compiler": "~10.2.0",
     "@angular/core": "~10.2.0",
     "@angular/forms": "~10.2.0",
+    "@angular/material": "^11.0.3",
     "@angular/platform-browser": "~10.2.0",
     "@angular/platform-browser-dynamic": "~10.2.0",
     "@angular/router": "~10.2.0",
@@ -24,7 +25,6 @@
     "component": "^1.1.0",
     "primeflex": "^2.0.0",
     "primeicons": "^4.0.0",
-    "primeng": "^10.0.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

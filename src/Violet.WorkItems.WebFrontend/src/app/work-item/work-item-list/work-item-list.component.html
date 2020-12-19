@@ -1,18 +1,19 @@
-<div class="p-d-flex p-flex-column" style="max-width: 768px;margin-left:auto;margin-right:auto">
-    <p-table [value]="workItems">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>Id</th>
-                <th>Type</th>
-                <th>Title</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-wi>
-            <tr (click)="onSelection(wi)">
-                <td>{{wi.id}}</td>
-                <td>{{wi.workItemType}}</td>
-                <td>{{getProperty(wi, "Title").value}}</td>
-            </tr>
-        </ng-template>
-    </p-table>
+<div style="max-width: 768px;margin-left:auto;margin-right:auto">
+    <table mat-table [dataSource]="workItems" class="mat-elevation-z1" style="width:100%">
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>Id</th>
+            <td mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let element">{{element.workItemType}}</td>
+        </ng-container>
+        <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let element">{{getProperty(element, "Title").value}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelection(row)"></tr>
+    </table>
 </div>

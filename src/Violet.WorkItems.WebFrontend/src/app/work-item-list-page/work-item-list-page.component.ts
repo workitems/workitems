@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
 import { WorkItem } from '../work-item/work-item.service';
 
 @Component({
@@ -11,23 +10,13 @@ import { WorkItem } from '../work-item/work-item.service';
 export class WorkItemListPageComponent implements OnInit {
   projectCode: string;
 
-  items: MenuItem[];
-  home: MenuItem;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router) { }
 
   ngOnInit(): void {
-    this.items = [];
-    this.home = { icon: 'pi pi-home', routerLink: '/' };
-
     this.route.paramMap.subscribe(pm => {
       this.projectCode = pm.get("projectCode");
-
-      this.items = [
-        { label: this.projectCode, url: '/wi/' + this.projectCode }
-      ];
     });
   }
 

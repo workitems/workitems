@@ -9,17 +9,16 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { ButtonModule } from 'primeng/button';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
-import { SplitButtonModule } from 'primeng/splitbutton';
-import { TableModule } from 'primeng/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 import { WorkItemModule } from './work-item/work-item.module';
 
 import { WorkItemPageComponent } from './work-item-page/work-item-page.component';
 import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-page.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -42,12 +41,11 @@ import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-
       }
     }),
 
-    ButtonModule,
-    BreadcrumbModule,
-    CheckboxModule,
-    InputTextModule,
-    SplitButtonModule,
-    TableModule
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

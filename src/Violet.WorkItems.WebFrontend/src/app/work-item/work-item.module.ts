@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { ButtonModule } from 'primeng/button';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
-import { SplitButtonModule } from 'primeng/splitbutton';
-import { TableModule } from 'primeng/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table'
 
 import { WorkItemDetailComponent } from './work-item-detail/work-item-detail.component';
 import { SingleLineTextPropertyComponent } from './properties/single-line-text-property.component';
@@ -27,12 +27,12 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     FormsModule,
 
-    ButtonModule,
-    BreadcrumbModule,
-    CheckboxModule,
-    InputTextModule,
-    SplitButtonModule,
-    TableModule
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatTableModule
   ],
   exports: [
     WorkItemDetailComponent,

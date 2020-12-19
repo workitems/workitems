@@ -1,18 +1,28 @@
-<div class="p-d-flex p-flex-column" *ngIf="workItem != null && propertyDescriptors != null"
+<div *ngIf="workItem != null && propertyDescriptors != null"
     style="max-width: 768px;margin-left:auto;margin-right:auto">
 
-    <div class="p-d-flex p-mb-2 p-mt-2">
-        <p-button icon="pi pi-save" styleClass="p-button-sm p-mr-2" (click)="save()"></p-button>
-
-        <span class="p-buttonset p-ml-auto p-button-sm">
-            <p-button *ngFor="let cmd of commandDescriptors" [label]="cmd.label" icon="pi pi-check"
-                styleClass="p-button-sm" (click)="executeCommand(cmd)">
-            </p-button>
-        </span>
-        <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm p-ml-2" (click)="close()"></p-button>
-    </div>
-
-    <vwi-work-item-property *ngFor="let property of workItem.properties"
-        [propertyDescriptor]="getDescriptor(property.name)" [propertyValue]="property">
-    </vwi-work-item-property>
+    <mat-card>
+        <mat-card-header>
+            <mat-icon mat-card-avatar style="font-size:36px">bug_report</mat-icon>
+            <mat-card-title>{{workItem.workItemType}} {{workItem.id}}</mat-card-title>
+            <mat-card-subtitle>{{workItem.projectCode}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+            <button mat-button color="primary" (click)="save()">
+                <mat-icon>save</mat-icon> Save
+            </button>
+            <button *ngFor="let cmd of commandDescriptors" mat-button color="accent" (click)="executeCommand(cmd)"
+                style="float:right">
+                <mat-icon>done</mat-icon> {{cmd.label}}
+            </button>
+            <button mat-button color="warn" (click)="close()">
+                <mat-icon>close</mat-icon> Close
+            </button>
+        </mat-card-actions>
+        <mat-card-content>
+            <vwi-work-item-property *ngFor="let property of workItem.properties"
+                [propertyDescriptor]="getDescriptor(property.name)" [propertyValue]="property">
+            </vwi-work-item-property>
+        </mat-card-content>
+    </mat-card>
 </div>

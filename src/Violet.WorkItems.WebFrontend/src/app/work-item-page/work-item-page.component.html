@@ -1,4 +1,14 @@
-<p-breadcrumb class="p-mb-2" [home]="home" [model]="items"></p-breadcrumb>
+<mat-card
+    style="margin: 8px 0px 8px 0px;padding:0px 8px 0px 8px;max-width: 768px;margin-left:auto;margin-right:auto; display:flex;align-items: baseline;">
+    <button mat-icon-button>
+        <mat-icon>home</mat-icon>
+    </button>
+
+    <mat-form-field appearance="standard" style="margin:-8px 0px -8px 0px;flex-grow: 1;">
+        <input matInput placeholder="Use WIQL" disabled="disabled" value="">
+        <mat-icon matSuffix>done</mat-icon>
+    </mat-form-field>
+</mat-card>
 
 <vwi-work-item-detail *ngIf="mode == 'new'" [projectCode]="projectCode" [workItemType]="workItemType"
     (completed)="onCompleted($event)" (closed)="onClosed()">
