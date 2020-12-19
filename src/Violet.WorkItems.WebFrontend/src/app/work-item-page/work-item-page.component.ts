@@ -28,7 +28,7 @@ export class WorkItemPageComponent implements OnInit {
     });
     this.route.queryParamMap.subscribe(qp => {
       this.workItemType = qp.get("type") ?? "Bug"; // TODO: Default Bug
-    })
+    });
   }
 
   onClosed() {
