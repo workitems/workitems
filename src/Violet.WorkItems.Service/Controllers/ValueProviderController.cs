@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Violet.WorkItems.Service.Models;
@@ -10,6 +11,7 @@ using Violet.WorkItems.ValueProvider;
 namespace Violet.WorkItems.Service.Controllers
 {
     [ApiController]
+    [Authorize("WorkItemPolicy")]
     public class ValueProviderController : ControllerBase
     {
         private readonly WorkItemManager _workItemManager;

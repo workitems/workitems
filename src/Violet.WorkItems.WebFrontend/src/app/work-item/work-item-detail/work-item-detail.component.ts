@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MenuItem } from 'primeng/api';
 import { DescriptorManagerService, WorkItemCommandDescriptor, WorkItemPropertyDescriptor } from '../descriptor-manager.service';
 import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
 
@@ -19,9 +18,6 @@ export class WorkItemDetailComponent implements OnInit {
 
   mode: "Creation" | "Editing";
 
-  items: MenuItem[];
-  home: MenuItem;
-
   workItem: WorkItem;
   propertyDescriptors: WorkItemPropertyDescriptor[];
   commandDescriptors: WorkItemCommandDescriptor[];
@@ -29,9 +25,6 @@ export class WorkItemDetailComponent implements OnInit {
   constructor(private workItemService: WorkItemService, private descriptorManagerService: DescriptorManagerService) { }
 
   ngOnInit(): void {
-    this.items = [];
-    this.home = { icon: 'pi pi-home', routerLink: '/' };
-
     this.mode = this.id == '' ? "Creation" : "Editing";
 
     if (this.mode == "Editing") {
@@ -46,12 +39,6 @@ export class WorkItemDetailComponent implements OnInit {
               this.commandDescriptors = descriptors.commands;
 
               console.log(wi, descriptors);
-
-
-              this.items = [
-                { label: wi.projectCode, url: '/wi/' + wi.projectCode },
-                { label: wi.id, url: '/wi/' + wi.projectCode + '/' + wi.id }
-              ];
             });
         });
     }
@@ -72,11 +59,6 @@ export class WorkItemDetailComponent implements OnInit {
         this.commandDescriptors = descriptors.commands;
 
         console.log(workItem, descriptors);
-
-        this.items = [
-          { label: workItem.projectCode, url: '/wi/' + workItem.projectCode },
-          { label: workItem.id, url: '/wi/' + workItem.projectCode + '/' + workItem.id }
-        ];
       });
   }
 

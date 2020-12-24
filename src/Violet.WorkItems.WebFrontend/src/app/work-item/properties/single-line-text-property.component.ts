@@ -5,12 +5,13 @@ import { PropertyComponent } from './property';
 
 @Component({
   template: `
-    <div class="p-field">
-      <label for="i1" class="p-m-0">{{propertyDescriptor.label}} <small>{{propertyDescriptor.description}}</small></label>
-      <div class="p-col p-inputgroup p-p-0">
-          <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-          <input id="i1" type="text" pInputText placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value" [disabled]="propertyDescriptor.isEditable ? null : 'disabled'">
-      </div>
+    <div>
+      <mat-form-field appearance="standard" style="width:100%">
+        <mat-label>{{propertyDescriptor.label}}</mat-label>
+        <input matInput placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value" [disabled]="propertyDescriptor.isEditable ? null : 'disabled'">
+        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        <mat-hint>{{propertyDescriptor.description}}</mat-hint>
+      </mat-form-field>
     </div>
   `,
   styles: [

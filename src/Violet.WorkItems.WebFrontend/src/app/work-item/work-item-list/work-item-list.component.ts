@@ -11,6 +11,7 @@ export class WorkItemListComponent implements OnInit {
   @Input() projectCode: string;
   @Output() selected = new EventEmitter<WorkItem>();
   workItems: WorkItem[];
+  displayedColumns: string[] = ["id", "type", "title"]
 
   constructor(private workItemService: WorkItemService, private descriptorManagerService: DescriptorManagerService) { }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkItem } from '../work-item.service';
+import { WorkItem } from '../work-item/work-item.service';
 
 @Component({
   selector: 'app-work-item-page',
@@ -28,7 +28,7 @@ export class WorkItemPageComponent implements OnInit {
     });
     this.route.queryParamMap.subscribe(qp => {
       this.workItemType = qp.get("type") ?? "Bug"; // TODO: Default Bug
-    })
+    });
   }
 
   onClosed() {

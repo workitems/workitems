@@ -1,10 +1,10 @@
 <Project>
     <PropertyGroup>
-        <PackageProjectUrl>https://github.com/violetgrass/workitems</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/workitems/workitems</PackageProjectUrl>
         <Description>WorkItem Management Framework</Description>
         <PackageTags>workitem,bug,bug-tracker,issue,issue-tracker,kanban-board</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryType>Git</RepositoryType>
-        <RepositoryUrl>https://github.com/violetgrass/workitems</RepositoryUrl>
+        <RepositoryUrl>https://github.com/workitems/workitems</RepositoryUrl>
     </PropertyGroup>
 </Project>
