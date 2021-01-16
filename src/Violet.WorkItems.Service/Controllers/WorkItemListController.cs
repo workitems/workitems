@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Violet.WorkItems.Service.Models;
+using Violet.WorkItems.Provider;
 
 namespace Violet.WorkItems.Service.Controllers
 {
@@ -29,14 +30,14 @@ namespace Violet.WorkItems.Service.Controllers
         {
             try
             {
-                var list = await _workItemManager.DataProvider.ListWorkItemsAsync(projectCode);
+                var result = await _workItemManager.DataProvider.QueryWorkItemsAsync(new ListQuery(new ProjectCodeEqualityClause(projectCode))) as ListQueryResult;
 
-                if (list != null)
+                if (result != null)
                 {
                     return Ok(new WorkItemListApiResponse()
                     {
                         Success = true,
-                        WorkItems = list,
+                        WorkItems = result.WorkItems,
                     });
                 }
                 else

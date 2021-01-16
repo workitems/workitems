@@ -95,5 +95,14 @@ namespace Violet.WorkItems.Provider
             return Task.FromResult(number);
         }
 
+        public IEnumerable<QueryError> ValidateQuery(Query query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QueryResult> QueryWorkItemsAsync(Query query)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

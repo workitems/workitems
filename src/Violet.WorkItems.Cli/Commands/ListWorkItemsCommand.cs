@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 using Violet.WorkItems.Text;
+using Violet.WorkItems.Provider;
 
 namespace Violet.WorkItems.Cli
 {
@@ -24,11 +26,17 @@ namespace Violet.WorkItems.Cli
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
+            var conditions = ImmutableArray.Create<BooleanClause>(new ProjectCodeEqualityClause(project));
+            if (type is not null)
+            {
+                conditions = conditions.Add(new WorkItemTypeEqualityClause(type));
+            }
+
+            var result = await workItemManager.DataProvider.QueryWorkItemsAsync(new ListQuery(new AndClause(conditions))) as ListQueryResult;
 
             var formatter = new WorkItemFormatter();
 
-            foreach (var item in items)
+            foreach (var item in result.WorkItems)
             {
                 writer.WriteLine(formatter.FormatShortLine(item));
             }

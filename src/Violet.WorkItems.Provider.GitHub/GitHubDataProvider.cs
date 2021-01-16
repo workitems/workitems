@@ -28,12 +28,73 @@ namespace Violet.WorkItems.Provider
         public bool Read => true;
         public bool Write => false;
 
-        public async Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string workItemType = null)
-            => (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
+        public IEnumerable<QueryError> ValidateQuery(Query query)
+        {
+            if (query is ListQuery listQuery)
             {
-                State = ItemStateFilter.All
-            }))
-            .Select(i => ConvertToWorkItem(projectCode, i));
+                if (listQuery.Clause is AndClause andClause)
+                {
+                    foreach (var clause in andClause.SubClauses)
+                    {
+                        var error = ValidateClause(clause);
+
+                        if (error != null)
+                        {
+                            yield return error;
+                        }
+                    }
+                }
+                else
+                {
+                    var error = ValidateClause(listQuery.Clause);
+
+                    if (error != null)
+                    {
+                        yield return error;
+                    }
+                }
+            }
+            else
+            {
+                yield return new QueryError("GitHub Provider only supports ListQueries");
+            }
+        }
+
+        private QueryError ValidateClause(BooleanClause clause)
+            => clause switch
+            {
+                ProjectCodeEqualityClause => null,
+                WorkItemTypeEqualityClause => null,
+                _ => new QueryError($"GitHub Provider does not support {clause.GetType().Name} clauses"),
+            };
+
+        public async Task<QueryResult> QueryWorkItemsAsync(Query query)
+        {
+            if (query is ListQuery listQuery)
+            {
+                var projectCode = (listQuery.Clause as AndClause).SubClauses.OfType<ProjectCodeEqualityClause>().FirstOrDefault()?.ProjectCode;
+                var workItemType = (listQuery.Clause as AndClause).SubClauses.OfType<WorkItemTypeEqualityClause>().FirstOrDefault()?.WorkItemType;
+
+                if (projectCode != null)
+                {
+                    var result = (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
+                    {
+                        State = ItemStateFilter.All
+                    }))
+                    .Select(i => ConvertToWorkItem(projectCode, i));
+
+                    return new ListQueryResult(listQuery, result);
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public async Task<WorkItem> GetAsync(string projectCode, string id)
             => ConvertToWorkItem(projectCode, (await _client.Issue.Get(projectCode.Split('/')[0], projectCode.Split('/')[1], int.Parse(id))));

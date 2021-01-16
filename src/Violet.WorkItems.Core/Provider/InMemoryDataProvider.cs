@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Violet.WorkItems.Provider;
 
 namespace Violet.WorkItems.Provider
 {
@@ -22,11 +25,68 @@ namespace Violet.WorkItems.Provider
             return Task.FromResult<WorkItem?>(result);
         }
 
-        public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? type = null)
+        public Task<QueryResult> QueryWorkItemsAsync(Query query)
         {
-            var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (type is null || wi.WorkItemType == type));
+            if (query is ListQuery listQuery)
+            {
+                var predicate = ConvertClauseToPredicate(listQuery.Clause);
 
-            return Task.FromResult(result);
+                var result = _data.Values.Where(predicate);
+
+                return Task.FromResult((QueryResult)new ListQueryResult(listQuery, result));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        private Func<WorkItem, bool> ConvertClauseToPredicate(BooleanClause clause)
+            => clause switch
+            {
+                ProjectCodeEqualityClause c => (WorkItem wi) => wi.ProjectCode == c.ProjectCode,
+                WorkItemTypeEqualityClause c => (WorkItem wi) => wi.WorkItemType == c.WorkItemType,
+                IdEqualityClause c => (WorkItem wi) => wi.Id == c.Id,
+                PropertyEqualityClause c => (WorkItem wi) => wi[c.PropertyName].Value == c.PropertyValue,
+
+                AndClause c => (WorkItem wi) => c.SubClauses.All(sc => ConvertClauseToPredicate(sc)(wi)),
+                OrClause c => (WorkItem wi) => c.SubClauses.Any(sc => ConvertClauseToPredicate(sc)(wi)),
+                NotClause c => (WorkItem wi) => !ConvertClauseToPredicate(c.SubClause)(wi),
+
+                _ => throw new NotImplementedException(),
+            };
+
+        public IEnumerable<QueryError> ValidateQuery(Query query)
+            => query switch
+            {
+                ListQuery listQuery => ValidateClause(listQuery.Clause),
+                _ => new QueryError[] { new QueryError("InMemoryDataProvider only supports ListQuery") },
+            };
+
+        private IEnumerable<QueryError> ValidateClause(BooleanClause clause)
+        {
+            switch (clause)
+            {
+                case ProjectCodeEqualityClause:
+                case WorkItemTypeEqualityClause:
+                case IdEqualityClause:
+                case PropertyEqualityClause:
+                    break;
+
+                case BooleanMultiClause multiClause:
+                    foreach (var c in multiClause.SubClauses)
+                    {
+                        foreach (var e in ValidateClause(c))
+                        {
+                            yield return e;
+                        }
+                    }
+                    break;
+
+                default:
+                    yield return new QueryError($"{nameof(InMemoryDataProvider)} does not support this clause");
+                    break;
+            }
         }
 
         public Task<int> NextNumberAsync(string projectCode)
