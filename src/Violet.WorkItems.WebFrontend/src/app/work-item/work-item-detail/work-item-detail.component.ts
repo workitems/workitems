@@ -14,7 +14,6 @@ export class WorkItemDetailComponent implements OnInit {
   @Input() workItemType: string = '';
 
   @Output() completed = new EventEmitter<WorkItem>();
-  @Output() closed = new EventEmitter<void>();
 
   mode: "Creation" | "Editing";
 
@@ -87,10 +86,6 @@ export class WorkItemDetailComponent implements OnInit {
         this.completed.emit(wi.workItem);
       });
     }
-  }
-
-  close(): void {
-    this.closed.emit();
   }
 
   executeCommand(command: WorkItemCommandDescriptor): void {

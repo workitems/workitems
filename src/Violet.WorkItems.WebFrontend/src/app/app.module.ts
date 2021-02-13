@@ -15,16 +15,28 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { WorkItemModule } from './work-item/work-item.module';
 
-import { WorkItemPageComponent } from './work-item-page/work-item-page.component';
 import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-page.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { WorkItemNavComponent } from './work-item-nav/work-item-nav.component';
+import { BladeElementComponent } from './blades/blade-element.component';
+import { BladeStackComponent } from './blades/blade-stack.component';
+import { BladeHostComponent } from './blades/blade-host.component';
+import { WorkItemListBladeComponent } from './work-item-list-blade/work-item-list-blade.component';
+import { WorkItemDetailBladeComponent } from './work-item-detail-blade/work-item-detail-blade.component';
+import { WorkItemDetailPageComponent } from './work-item-detail-page/work-item-detail-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    WorkItemPageComponent,
     WorkItemListPageComponent,
+    WorkItemNavComponent,
+    BladeElementComponent,
+    BladeStackComponent,
+    BladeHostComponent,
+    WorkItemListBladeComponent,
+    WorkItemDetailBladeComponent,
+    WorkItemDetailPageComponent,
   ],
   imports: [
     BrowserModule,

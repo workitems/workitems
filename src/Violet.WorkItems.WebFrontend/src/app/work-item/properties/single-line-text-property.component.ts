@@ -5,8 +5,8 @@ import { PropertyComponent } from './property';
 
 @Component({
   template: `
-    <div>
-      <mat-form-field appearance="standard" style="width:100%">
+    <div style="margin-bottom:10px">
+      <mat-form-field appearance="standard" style="width:100%;">
         <mat-label>{{propertyDescriptor.label}}</mat-label>
         <input matInput placeholder="{{propertyDescriptor.hint}}" [(ngModel)]="propertyValue.value" [disabled]="propertyDescriptor.isEditable ? null : 'disabled'">
         <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
