@@ -1,8 +1,18 @@
 <div style="max-width: 768px;margin-left:auto;margin-right:auto;">
     <vwi-work-item-detail *ngIf="mode == 'Creation'" [projectCode]="projectCode" [workItemType]="workItemType"
-        (completed)="onCompleted($event)">
+        (completed)="onCompleted($event)" saveButtonEnabled="false" #detailCreation>
     </vwi-work-item-detail>
     <vwi-work-item-detail *ngIf="mode == 'Editing'" [projectCode]="projectCode" [id]="workItemId"
-        (completed)="onCompleted($event)">
+        (completed)="onCompleted($event)" saveButtonEnabled="false" #detailEditing>
     </vwi-work-item-detail>
 </div>
+
+<button style="position: absolute;top:44px;right:4px;" (click)="save()" mat-icon-button color="primary"
+    aria-label="Save">
+    <mat-icon>save</mat-icon>
+</button>
+
+<button style="position: absolute;top:84px;right:4px;" (click)="gotoProject()" mat-icon-button color="accent"
+    aria-label="Goto Project">
+    <mat-icon>group_work</mat-icon>
+</button>

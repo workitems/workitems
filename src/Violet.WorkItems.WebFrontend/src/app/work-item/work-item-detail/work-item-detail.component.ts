@@ -15,7 +15,8 @@ export class WorkItemDetailComponent implements OnInit {
 
   @Output() completed = new EventEmitter<WorkItem>();
 
-  mode: "Creation" | "Editing";
+  @Input() mode: "Creation" | "Editing";
+  @Input() saveButtonEnabled: boolean = true;
 
   workItem: WorkItem;
   propertyDescriptors: WorkItemPropertyDescriptor[];

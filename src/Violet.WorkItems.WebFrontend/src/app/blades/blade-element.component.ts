@@ -17,6 +17,7 @@ import { Component, OnInit } from '@angular/core';
         min-width:200px;
         box-sizing: border-box;
         flex-grow:0; 
+        flex-shrink:0;
         padding:8px;
         padding-right:48px;
         
