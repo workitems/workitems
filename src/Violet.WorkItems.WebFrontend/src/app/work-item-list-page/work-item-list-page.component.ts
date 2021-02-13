@@ -4,12 +4,17 @@ import { BladeStackComponent } from '../blades/blade-stack.component';
 import { WorkItemListBladeComponent } from '../work-item-list-blade/work-item-list-blade.component';
 
 @Component({
-  selector: 'app-work-item-list-page',
-  templateUrl: './work-item-list-page.component.html',
-  styleUrls: ['./work-item-list-page.component.css']
+  template: `
+    <blade-host>
+      <vwi-work-item-nav></vwi-work-item-nav>
+      <blade-stack #stack></blade-stack>
+    </blade-host>
+  `,
+  styles: []
 })
 export class WorkItemListPageComponent implements OnInit, AfterViewInit {
   @Input() projectCode: string;
+  @Input() mode: "ProjectSearch" | "Search" = "ProjectSearch";
 
   @ViewChild('stack') stack: BladeStackComponent;
 
@@ -23,8 +28,8 @@ export class WorkItemListPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemListBladeComponent);
-
-    componentRef.instance.bladeComponent.projectCode = this.projectCode;
+    const componentRef = this.stack.addBladeElementWithContent(WorkItemListBladeComponent, content => {
+      content.projectCode = this.projectCode;
+    });
   }
 }

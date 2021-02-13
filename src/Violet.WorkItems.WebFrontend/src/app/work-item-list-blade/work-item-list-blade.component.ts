@@ -2,13 +2,13 @@ import { Input, Optional } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { BladeStackComponent } from '../blades/blade-stack.component';
 import { WorkItemDetailBladeComponent } from '../work-item-detail-blade/work-item-detail-blade.component';
-import { WorkItemDetailComponent } from '../work-item/work-item-detail/work-item-detail.component';
 import { WorkItem } from '../work-item/work-item.service';
 
 @Component({
-  selector: 'app-work-item-list-blade',
   templateUrl: './work-item-list-blade.component.html',
-  styleUrls: ['./work-item-list-blade.component.css']
+  styles: [
+    `:host { min-width:400px; }`
+  ]
 })
 export class WorkItemListBladeComponent implements OnInit {
   @Input() projectCode: string;
@@ -20,24 +20,22 @@ export class WorkItemListBladeComponent implements OnInit {
 
 
   onSelected(workItem: WorkItem): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent);
+    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent, content => {
+      content.mode = 'Editing';
+      content.projectCode = workItem.projectCode;
+      content.workItemId = workItem.id;
+      // TODO completed event
+    });
 
-    componentRef.instance.bladeComponent.mode = 'Editing';
-    componentRef.instance.bladeComponent.projectCode = workItem.projectCode;
-    componentRef.instance.bladeComponent.workItemId = workItem.id;
-    // TODO completed event
-
-    //this.router.navigate(["wi", workItem.projectCode, workItem.id]);
   }
 
   new(): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent);
+    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent, content => {
+      content.mode = 'Creation';
+      content.projectCode = this.projectCode;
+      content.workItemType = 'Bug';
+    });
 
-    componentRef.instance.bladeComponent.mode = 'Creation';
-    componentRef.instance.bladeComponent.projectCode = this.projectCode;
-    componentRef.instance.bladeComponent.workItemType = 'Bug';
-
-    //this.router.navigate(["wi", this.projectCode, "new"]);
   }
 
 }

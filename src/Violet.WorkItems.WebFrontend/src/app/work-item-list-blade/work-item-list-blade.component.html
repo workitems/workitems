@@ -1,16 +1,18 @@
-<div class="blade-header" style="padding:8px;">
-    <div style="display:flex;align-items: baseline;">
-        <mat-form-field appearance="standard" style="margin:-8px 0px -8px 0px;flex-grow: 1;">
-            <input matInput placeholder="Use WIQL" value="project:{{projectCode}}">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-icon matSuffix>done_all</mat-icon>
-        </mat-form-field>
-    </div>
-</div>
+<mat-card style="padding:0px 8px 0px 8px; display:flex;align-items: baseline;margin-bottom: 8px;">
+    <button mat-icon-button>
+        <mat-icon>search</mat-icon>
+    </button>
+
+    <mat-form-field appearance="standard" style="margin:-8px 0px -8px 0px;flex-grow: 1;">
+        <input matInput placeholder="Use WIQL" value="project:{{projectCode}}">
+        <mat-icon matSuffix color="primary">done_all</mat-icon>
+    </mat-form-field>
+</mat-card>
+
 <vwi-work-item-list [projectCode]="projectCode" (selected)="onSelected($event)">
 </vwi-work-item-list>
 
 <button style="position: absolute;top:44px;right:4px;" (click)="new()" mat-icon-button color="primary"
-    aria-label="Close">
+    aria-label="Add Work Item">
     <mat-icon>add</mat-icon>
 </button>

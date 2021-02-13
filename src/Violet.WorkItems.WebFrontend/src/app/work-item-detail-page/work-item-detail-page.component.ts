@@ -4,9 +4,13 @@ import { BladeStackComponent } from '../blades/blade-stack.component';
 import { WorkItemDetailBladeComponent } from '../work-item-detail-blade/work-item-detail-blade.component';
 
 @Component({
-  selector: 'app-work-item-detail-page',
-  templateUrl: './work-item-detail-page.component.html',
-  styleUrls: ['./work-item-detail-page.component.css']
+  template: `
+    <blade-host>
+      <vwi-work-item-nav></vwi-work-item-nav>
+      <blade-stack #stack></blade-stack>
+    </blade-host>
+  `,
+  styles: []
 })
 export class WorkItemDetailPageComponent implements OnInit, AfterViewInit {
   mode: string;
@@ -34,12 +38,13 @@ export class WorkItemDetailPageComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent);
+    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent, content => {
+      content.projectCode = this.projectCode;
+      content.mode = this.mode;
+      content.workItemId = this.workItemId;
+      content.workItemType = this.workItemType;
+    });
 
-    componentRef.instance.bladeComponent.projectCode = this.projectCode;
-    componentRef.instance.bladeComponent.mode = this.mode;
-    componentRef.instance.bladeComponent.workItemId = this.workItemId;
-    componentRef.instance.bladeComponent.workItemType = this.workItemType;
   }
 
 }

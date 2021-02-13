@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'vwi-work-item-nav',
   templateUrl: './work-item-nav.component.html',
-  styleUrls: ['./work-item-nav.component.css']
+  styles: []
 })
 export class WorkItemNavComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
 
-  new() { }
+  new() { this.router.navigate(['wi', 'ACME', 'new']); }
+  search() { this.router.navigate(['wi', 'search']); }
 
 }

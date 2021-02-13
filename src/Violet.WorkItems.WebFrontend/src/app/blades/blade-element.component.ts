@@ -1,13 +1,11 @@
-import { ComponentRef, EventEmitter, Optional, ViewChild, ViewContainerRef } from '@angular/core';
+import { ComponentFactoryResolver, ComponentRef, EventEmitter, Optional, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { BladeHostComponent } from './blade-host.component';
-import { BladeStackComponent } from './blade-stack.component';
 
 @Component({
   selector: 'blade-element',
   template: `
-    <ng-content></ng-content>
+    <ng-container #cont></ng-container>
     <button class="close-icon" (click)="close()" mat-icon-button color="warn" aria-label="Close">
       <mat-icon>close</mat-icon>
     </button>
@@ -16,14 +14,18 @@ import { BladeStackComponent } from './blade-stack.component';
     `:host { 
         position:relative;
         height:100%;
-        min-width:200px; 
-        box-sizing: border-box; flex-grow:1; 
+        min-width:200px;
+        box-sizing: border-box;
+        flex-grow:0; 
         padding:8px;
+        padding-right:48px;
         
-        display: flex;
+        display: inline-flex;
         flex-direction: column;
 
         overflow-y:auto;
+        
+        margin-right:4px;
         background-color:whitesmoke;
       }`,
     //':host { padding-top:88px; }',
@@ -32,18 +34,27 @@ import { BladeStackComponent } from './blade-stack.component';
     //, ':host { background-color:green; }'
   ],
   host: {
-    'class': 'mat-elevation-z4'
+    'class': 'mat-elevation-z2'
   }
 })
 export class BladeElementComponent<TComponent> implements OnInit {
+  @ViewChild('cont', { read: ViewContainerRef }) vcRef: ViewContainerRef;
 
   @Output() closing = new EventEmitter<any>();
 
   bladeComponent: TComponent;
 
-  constructor(@Optional() private host?: BladeHostComponent, @Optional() private stack?: BladeStackComponent) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
   ngOnInit(): void {
+  }
+
+  addContent<TComponent>(component: Type<TComponent>): ComponentRef<TComponent> {
+    const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
+
+    const contentComponentRef = this.vcRef.createComponent(contentComponentFactory);
+
+    return contentComponentRef;
   }
 
   close(): void {

@@ -19,6 +19,8 @@ import { take } from 'rxjs/operators';
       flex-wrap: nowrap; 
       align-items: stretch; 
       overflow-x: auto;
+
+      background-color:darkgray;
     }`
     //, ':host { background-color:orange; }'
   ]
@@ -33,16 +35,21 @@ export class BladeStackComponent implements OnInit {
 
   }
 
-  addBladeElementWithContent<TComponent>(component: Type<TComponent>): ComponentRef<BladeElementComponent<TComponent>> {
-    console.log(this.vcRef);
+  addBladeElementWithContent<TComponent>(component: Type<TComponent>, componentInitializer: (TComponent) => void = undefined): ComponentRef<BladeElementComponent<TComponent>> {
     const elementComponentFactory = this.componentFactoryResolver.resolveComponentFactory(BladeElementComponent);
-    const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
 
-    const contentComponentRef = this.vcRef.createComponent(contentComponentFactory);
+    const bladeElementComponentRef = this.vcRef.createComponent(elementComponentFactory) as ComponentRef<BladeElementComponent<TComponent>>;
+    bladeElementComponentRef.changeDetectorRef.detectChanges();
 
-    const bladeElementComponentRef = this.vcRef.createComponent(elementComponentFactory, undefined, undefined, [[contentComponentRef.location.nativeElement]]) as ComponentRef<BladeElementComponent<TComponent>>;
+    const contentComponentRef = bladeElementComponentRef.instance.addContent(component);
     bladeElementComponentRef.instance.bladeComponent = contentComponentRef.instance;
     bladeElementComponentRef.instance.closing.pipe(take(1)).subscribe(() => bladeElementComponentRef.destroy());
+
+    if (componentInitializer !== undefined) {
+      componentInitializer(contentComponentRef.instance);
+
+      contentComponentRef.changeDetectorRef.detectChanges();
+    }
 
     return bladeElementComponentRef;
   }

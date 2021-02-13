@@ -5,6 +5,11 @@ import { WorkItemListPageComponent } from './work-item-list-page/work-item-list-
 
 const routes: Routes = [
   {
+    path: 'wi/search', component: WorkItemListPageComponent, data: {
+      "mode": "Search"
+    }
+  },
+  {
     path: 'wi/:projectCode/new', component: WorkItemDetailPageComponent, data: {
       "mode": "Creation"
     }

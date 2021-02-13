@@ -4,9 +4,10 @@ import { BladeElementComponent } from '../blades/blade-element.component';
 import { WorkItem } from '../work-item/work-item.service';
 
 @Component({
-  selector: 'app-work-item-detail-blade',
   templateUrl: './work-item-detail-blade.component.html',
-  styleUrls: ['./work-item-detail-blade.component.css']
+  styles: [
+    `:host { min-width:400px; }`
+  ]
 })
 export class WorkItemDetailBladeComponent implements OnInit {
   @Input() mode: string;
@@ -14,7 +15,7 @@ export class WorkItemDetailBladeComponent implements OnInit {
   @Input() workItemType: string;
   @Input() workItemId: string;
 
-  constructor(private router: Router, @Optional() private bladeElement?: BladeElementComponent<any>) { }
+  constructor(private router: Router, @Optional() private bladeElement?: BladeElementComponent<WorkItemDetailBladeComponent>) { }
 
   ngOnInit(): void {
   }
