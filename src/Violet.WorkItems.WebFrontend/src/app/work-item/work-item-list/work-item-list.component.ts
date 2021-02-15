@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DescriptorManagerService } from '../descriptor-manager.service';
 import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
@@ -11,6 +12,7 @@ import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.servic
 })
 export class WorkItemListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   @Input() projectCode: string;
   @Output() selected = new EventEmitter<WorkItem>();
@@ -25,12 +27,14 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
 
       if (this.paginator != null) {
         this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       }
     });
   }
   ngAfterViewInit() {
     if (this.dataSource != null) {
       this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     }
   }
 

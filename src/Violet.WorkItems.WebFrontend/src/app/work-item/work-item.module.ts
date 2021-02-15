@@ -15,6 +15,7 @@ import { WorkItemPropertyComponent } from './properties/work-item-property.compo
 import { WorkItemPropertyDirective } from './properties/work-item-property.directive';
 import { WorkItemListComponent } from './work-item-list/work-item-list.component';
 import { FormsModule } from '@angular/forms';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { FormsModule } from '@angular/forms';
     MatInputModule,
     MatIconModule,
     MatPaginatorModule,
+    MatSortModule,
     MatTableModule
   ],
   exports: [
