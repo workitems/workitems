@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { DescriptorManagerService } from '../descriptor-manager.service';
 import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
 
@@ -7,19 +9,29 @@ import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.servic
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.css']
 })
-export class WorkItemListComponent implements OnInit {
+export class WorkItemListComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   @Input() projectCode: string;
   @Output() selected = new EventEmitter<WorkItem>();
-  workItems: WorkItem[];
-  displayedColumns: string[] = ["id", "type", "title"]
+  displayedColumns: string[] = ["id", "type", "title"];
+  dataSource: MatTableDataSource<WorkItem>;
 
   constructor(private workItemService: WorkItemService, private descriptorManagerService: DescriptorManagerService) { }
 
   ngOnInit(): void {
     this.workItemService.getWorkItems(this.projectCode, "").subscribe(items => {
-      console.log(items);
-      this.workItems = items;
+      this.dataSource = new MatTableDataSource(items);
+
+      if (this.paginator != null) {
+        this.dataSource.paginator = this.paginator;
+      }
     });
+  }
+  ngAfterViewInit() {
+    if (this.dataSource != null) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   getProperty(workItem: WorkItem, name: string): WorkItemProperty {
