@@ -20,7 +20,7 @@ export class WorkItemListBladeComponent implements OnInit {
 
 
   onSelected(workItem: WorkItem): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent, content => {
+    const componentRef = this.stack.addBladeElementWithContent('workitem-' + workItem.projectCode + '-' + workItem.id, WorkItemDetailBladeComponent, content => {
       content.mode = 'Editing';
       content.projectCode = workItem.projectCode;
       content.workItemId = workItem.id;
@@ -30,7 +30,7 @@ export class WorkItemListBladeComponent implements OnInit {
   }
 
   new(): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemDetailBladeComponent, content => {
+    const componentRef = this.stack.addBladeElementWithContent('workitem-' + this.projectCode + '-NEW', WorkItemDetailBladeComponent, content => {
       content.mode = 'Creation';
       content.projectCode = this.projectCode;
       content.workItemType = 'Bug';

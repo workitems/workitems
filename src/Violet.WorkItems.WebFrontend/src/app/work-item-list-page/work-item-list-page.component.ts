@@ -28,7 +28,7 @@ export class WorkItemListPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const componentRef = this.stack.addBladeElementWithContent(WorkItemListBladeComponent, content => {
+    const componentRef = this.stack.addBladeElementWithContent('project-list-' + this.projectCode, WorkItemListBladeComponent, content => {
       content.projectCode = this.projectCode;
     });
   }

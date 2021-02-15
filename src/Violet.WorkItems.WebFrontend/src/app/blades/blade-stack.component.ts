@@ -6,7 +6,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'blade-stack',
-  template: `<ng-container #stackElements></ng-container>`,
+  template: `<ng-container #bladeStackContainer></ng-container>`,
   styles: [
     `:host { 
       position:relative;
@@ -26,8 +26,9 @@ import { take } from 'rxjs/operators';
   ]
 })
 export class BladeStackComponent implements OnInit {
+  private blades: { [id: string]: ComponentRef<BladeElementComponent<any>>; } = {};
 
-  @ViewChild('stackElements', { read: ViewContainerRef }) vcRef: ViewContainerRef;
+  @ViewChild('bladeStackContainer', { read: ViewContainerRef }) vcRef: ViewContainerRef;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
@@ -35,23 +36,33 @@ export class BladeStackComponent implements OnInit {
 
   }
 
-  addBladeElementWithContent<TComponent>(component: Type<TComponent>, componentInitializer: (TComponent) => void = undefined): ComponentRef<BladeElementComponent<TComponent>> {
-    const elementComponentFactory = this.componentFactoryResolver.resolveComponentFactory(BladeElementComponent);
+  addBladeElementWithContent<TComponent>(id: string, component: Type<TComponent>, componentInitializer: (TComponent) => void = undefined): ComponentRef<BladeElementComponent<TComponent>> {
+    if (this.blades[id] === undefined) {
+      const elementComponentFactory = this.componentFactoryResolver.resolveComponentFactory(BladeElementComponent);
 
-    const bladeElementComponentRef = this.vcRef.createComponent(elementComponentFactory) as ComponentRef<BladeElementComponent<TComponent>>;
-    bladeElementComponentRef.changeDetectorRef.detectChanges();
+      const bladeElementComponentRef = this.vcRef.createComponent(elementComponentFactory) as ComponentRef<BladeElementComponent<TComponent>>;
+      bladeElementComponentRef.changeDetectorRef.detectChanges();
 
-    const contentComponentRef = bladeElementComponentRef.instance.addContent(component);
-    bladeElementComponentRef.instance.bladeComponent = contentComponentRef.instance;
-    bladeElementComponentRef.instance.closing.pipe(take(1)).subscribe(() => bladeElementComponentRef.destroy());
+      const contentComponentRef = bladeElementComponentRef.instance.addContent(component);
+      bladeElementComponentRef.instance.bladeComponent = contentComponentRef.instance;
+      bladeElementComponentRef.instance.closing.pipe(take(1)).subscribe(() => {
+        bladeElementComponentRef.destroy();
+      });
+      bladeElementComponentRef.onDestroy(() => {
+        delete this.blades[id];
+      });
 
-    if (componentInitializer !== undefined) {
-      componentInitializer(contentComponentRef.instance);
+      if (componentInitializer !== undefined) {
+        componentInitializer(contentComponentRef.instance);
 
-      contentComponentRef.changeDetectorRef.detectChanges();
+        contentComponentRef.changeDetectorRef.detectChanges();
+      }
+
+      this.blades[id] = bladeElementComponentRef;
+
+      return bladeElementComponentRef;
+    } else {
+      return this.blades[id];
     }
-
-    return bladeElementComponentRef;
   }
-
 }

@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'blade-element',
   template: `
-    <ng-container #cont></ng-container>
+    <ng-container #bladeElementContainer></ng-container>
     <button class="close-icon" (click)="close()" mat-icon-button color="warn" aria-label="Close">
       <mat-icon>close</mat-icon>
     </button>
@@ -39,7 +39,7 @@ import { Component, OnInit } from '@angular/core';
   }
 })
 export class BladeElementComponent<TComponent> implements OnInit {
-  @ViewChild('cont', { read: ViewContainerRef }) vcRef: ViewContainerRef;
+  @ViewChild('bladeElementContainer', { read: ViewContainerRef }) vcRef: ViewContainerRef;
 
   @Output() closing = new EventEmitter<any>();
 
