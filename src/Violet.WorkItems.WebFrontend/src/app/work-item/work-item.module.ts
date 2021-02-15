@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table'
 
 import { WorkItemDetailComponent } from './work-item-detail/work-item-detail.component';
@@ -32,6 +33,7 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatPaginator,
     MatTableModule
   ],
   exports: [
