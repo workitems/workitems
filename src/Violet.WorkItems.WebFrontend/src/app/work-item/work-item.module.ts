@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +18,8 @@ import { WorkItemPropertyDirective } from './properties/work-item-property.direc
 import { WorkItemListComponent } from './work-item-list/work-item-list.component';
 import { FormsModule } from '@angular/forms';
 import { MatSortModule } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { WorkItemSearchBoxComponent } from './work-item-search-box/work-item-search-box.component';
 
 @NgModule({
   declarations: [
@@ -23,18 +27,22 @@ import { MatSortModule } from '@angular/material/sort';
     SingleLineTextPropertyComponent,
     WorkItemPropertyComponent,
     WorkItemPropertyDirective,
-    WorkItemListComponent
+    WorkItemListComponent,
+    WorkItemSearchBoxComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
 
+    MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
+    MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatPaginatorModule,
+    MatSelectModule,
     MatSortModule,
     MatTableModule
   ],

@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorkItemCommandDescriptor } from './descriptor-manager.service';
 
+
+
 export interface WorkItemProperty {
   name: string;
   dataType: string;

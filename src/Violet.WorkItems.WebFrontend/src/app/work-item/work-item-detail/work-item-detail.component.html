@@ -11,7 +11,7 @@
             <button *ngIf="saveButtonEnabled == true" mat-button color="primary" (click)="save()">
                 <mat-icon>save</mat-icon> Save
             </button>
-            <button *ngFor="let cmd of commandDescriptors" mat-button color="accent" (click)="executeCommand(cmd)">
+            <button *ngFor="let cmd of commandDescriptors" mat-button (click)="executeCommand(cmd)">
                 <mat-icon>done</mat-icon> {{cmd.label}}
             </button>
         </mat-card-actions>

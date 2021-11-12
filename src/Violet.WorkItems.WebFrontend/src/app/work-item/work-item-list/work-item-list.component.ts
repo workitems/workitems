@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DescriptorManagerService } from '../descriptor-manager.service';
+import { WorkItemQuery } from '../query-ast';
 import { WorkItem, WorkItemProperty, WorkItemService } from '../work-item.service';
 
 @Component({
@@ -15,7 +16,10 @@ export class WorkItemListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
 
   @Input() projectCode: string;
+  @Input() query: WorkItemQuery;
   @Output() selected = new EventEmitter<WorkItem>();
+
+
   displayedColumns: string[] = ["id", "type", "title"];
   dataSource: MatTableDataSource<WorkItem>;
 
