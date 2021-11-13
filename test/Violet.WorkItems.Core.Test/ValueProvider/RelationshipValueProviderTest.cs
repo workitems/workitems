@@ -24,7 +24,7 @@ public class RelationshipValueProviderTest
 
         var feature = (await manager.CreateTemplateAsync("Foo", "Feature"))
             .WithValue("Title", "Feature1")
-            .WithValue("Epic", RelationshipValueProvider.EncodeRelationship("realize", "Foo", result1.Id))
+            .WithValue("Epic", RelationshipValueProvider.EncodeRelationship("realize", "Foo", result1.ChangedWorkItem.Id))
             .WithValue("State", "Open")
             .WithValue("AcceptanceCriteria", "Should be featuritis");
         var result = await manager.CreateAsync("Foo", "Feature", feature.Properties);

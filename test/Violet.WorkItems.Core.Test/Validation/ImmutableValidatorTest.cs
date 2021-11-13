@@ -26,7 +26,7 @@ public class ImmutableValidatorTest
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Empty(result.Errors);
     }
 
@@ -48,7 +48,7 @@ public class ImmutableValidatorTest
         // assert
         Assert.NotNull(result);
         Assert.False(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Collection(result.Errors,
             em =>
             {
@@ -74,14 +74,14 @@ public class ImmutableValidatorTest
 
         // act
         var result1 = await manager.CreateAsync("FOO", "BAR", properties);
-        var result = await manager.UpdateAsync("FOO", result1.CreatedWorkItem.Id, new Property[] {
+        var result = await manager.UpdateAsync("FOO", result1.ChangedWorkItem.Id, new Property[] {
                 new Property("B", "String", "bb")
             });
 
         // assert
         Assert.NotNull(result);
         Assert.False(result.Success);
-        Assert.NotNull(result.UpdatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Collection(result.Errors,
             em =>
             {
@@ -107,12 +107,12 @@ public class ImmutableValidatorTest
 
         // act
         var result1 = await manager.CreateAsync("FOO", "BAR", properties);
-        var result = await manager.ExecuteCommandAsync("FOO", result1.CreatedWorkItem.Id, "set");
+        var result = await manager.ExecuteCommandAsync("FOO", result1.ChangedWorkItem.Id, "set");
 
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.UpdatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Empty(result.Errors);
     }
 

@@ -63,7 +63,7 @@ public static class EditWorkItemCommand
 
             if (result.Success)
             {
-                Console.WriteLine($"Updated WorkItem in project {result.UpdatedWorkItem?.ProjectCode} with id {result.UpdatedWorkItem?.Id}");
+                Console.WriteLine($"Updated WorkItem in project {result.ChangedWorkItem?.ProjectCode} with id {result.ChangedWorkItem?.Id}");
             }
             else
             {

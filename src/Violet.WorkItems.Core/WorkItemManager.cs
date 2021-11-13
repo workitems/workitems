@@ -61,7 +61,7 @@ public class WorkItemManager
         return wi;
     }
 
-    public async Task<WorkItemCreatedResult> CreateAsync(string projectCode, string workItemType, IEnumerable<Property> properties, bool autoCompleteFromTemplate = true)
+    public async Task<WorkItemChangedResult> CreateAsync(string projectCode, string workItemType, IEnumerable<Property> properties, bool autoCompleteFromTemplate = true)
     {
         if (string.IsNullOrWhiteSpace(projectCode))
         {
@@ -83,7 +83,7 @@ public class WorkItemManager
             throw new InvalidOperationException("DataProvider does not allow write operation");
         }
 
-        WorkItemCreatedResult result;
+        WorkItemChangedResult result;
 
         await InitAsync();
 
@@ -112,17 +112,17 @@ public class WorkItemManager
             {
                 await DataProvider.SaveNewWorkItemAsync(wi);
 
-                result = new WorkItemCreatedResult(true, wi, Array.Empty<ErrorMessage>());
+                result = new WorkItemChangedResult(true, wi, Array.Empty<ErrorMessage>());
             }
             else
             {
-                result = new WorkItemCreatedResult(false, wi, validationResult);
+                result = new WorkItemChangedResult(false, wi, validationResult);
             }
 
         }
         else
         {
-            result = new WorkItemCreatedResult(false, null, Array.Empty<ErrorMessage>());
+            result = new WorkItemChangedResult(false, null, Array.Empty<ErrorMessage>());
         }
 
         return result;
@@ -152,7 +152,7 @@ public class WorkItemManager
         return workItem;
     }
 
-    public async Task<WorkItemUpdatedResult> UpdateAsync(string projectCode, string id, IEnumerable<Property> properties)
+    public async Task<WorkItemChangedResult> UpdateAsync(string projectCode, string id, IEnumerable<Property> properties)
     {
         if (string.IsNullOrWhiteSpace(projectCode))
         {
@@ -169,7 +169,7 @@ public class WorkItemManager
             throw new InvalidOperationException("DataProvider does not allow write operations");
         }
 
-        WorkItemUpdatedResult result;
+        WorkItemChangedResult result;
 
         await InitAsync();
 
@@ -183,12 +183,12 @@ public class WorkItemManager
             var (newWorkItem, errors) = await UpdateInternalAsync(workItem, newProperties, changes, false);
 
             result = !errors.Any()
-                ? new WorkItemUpdatedResult(true, newWorkItem, Array.Empty<ErrorMessage>())
-                : new WorkItemUpdatedResult(false, newWorkItem, errors);
+                ? new WorkItemChangedResult(true, newWorkItem, Array.Empty<ErrorMessage>())
+                : new WorkItemChangedResult(false, newWorkItem, errors);
         }
         else
         {
-            result = new WorkItemUpdatedResult(false, null, new ErrorMessage[] {
+            result = new WorkItemChangedResult(false, null, new ErrorMessage[] {
                     new ErrorMessage(nameof(WorkItemManager), string.Empty, $"The work item with id '{id}' in project '{projectCode}' cannot be found.", projectCode, string.Empty, string.Empty),
                 });
         }
@@ -234,9 +234,9 @@ public class WorkItemManager
     private static IEnumerable<Property> MergePropertySet(IEnumerable<Property> properties, IEnumerable<Property> requested)
         => properties.Union(requested.Where(pr => !properties.Any(p => pr.Name == p.Name)));
 
-    public async Task<WorkItemCommandExecutedResult> ExecuteCommandAsync(string projectCode, string id, string command)
+    public async Task<WorkItemChangedResult> ExecuteCommandAsync(string projectCode, string id, string command)
     {
-        WorkItemCommandExecutedResult result;
+        WorkItemChangedResult result;
         var workItem = await GetAsync(projectCode, id);
 
         if (workItem != null)
@@ -250,18 +250,18 @@ public class WorkItemManager
 
                 var (newWorkItem, errors) = await UpdateInternalAsync(workItem, workItem.Properties, changes, true);
 
-                result = new WorkItemCommandExecutedResult(!errors.Any(), newWorkItem, errors);
+                result = new WorkItemChangedResult(!errors.Any(), newWorkItem, errors);
             }
             else
             {
-                result = new WorkItemCommandExecutedResult(false, null, new ErrorMessage[] {
+                result = new WorkItemChangedResult(false, null, new ErrorMessage[] {
                         new ErrorMessage(nameof(WorkItemManager), string.Empty, $"The command with name '{command}' cannot be found in work item with id '{id}' in project '{projectCode}'.", projectCode, id, string.Empty),
                     });
             }
         }
         else
         {
-            result = new WorkItemCommandExecutedResult(false, null, new ErrorMessage[] {
+            result = new WorkItemChangedResult(false, null, new ErrorMessage[] {
                     new ErrorMessage(nameof(WorkItemManager), string.Empty, $"The work item with id '{id}' in project '{projectCode}' cannot be found.", projectCode, string.Empty, string.Empty),
                 });
         }

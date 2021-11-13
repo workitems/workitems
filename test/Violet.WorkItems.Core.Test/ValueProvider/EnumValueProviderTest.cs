@@ -27,7 +27,7 @@ public class EnumValueProviderTest
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Empty(result.Errors);
     }
 
@@ -49,7 +49,7 @@ public class EnumValueProviderTest
         // assert
         Assert.NotNull(result);
         Assert.False(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Collection(result.Errors,
             em =>
             {
@@ -80,7 +80,7 @@ public class EnumValueProviderTest
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Empty(result.Errors);
     }
 
@@ -102,7 +102,7 @@ public class EnumValueProviderTest
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Empty(result.Errors);
     }
 
@@ -124,7 +124,7 @@ public class EnumValueProviderTest
         // assert
         Assert.NotNull(result);
         Assert.False(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
         Assert.Collection(result.Errors,
             em =>
             {
