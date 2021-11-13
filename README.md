@@ -63,7 +63,7 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 ### Infrastructure
 
-1. Violet.WorkItems.Provider.SqlServer
+1. ⌛ Violet.WorkItems.Provider.SqlServer
    - Traditional Relational Database Backend (read/write)
 1. ⌛ Violet.WorkItems.Provider.Git
    - Persist WorkItems and related information in Git (read/write)

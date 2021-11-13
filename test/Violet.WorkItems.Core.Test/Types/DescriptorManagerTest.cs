@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,7 +16,8 @@ public class DescriptorManagerTest
         var workItem = new WorkItem("BAR", "1234", "Foo", new Property[] {
                 new Property("A", "String", ""),
                 new Property("State", "String", "Triage"),
-            }, Array.Empty<LogEntry>());
+            }.ToImmutableArray(),
+            ImmutableArray<LogEntry>.Empty);
 
         // act
         var properties = manager.GetCurrentPropertyDescriptors(workItem);
@@ -45,7 +47,7 @@ public class DescriptorManagerTest
         var workItem = new WorkItem("BAR", "1234", "Foo", new Property[] {
                 new Property("A", "String", ""),
                 new Property("State", "String", "New"),
-            }, Array.Empty<LogEntry>());
+            }.ToImmutableArray(), ImmutableArray<LogEntry>.Empty);
 
         // act
         var properties = manager.GetCurrentPropertyDescriptors(workItem);
@@ -73,7 +75,7 @@ public class DescriptorManagerTest
         var workItem = new WorkItem("BAR", "1234", "Foo", new Property[] {
                 new Property("A", "String", ""),
                 new Property("State", "String", "Triage"),
-            }, Array.Empty<LogEntry>());
+            }.ToImmutableArray(), ImmutableArray<LogEntry>.Empty);
 
         // act
         var commands = manager.GetCurrentCommands(workItem);

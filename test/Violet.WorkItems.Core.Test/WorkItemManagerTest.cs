@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Violet.WorkItems.Provider;
-using Violet.WorkItems.Provider.SqlServer;
 using Violet.WorkItems.Types;
 using Violet.WorkItems.Types.CommonSdlc;
 using Xunit;
@@ -12,21 +11,10 @@ namespace Violet.WorkItems.Core.Test;
 
 public class WorkItemManagerTest
 {
-    private static IDataProvider GetSqlServerDataProvider()
-    {
-        var db = new SqlServerDataProvider($@"Server=localhost\SQLEXPRESS;Database=workitems_test;Trusted_Connection=True;");
-        db.InitAsync().Wait();
-        return db;
-    }
 
     [Fact]
     public Task WorkItemManager_Create_SimpleWithoutDescriptor_OnInMemoryDataProvider()
         => WorkItemManager_Create_SimpleWithoutDescriptor(new InMemoryDataProvider());
-
-    [Fact]
-    [Trait("OnDataProvider", "SqlServer")]
-    public Task WorkItemManager_Create_SimpleWithoutDescriptor_OnSqlServerDataProvider()
-        => WorkItemManager_Create_SimpleWithoutDescriptor(GetSqlServerDataProvider());
 
     private static async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
     {
@@ -107,11 +95,6 @@ public class WorkItemManagerTest
     public Task WorkItemManager_Update_SimpleWithoutDescriptor_OnInMemoryDataProvider()
         => WorkItemManager_Update_SimpleWithoutDescriptor(new InMemoryDataProvider());
 
-    [Fact]
-    [Trait("OnDataProvider", "SqlServer")]
-    public Task WorkItemManager_Update_SimpleWithoutDescriptor_OnSqlServerDataProvider()
-        => WorkItemManager_Update_SimpleWithoutDescriptor(GetSqlServerDataProvider());
-
     private static async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
     {
         // arrange
@@ -165,10 +148,6 @@ public class WorkItemManagerTest
     public Task WorkItemManager_Update_TwoTimesWithoutDescriptor_OnInMemoryDataProvider()
         => WorkItemManager_Update_TwoTimesWithoutDescriptor(new InMemoryDataProvider());
 
-    [Fact]
-    [Trait("OnDataProvider", "SqlServer")]
-    public Task WorkItemManager_Update_TwoTimesWithoutDescriptor_OnSqlServerDataProvider()
-        => WorkItemManager_Update_TwoTimesWithoutDescriptor(GetSqlServerDataProvider());
 
     private static async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
     {

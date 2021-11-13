@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Violet.WorkItems.Provider;
@@ -48,15 +49,14 @@ public class WorkItemManager
 
         await InitAsync();
 
-        IEnumerable<Property> properties;
 
         var (success, propertyDescriptors) = DescriptorManager.GetAllPropertyDescriptors(workItemType);
 
-        properties = success
-            ? propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue)).ToList()
-            : new List<Property>();
+        var properties = success
+            ? propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue)).ToImmutableArray()
+            : ImmutableArray<Property>.Empty;
 
-        var wi = new WorkItem(projectCode, "NEW", workItemType, properties, new List<LogEntry>());
+        var wi = new WorkItem(projectCode, "NEW", workItemType, properties, ImmutableArray<LogEntry>.Empty);
 
         return wi;
     }
@@ -104,7 +104,7 @@ public class WorkItemManager
                 newProperties = ApplyChangesToPropertySet(newProperties, propertyChanges);
             }
 
-            var wi = new WorkItem(projectCode, newIdentifer, workItemType, new List<Property>(newProperties), Array.Empty<LogEntry>());
+            var wi = new WorkItem(projectCode, newIdentifer, workItemType, newProperties.ToImmutableArray(), ImmutableArray<LogEntry>.Empty);
 
             var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges, false);
 
@@ -200,9 +200,9 @@ public class WorkItemManager
     {
         properties = ApplyChangesToPropertySet(properties, changes);
 
-        var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes.ToArray()) }).ToArray();
+        var newLog = workItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changes.ToImmutableArray()) }).ToImmutableArray();
 
-        var newWorkItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, properties.ToArray(), newLog);
+        var newWorkItem = new WorkItem(workItem.ProjectCode, workItem.Id, workItem.WorkItemType, properties.ToImmutableArray(), newLog);
 
         var errors = await ValidationManager.ValidateAsync(newWorkItem, changes, internalEdit);
 

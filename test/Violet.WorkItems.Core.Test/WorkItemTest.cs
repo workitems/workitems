@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using Xunit;
 
 namespace Violet.WorkItems;
@@ -11,9 +12,9 @@ public class WorkItemTest
         var workItem = new WorkItem("A", "B", "Feature", new Property[] {
                 new Property("A", "String", "a"),
                 new Property("B", "String", "b"),
-            }, Array.Empty<LogEntry>());
+            }.ToImmutableArray(), ImmutableArray<LogEntry>.Empty);
 
-        workItem["A"].Value = "aa";
+        workItem = workItem.WithValue("A", "aa");
 
         Assert.Equal("aa", workItem["A"].Value);
         Assert.Collection(workItem.Properties,

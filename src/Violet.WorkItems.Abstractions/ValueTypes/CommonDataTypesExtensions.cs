@@ -6,7 +6,11 @@ namespace Violet.WorkItems;
 
 public static class CommonDataTypesExtensions
 {
-    public static void Value<T>(this Property property, T value)
+    public static WorkItem WithValue<T>(this WorkItem workItem, string propertyName, T value)
+        => workItem.With(workItem.TryGetProperty(propertyName, out var oldProperty)
+            ? oldProperty.WithValue(value)
+            : throw new ArgumentException("no property found with given name", nameof(propertyName)));
+    public static Property WithValue<T>(this Property property, T value)
     {
         if (property is null)
         {
@@ -28,10 +32,13 @@ public static class CommonDataTypesExtensions
 
         var result = tc.ConvertToInvariantString(value);
 
-        property.Value = result ?? string.Empty;
+        return property with
+        {
+            Value = result ?? string.Empty,
+        };
     }
 
-    public static void Value<T>(this Property property, out T? value)
+    public static void As<T>(this Property property, out T value)
     {
         if (property is null)
         {
@@ -63,59 +70,45 @@ public static class CommonDataTypesExtensions
         }
     }
 
-    public static void NullableValue<T>(this Property property, T? value) where T : struct
+
+    public static WorkItem WithNullableValue<T>(this WorkItem workItem, string propertyName, T? value) where T : class
+        => workItem.With(workItem.TryGetProperty(propertyName, out var oldProperty)
+            ? oldProperty.WithNullableValue(value)
+            : throw new ArgumentException("no property found with given name", nameof(propertyName)));
+    public static WorkItem WithNullableValue<T>(this WorkItem workItem, string propertyName, T? value) where T : struct
+        => workItem.With(workItem.TryGetProperty(propertyName, out var oldProperty)
+            ? oldProperty.WithNullableValue(value)
+            : throw new ArgumentException("no property found with given name", nameof(propertyName)));
+    public static Property WithNullableValue<T>(this Property property, T? value) where T : struct
     {
         if (property is null)
         {
             throw new ArgumentNullException(nameof(property));
         }
 
-        if (!value.HasValue)
-        {
-            property.Value = Property.NullValue;
-        }
-        else
-        {
-            Value<T>(property, value.Value);
-        }
+        return value.HasValue
+            ? WithValue<T>(property, value.Value)
+            : property with
+            {
+                Value = Property.NullValue,
+            };
     }
-
-    public static void NullableValue<T>(this Property property, T? value) where T : class
+    public static Property WithNullableValue<T>(this Property property, T? value) where T : class
     {
         if (property is null)
         {
             throw new ArgumentNullException(nameof(property));
         }
 
-        if (value == null)
-        {
-            property.Value = Property.NullValue;
-        }
-        else
-        {
-            Value<T>(property, value);
-        }
+        return value is null
+            ? property with
+            {
+                Value = Property.NullValue
+            }
+            : WithValue<T>(property, value);
     }
 
-    public static void NullableValue<T>(this Property property, out T? value) where T : struct
-    {
-        if (property is null)
-        {
-            throw new ArgumentNullException(nameof(property));
-        }
-
-        if (property.Value == null || property.Value == string.Empty)
-        {
-            value = default;
-        }
-        else
-        {
-            Value<T>(property, out var notNullableValue2);
-            value = notNullableValue2;
-        }
-    }
-
-    public static void NullableValue<T>(this Property property, out T? value) where T : class
+    public static void AsNullable<T>(this Property property, out T? value) where T : struct
     {
         if (property is null)
         {
@@ -128,13 +121,31 @@ public static class CommonDataTypesExtensions
         }
         else
         {
-            Value<T>(property, out var notNullableValue2);
+            As<T>(property, out var notNullableValue2);
+            value = notNullableValue2;
+        }
+    }
+
+    public static void AsNullable<T>(this Property property, out T? value) where T : class
+    {
+        if (property is null)
+        {
+            throw new ArgumentNullException(nameof(property));
+        }
+
+        if (property.Value == null || property.Value == string.Empty)
+        {
+            value = default;
+        }
+        else
+        {
+            As<T>(property, out var notNullableValue2);
             value = notNullableValue2;
         }
     }
 
 
-    public static void Values<T>(this Property property, params T[] values)
+    public static Property WithValues<T>(this Property property, params T[] values)
     {
         if (property is null)
         {
@@ -158,10 +169,13 @@ public static class CommonDataTypesExtensions
 
         var result = string.Join(",", valuesAsString);
 
-        property.Value = result;
+        return property with
+        {
+            Value = result
+        };
     }
 
-    public static void Values<T>(this Property property, out T[] values)
+    public static void AsValues<T>(this Property property, out T[] values)
     {
         if (property is null)
         {
