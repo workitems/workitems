@@ -1,6 +1,11 @@
 {
     "sources": [
         {
+            "name": "default",
+            "type": "Violet.WorkItems.Provider.FileSystemDataProvider, Violet.WorkItems.Core",
+            "connectionString": "./sample"
+        },
+        {
             "name": "github",
             "type": "Violet.WorkItems.Provider.GitHubDataProvider, Violet.WorkItems.Provider.GitHub",
             "connectionString": ""
