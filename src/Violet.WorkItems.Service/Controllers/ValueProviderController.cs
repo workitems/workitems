@@ -8,58 +8,55 @@ using Microsoft.Extensions.Logging;
 using Violet.WorkItems.Service.Models;
 using Violet.WorkItems.ValueProvider;
 
-namespace Violet.WorkItems.Service.Controllers
+namespace Violet.WorkItems.Service.Controllers;
+
+[ApiController]
+[Authorize("WorkItemPolicy")]
+public class ValueProviderController : ControllerBase
 {
-    [ApiController]
-    [Authorize("WorkItemPolicy")]
-    public class ValueProviderController : ControllerBase
+    private readonly WorkItemManager _workItemManager;
+
+    public ValueProviderController(WorkItemManager workItemManager)
     {
-        private readonly WorkItemManager _workItemManager;
-        private readonly ILogger<ValueProviderController> _logger;
+        _workItemManager = workItemManager;
+    }
 
-        public ValueProviderController(WorkItemManager workItemManager, ILogger<ValueProviderController> logger)
+    [HttpGet("api/v1/projects/{projectCode}/types/{workItemType}/properties/{propertyName}/provider")]
+    public async Task<ValueProviderApiResponse> GetValuesForTemplateProperty(string projectCode, string workItemType, string propertyName, [FromQuery] string query)
+        => await InternalGetValuesForWorkItemProperty(await _workItemManager.CreateTemplateAsync(projectCode, workItemType), propertyName, query);
+
+    [HttpGet("api/v1/projects/{projectCode}/workitems/{workItemId}/properties/{propertyName}/provider")]
+    public async Task<ValueProviderApiResponse> GetValuesForWorkItemProperty(string projectCode, string workItemId, string propertyName, [FromQuery] string query)
+        => await InternalGetValuesForWorkItemProperty(await _workItemManager.GetAsync(projectCode, workItemId), propertyName, query);
+
+    private async Task<ValueProviderApiResponse> InternalGetValuesForWorkItemProperty(WorkItem item, string propertyName, [FromQuery] string query)
+    {
+        var descriptor = _workItemManager.DescriptorManager.GetCurrentPropertyDescriptor(item, propertyName);
+
+        if (descriptor.ValueProvider is null)
         {
-            _workItemManager = workItemManager;
-            _logger = logger;
+            return new ValueProviderApiResponse()
+            {
+                ProjectCode = item.ProjectCode,
+                WorkItemId = item.Id,
+                PropertyName = propertyName,
+                Values = Array.Empty<ProvidedValue>(),
+            };
         }
-
-        [HttpGet("api/v1/projects/{projectCode}/types/{workItemType}/properties/{propertyName}/provider")]
-        public async Task<ValueProviderApiResponse> GetValuesForTemplateProperty(string projectCode, string workItemType, string propertyName, [FromQuery] string query)
-            => await InternalGetValuesForWorkItemProperty(await _workItemManager.CreateTemplateAsync(projectCode, workItemType), propertyName, query);
-
-        [HttpGet("api/v1/projects/{projectCode}/workitems/{workItemId}/properties/{propertyName}/provider")]
-        public async Task<ValueProviderApiResponse> GetValuesForWorkItemProperty(string projectCode, string workItemId, string propertyName, [FromQuery] string query)
-            => await InternalGetValuesForWorkItemProperty(await _workItemManager.GetAsync(projectCode, workItemId), propertyName, query);
-
-        private async Task<ValueProviderApiResponse> InternalGetValuesForWorkItemProperty(WorkItem item, string propertyName, [FromQuery] string query)
+        else
         {
-            var descriptor = _workItemManager.DescriptorManager.GetCurrentPropertyDescriptor(item, propertyName);
+            var provider = _workItemManager.ValidationManager.CreateValueProvider(item, descriptor.ValueProvider);
 
-            if (descriptor.ValueProvider is null)
+            var suggestions = await provider.SuggestionsAsync(query ?? string.Empty);
+
+            return new ValueProviderApiResponse()
             {
-                return new ValueProviderApiResponse()
-                {
-                    ProjectCode = item.ProjectCode,
-                    WorkItemId = item.Id,
-                    PropertyName = propertyName,
-                    Values = Array.Empty<ProvidedValue>(),
-                };
-            }
-            else
-            {
-                var provider = _workItemManager.ValidationManager.CreateValueProvider(item, descriptor.ValueProvider);
-
-                var suggestions = await provider.SuggestionsAsync(query ?? string.Empty);
-
-                return new ValueProviderApiResponse()
-                {
-                    Success = true,
-                    ProjectCode = item.ProjectCode,
-                    WorkItemId = item.Id,
-                    PropertyName = propertyName,
-                    Values = suggestions,
-                };
-            }
+                Success = true,
+                ProjectCode = item.ProjectCode,
+                WorkItemId = item.Id,
+                PropertyName = propertyName,
+                Values = suggestions,
+            };
         }
     }
 }

@@ -7,61 +7,55 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Violet.WorkItems.Service.Models;
 
-namespace Violet.WorkItems.Service.Controllers
+namespace Violet.WorkItems.Service.Controllers;
+
+[ApiController]
+[Authorize("WorkItemPolicy")]
+public class WorkItemListController : ControllerBase
 {
-    [ApiController]
-    [Authorize("WorkItemPolicy")]
-    public class WorkItemListController : ControllerBase
+    private readonly WorkItemManager _workItemManager;
+    private readonly ILogger<WorkItemController> _logger;
+
+    public WorkItemListController(WorkItemManager workItemManager, ILogger<WorkItemController> logger)
     {
-        private readonly WorkItemManager _workItemManager;
-        private readonly ILogger<WorkItemController> _logger;
+        _workItemManager = workItemManager;
+        _logger = logger;
+    }
 
-        public WorkItemListController(WorkItemManager workItemManager, ILogger<WorkItemController> logger)
+    [HttpGet("api/v1/projects/{projectCode}/workitems")]
+    [ProducesResponseType(typeof(WorkItemListApiResponse), 200)]
+    [ProducesResponseType(typeof(WorkItemBadRequestApiResponse), 400)]
+    public async Task<ActionResult> GetAllProjectWorkItems(string projectCode)
+    {
+        try
         {
-            _workItemManager = workItemManager;
-            _logger = logger;
-        }
+            var list = await _workItemManager.DataProvider.ListWorkItemsAsync(projectCode);
 
-        [HttpGet("api/v1/projects/{projectCode}/workitems")]
-        [ProducesResponseType(typeof(WorkItemListApiResponse), 200)]
-        [ProducesResponseType(typeof(WorkItemBadRequestApiResponse), 400)]
-        public async Task<ActionResult> GetAllProjectWorkItems(string projectCode)
-        {
-            try
-            {
-                var list = await _workItemManager.DataProvider.ListWorkItemsAsync(projectCode);
-
-                if (list != null)
+            return list != null
+                ? Ok(new WorkItemListApiResponse()
                 {
-                    return Ok(new WorkItemListApiResponse()
-                    {
-                        Success = true,
-                        WorkItems = list,
-                    });
-                }
-                else
-                {
-                    return NotFound(new WorkItemApiResponse()
-                    {
-                        Success = false,
-                        ProjectCode = projectCode,
-                        WorkItemId = null,
-                        WorkItem = null,
-                    });
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Exception in {nameof(WorkItemController)}.{nameof(GetAllProjectWorkItems)}");
-
-                return BadRequest(new WorkItemBadRequestApiResponse()
+                    Success = true,
+                    WorkItems = list,
+                })
+                : NotFound(new WorkItemApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = null,
+                    WorkItem = null,
                 });
-            }
-
         }
+        catch (Exception e)
+        {
+            _logger.LogError(e, $"Exception in {nameof(WorkItemController)}.{nameof(GetAllProjectWorkItems)}");
+
+            return BadRequest(new WorkItemBadRequestApiResponse()
+            {
+                Success = false,
+                ProjectCode = projectCode,
+                WorkItemId = null,
+            });
+        }
+
     }
 }

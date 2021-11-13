@@ -1,23 +1,23 @@
 ﻿using System;
 
-namespace Violet.WorkItems.Types.CommonSdlc
+namespace Violet.WorkItems.Types.CommonSdlc;
+
+public static class EpicFeatureUserStoryModel
 {
-    public static class EpicFeatureUserStoryModel
-    {
-        public static WorkItemDescriptor Epic
-            => WorkItemDescriptor.Create("Epic",
-                new PropertyDescriptor[] {
+    public static WorkItemDescriptor Epic
+        => WorkItemDescriptor.Create("Epic",
+            new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
                     PropertyDescriptor.Create("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Open", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
-                }
-            );
-        public static WorkItemDescriptor Feature
-            => WorkItemDescriptor.Create("Feature",
-                new PropertyDescriptor[] {
+            }
+        );
+    public static WorkItemDescriptor Feature
+        => WorkItemDescriptor.Create("Feature",
+            new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
@@ -33,11 +33,11 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     PropertyDescriptor.Create("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Draft", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
-                }
-            );
-        public static WorkItemDescriptor UserStory
-            => WorkItemDescriptor.Create("UserStory",
-                new PropertyDescriptor[] {
+            }
+        );
+    public static WorkItemDescriptor UserStory
+        => WorkItemDescriptor.Create("UserStory",
+            new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators:  new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),
@@ -53,7 +53,6 @@ namespace Violet.WorkItems.Types.CommonSdlc
                     PropertyDescriptor.Create("State", "String", propertyType: PropertyType.SingleValueFromProvider, initialValue: "Draft", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }, valueProvider: new EnumValueProviderDescriptor(new EnumValue("Draft", "Draft"), new EnumValue("Ready", "Ready"), new EnumValue("Open", "Open"), new EnumValue("Done", "Done"))),
-                }
-            );
-    }
+            }
+        );
 }
