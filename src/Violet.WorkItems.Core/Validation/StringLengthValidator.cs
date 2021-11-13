@@ -19,7 +19,7 @@ public class StringLengthValidator : PropertyWithValidatorDescriptorValidatorBas
 
         if (property.DataType == "String")
         {
-            property.Value(out string valueAsString);
+            property.As(out string valueAsString);
 
             int length = valueAsString.Length;
 

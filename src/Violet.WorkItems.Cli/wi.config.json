@@ -1,11 +1,6 @@
 {
     "sources": [
         {
-            "name": "default",
-            "type": "Violet.WorkItems.Provider.SqlServerDataProvider, Violet.WorkItems.Provider.SqlServer",
-            "connectionString": "Server=localhost\\SQLEXPRESS;Database=workitems;Trusted_Connection=True;"
-        },
-        {
             "name": "github",
             "type": "Violet.WorkItems.Provider.GitHubDataProvider, Violet.WorkItems.Provider.GitHub",
             "connectionString": ""

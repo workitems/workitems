@@ -26,4 +26,4 @@ jobs:
     - name: Build .NET
       run: dotnet build --configuration Release
     - name: Test .NET
-      run: dotnet test --no-build --configuration Release --filter OnDataProvider!=SqlServer
+      run: dotnet test --no-build --configuration Release

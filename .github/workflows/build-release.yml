@@ -21,7 +21,7 @@ jobs:
     - name: Build Violet WorkItems
       run: dotnet build --configuration Release -p:Version=$RELEASE_VERSION
     - name: Test Violet WorkItems
-      run: dotnet test --no-build --configuration Release --filter OnDataProvider!=SqlServer
+      run: dotnet test --no-build --configuration Release
     - name: Pack Violet WorkItems
       run: dotnet pack --no-build --output ./artifacts --configuration Release -p:Version=$RELEASE_VERSION
     - uses: actions/upload-artifact@v1

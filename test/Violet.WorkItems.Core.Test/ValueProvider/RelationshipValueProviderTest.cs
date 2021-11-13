@@ -15,17 +15,18 @@ public class RelationshipValueProviderTest
     {
         // arrange
         var manager = BuildManager();
-        var epic = await manager.CreateTemplateAsync("Foo", "Epic");
-        epic["Title"].Value = "Epic1";
-        epic["State"].Value = "Open";
+        var epic = (await manager.CreateTemplateAsync("Foo", "Epic"))
+            .WithValue("Title", "Epic1")
+            .WithValue("State", "Open");
+
         var result1 = await manager.CreateAsync("Foo", "Epic", epic.Properties);
         Assert.True(result1.Success);
 
-        var feature = await manager.CreateTemplateAsync("Foo", "Feature");
-        feature["Title"].Value = "Feature1";
-        feature["Epic"].Value = RelationshipValueProvider.EncodeRelationship("realize", "Foo", result1.Id);
-        feature["State"].Value = "Open";
-        feature["AcceptanceCriteria"].Value = "Should be featuritis";
+        var feature = (await manager.CreateTemplateAsync("Foo", "Feature"))
+            .WithValue("Title", "Feature1")
+            .WithValue("Epic", RelationshipValueProvider.EncodeRelationship("realize", "Foo", result1.Id))
+            .WithValue("State", "Open")
+            .WithValue("AcceptanceCriteria", "Should be featuritis");
         var result = await manager.CreateAsync("Foo", "Feature", feature.Properties);
 
         Assert.True(result.Success);
@@ -37,17 +38,17 @@ public class RelationshipValueProviderTest
     {
         // arrange
         var manager = BuildManager();
-        var epic = await manager.CreateTemplateAsync("Foo", "Epic");
-        epic["Title"].Value = "Epic1";
-        epic["State"].Value = "Open";
+        var epic = (await manager.CreateTemplateAsync("Foo", "Epic"))
+            .WithValue("Title", "Epic1")
+            .WithValue("State", "Open");
         var result1 = await manager.CreateAsync("Foo", "Epic", epic.Properties);
         Assert.True(result1.Success);
 
-        var feature = await manager.CreateTemplateAsync("Foo", "Feature");
-        feature["Title"].Value = "Feature1";
-        feature["Epic"].Value = RelationshipValueProvider.EncodeRelationship("realize", "Foo", "999");
-        feature["State"].Value = "Open";
-        feature["AcceptanceCriteria"].Value = "Should be featuritis";
+        var feature = (await manager.CreateTemplateAsync("Foo", "Feature"))
+            .WithValue("Title", "Feature1")
+            .WithValue("Epic", RelationshipValueProvider.EncodeRelationship("realize", "Foo", "999"))
+            .WithValue("State", "Open")
+            .WithValue("AcceptanceCriteria", "Should be featuritis");
         var result = await manager.CreateAsync("Foo", "Feature", feature.Properties);
 
         Assert.False(result.Success);
@@ -60,17 +61,17 @@ public class RelationshipValueProviderTest
     {
         // arrange
         var manager = BuildManager();
-        var epic = await manager.CreateTemplateAsync("Foo", "Epic");
-        epic["Title"].Value = "Epic1";
-        epic["State"].Value = "Open";
+        var epic = (await manager.CreateTemplateAsync("Foo", "Epic"))
+            .WithValue("Title", "Epic1")
+            .WithValue("State", "Open");
         var result1 = await manager.CreateAsync("Foo", "Epic", epic.Properties);
         Assert.True(result1.Success);
 
-        var feature = await manager.CreateTemplateAsync("Foo", "Feature");
-        feature["Title"].Value = "Feature1";
-        feature["Epic"].Value = "adsfasdfasf";
-        feature["State"].Value = "Open";
-        feature["AcceptanceCriteria"].Value = "Should be featuritis";
+        var feature = (await manager.CreateTemplateAsync("Foo", "Feature"))
+            .WithValue("Title", "Feature1")
+            .WithValue("Epic", "adsfasdfasf")
+            .WithValue("State", "Open")
+            .WithValue("AcceptanceCriteria", "Should be featuritis");
         var result = await manager.CreateAsync("Foo", "Feature", feature.Properties);
 
         Assert.False(result.Success);

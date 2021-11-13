@@ -97,7 +97,7 @@ public class WorkItemFormatter
 
             if (property != null)
             {
-                property.Value(out result);
+                property.As(out result);
 
                 result ??= string.Empty;
 

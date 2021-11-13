@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Octokit;
@@ -52,8 +53,8 @@ public class GitHubDataProvider : IDataProvider
                 new Property(TitleProperty, "string", issue.Title),
                 new Property(BodyProperty, "string", issue.Body),
                 new Property(StateProperty, "state", issue.State.StringValue),
-            },
-            Array.Empty<LogEntry>());
+            }.ToImmutableArray(),
+            ImmutableArray<LogEntry>.Empty);
 
         return result;
     }

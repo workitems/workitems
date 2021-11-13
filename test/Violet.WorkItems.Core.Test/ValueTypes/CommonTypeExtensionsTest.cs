@@ -13,7 +13,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() => property.Value(x));
+        Assert.Throws<InvalidOperationException>(() => property.WithValue(x));
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() => property.Value(out long x));
+        Assert.Throws<InvalidOperationException>(() => property.As(out long x));
     }
 
 
@@ -34,7 +34,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<ArgumentException>(() => property.Value(out int result));
+        Assert.Throws<ArgumentException>(() => property.As(out int result));
     }
     [Fact]
     public void CommonTypeExtensions_Value_Int32_NullableAllowed()
@@ -43,7 +43,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", "Int32", string.Empty);
 
         // act
-        property.NullableValue(out int? result);
+        property.AsNullable(out int? result);
 
         // assert
         Assert.Null(result);
@@ -58,8 +58,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", "Int32", "1234");
 
         // act
-        property.NullableValue(x);
-        property.NullableValue(out int? result);
+        property = property.WithNullableValue(x);
+        property.AsNullable(out int? result);
 
         // assert
         Assert.Equal(x, result);
@@ -73,8 +73,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out int result);
+        property = property.WithValue(x);
+        property.As(out int result);
 
         // assert
         Assert.Equal(x, result);
@@ -88,8 +88,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int64), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out long result);
+        property = property.WithValue(x);
+        property.As(out long result);
 
         // assert
         Assert.Equal(x, result);
@@ -103,8 +103,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Single), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out float result);
+        property = property.WithValue(x);
+        property.As(out float result);
 
         // assert
         Assert.Equal(x, result);
@@ -118,8 +118,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Double), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out double result);
+        property = property.WithValue(x);
+        property.As(out double result);
 
         // assert
         Assert.Equal(x, result);
@@ -133,8 +133,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Decimal), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out decimal result);
+        property = property.WithValue(x);
+        property.As(out decimal result);
 
         // assert
         Assert.Equal(x, result);
@@ -148,8 +148,8 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(DateTimeOffset), string.Empty);
 
         // act
-        property.Value(x);
-        property.Value(out DateTimeOffset result);
+        property = property.WithValue(x);
+        property.As(out DateTimeOffset result);
 
         // assert
         Assert.Equal(x, result);
@@ -161,7 +161,7 @@ public class CommonTypeExtensionsTest
         // arrange
         var property = new Property("A", "Int32", "");
         // act
-        property.Values(1, 2, 3, 4);
+        property = property.WithValues(1, 2, 3, 4);
         // assert
         Assert.Equal("1,2,3,4", property.Value);
     }
@@ -171,7 +171,7 @@ public class CommonTypeExtensionsTest
         // arrange
         var property = new Property("A", "Int32", "");
         // act
-        property.Values(new int[] { 1, 2, 3, 4 });
+        property = property.WithValues(new int[] { 1, 2, 3, 4 });
         // assert
         Assert.Equal("1,2,3,4", property.Value);
     }
@@ -181,7 +181,7 @@ public class CommonTypeExtensionsTest
         // arrange
         var property = new Property("A", "Int32", "1,2,3,4");
         // act
-        property.Values(out int[] result);
+        property.AsValues(out int[] result);
         // assert
         Assert.Collection(result,
             i => Assert.Equal(1, i),
@@ -195,6 +195,6 @@ public class CommonTypeExtensionsTest
         // arrange
         var property = new Property("A", "Int32", "1,2,A,4");
         // act & assert
-        Assert.Throws<ArgumentException>(() => property.Values(out int[] result));
+        Assert.Throws<ArgumentException>(() => property.AsValues(out int[] result));
     }
 }
