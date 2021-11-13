@@ -3,38 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Violet.WorkItems.Validation
+namespace Violet.WorkItems.Validation;
+
+public class RawDataTypeValidator : IValidator
 {
-    public class RawDataTypeValidator : IValidator
+    public string PropertyName { get; }
+
+    public RawDataTypeValidator(string propertyName)
     {
-        public string PropertyName { get; }
+        PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+    }
 
-        public RawDataTypeValidator(string propertyName)
+    public Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context)
+    {
+        var result = new List<ErrorMessage>();
+
+        var workItem = context.WorkItem;
+
+        var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyName);
+
+        if (property != null)
         {
-            PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-        }
-
-        public Task<IEnumerable<ErrorMessage>> ValidateAsync(ValidationContext context)
-        {
-            var result = new List<ErrorMessage>();
-
-            var workItem = context.WorkItem;
-
-            var property = workItem.Properties.FirstOrDefault(p => p.Name == PropertyName);
-
-            if (property != null)
+            if (!ValueTypesManager.IsValidDataType(property.DataType))
             {
-                if (!ValueTypesManager.IsValidDataType(property.DataType))
-                {
-                    result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' is not a recognized property type.", workItem.ProjectCode, workItem.Id, property.Name));
-                }
-                else if (!ValueTypesManager.IsValidData(property.DataType, property.Value))
-                {
-                    result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' does not match property value.", workItem.ProjectCode, workItem.Id, property.Name));
-                }
+                result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' is not a recognized property type.", workItem.ProjectCode, workItem.Id, property.Name));
             }
-
-            return Task.FromResult((IEnumerable<ErrorMessage>)result);
+            else if (!ValueTypesManager.IsValidData(property.DataType, property.Value))
+            {
+                result.Add(new ErrorMessage(nameof(RawDataTypeValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' does not match property value.", workItem.ProjectCode, workItem.Id, property.Name));
+            }
         }
+
+        return Task.FromResult((IEnumerable<ErrorMessage>)result);
     }
 }

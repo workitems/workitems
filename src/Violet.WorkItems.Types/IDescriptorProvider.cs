@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Violet.WorkItems.Types
+namespace Violet.WorkItems.Types;
+
+public interface IDescriptorProvider
 {
-    public interface IDescriptorProvider
-    {
-        Task<IEnumerable<WorkItemDescriptor>> GetAllDescriptorsAsync();
-    }
+    Task<IEnumerable<WorkItemDescriptor>> GetAllDescriptorsAsync();
 }

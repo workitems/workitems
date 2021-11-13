@@ -3,37 +3,36 @@ using System.IO;
 using System.Threading.Tasks;
 using Violet.WorkItems.Text;
 
-namespace Violet.WorkItems.Cli
+namespace Violet.WorkItems.Cli;
+
+public static class ListWorkItemsCommand
 {
-    public static class ListWorkItemsCommand
+    public static async Task<int> ExecuteAsync(WorkItemManager workItemManager, string? project, string? type, TextWriter writer)
     {
-        public static async Task<int> ExecuteAsync(WorkItemManager workItemManager, string? project, string? type, TextWriter writer)
+        if (workItemManager is null)
         {
-            if (workItemManager is null)
-            {
-                throw new ArgumentNullException(nameof(workItemManager));
-            }
-
-            if (string.IsNullOrWhiteSpace(project))
-            {
-                throw new ArgumentException("message", nameof(project));
-            }
-
-            if (writer is null)
-            {
-                throw new ArgumentNullException(nameof(writer));
-            }
-
-            var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
-
-            var formatter = new WorkItemFormatter();
-
-            foreach (var item in items)
-            {
-                writer.WriteLine(formatter.FormatShortLine(item));
-            }
-
-            return 0;
+            throw new ArgumentNullException(nameof(workItemManager));
         }
+
+        if (string.IsNullOrWhiteSpace(project))
+        {
+            throw new ArgumentException("message", nameof(project));
+        }
+
+        if (writer is null)
+        {
+            throw new ArgumentNullException(nameof(writer));
+        }
+
+        var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
+
+        var formatter = new WorkItemFormatter();
+
+        foreach (var item in items)
+        {
+            writer.WriteLine(formatter.FormatShortLine(item));
+        }
+
+        return 0;
     }
 }

@@ -1,84 +1,83 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Violet.WorkItems.Provider.SqlServer
+namespace Violet.WorkItems.Provider.SqlServer;
+
+public class WorkItemDbContext : DbContext
 {
-    public class WorkItemDbContext : DbContext
+    private readonly string _connectionString;
+
+    public WorkItemDbContext()
     {
-        private readonly string _connectionString;
+        _connectionString = @"Server=localhost\SQLEXPRESS;Database=workitems;Trusted_Connection=True;";
+    }
 
-        public WorkItemDbContext()
-        {
-            _connectionString = @"Server=localhost\SQLEXPRESS;Database=workitems;Trusted_Connection=True;";
-        }
+    public WorkItemDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(_connectionString);
+    }
 
-        public WorkItemDbContext(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionString);
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<WorkItem>()
+            .HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        modelBuilder.Entity<WorkItem>(workItemEntityBuilder =>
         {
-            modelBuilder.Entity<WorkItem>()
-                .HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
+            workItemEntityBuilder.Property(e => e.ProjectCode);
+            workItemEntityBuilder.Property(e => e.Id);
+            workItemEntityBuilder.Property(e => e.WorkItemType);
+        });
 
-            modelBuilder.Entity<WorkItem>(workItemEntityBuilder =>
+        modelBuilder.Entity<WorkItem>()
+            .OwnsMany(e => e.Properties, propertyEntityBuilder =>
             {
-                workItemEntityBuilder.Property(e => e.ProjectCode);
-                workItemEntityBuilder.Property(e => e.Id);
-                workItemEntityBuilder.Property(e => e.WorkItemType);
-            });
-
-            modelBuilder.Entity<WorkItem>()
-                .OwnsMany(e => e.Properties, propertyEntityBuilder =>
-                {
-                    propertyEntityBuilder.Property(p => p.Name);
-                    propertyEntityBuilder.Property(p => p.DataType);
-                    propertyEntityBuilder.Property(p => p.Value);
+                propertyEntityBuilder.Property(p => p.Name);
+                propertyEntityBuilder.Property(p => p.DataType);
+                propertyEntityBuilder.Property(p => p.Value);
 
                     // shadow properties
                     propertyEntityBuilder.Property<string>(nameof(WorkItem.ProjectCode));
-                    propertyEntityBuilder.Property<string>(nameof(WorkItem.Id));
+                propertyEntityBuilder.Property<string>(nameof(WorkItem.Id));
 
-                    propertyEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
-                    propertyEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(Property.Name));
-                });
+                propertyEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
+                propertyEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(Property.Name));
+            });
 
-            modelBuilder.Entity<WorkItem>()
-                .OwnsMany(e => e.Log, logEntityBuilder =>
-                {
-                    logEntityBuilder.Property(p => p.Date);
-                    logEntityBuilder.Property(p => p.User);
-                    logEntityBuilder.Property(p => p.Comment);
+        modelBuilder.Entity<WorkItem>()
+            .OwnsMany(e => e.Log, logEntityBuilder =>
+            {
+                logEntityBuilder.Property(p => p.Date);
+                logEntityBuilder.Property(p => p.User);
+                logEntityBuilder.Property(p => p.Comment);
 
                     // shadow properties
                     logEntityBuilder.Property<string>(nameof(WorkItem.ProjectCode));
-                    logEntityBuilder.Property<string>(nameof(WorkItem.Id));
+                logEntityBuilder.Property<string>(nameof(WorkItem.Id));
 
-                    logEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
-                    logEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date));
+                logEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id));
+                logEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date));
 
-                    logEntityBuilder.OwnsMany(e => e.Changes, propertyChangeEntityBuilder =>
-                    {
-                        propertyChangeEntityBuilder.Property(p => p.Name);
-                        propertyChangeEntityBuilder.Property(p => p.OldValue);
-                        propertyChangeEntityBuilder.Property(p => p.NewValue);
+                logEntityBuilder.OwnsMany(e => e.Changes, propertyChangeEntityBuilder =>
+                {
+                    propertyChangeEntityBuilder.Property(p => p.Name);
+                    propertyChangeEntityBuilder.Property(p => p.OldValue);
+                    propertyChangeEntityBuilder.Property(p => p.NewValue);
 
                         // shadow properties
                         propertyChangeEntityBuilder.Property<string>(nameof(WorkItem.ProjectCode));
-                        propertyChangeEntityBuilder.Property<string>(nameof(WorkItem.Id));
-                        propertyChangeEntityBuilder.Property<DateTimeOffset>(nameof(LogEntry.Date));
+                    propertyChangeEntityBuilder.Property<string>(nameof(WorkItem.Id));
+                    propertyChangeEntityBuilder.Property<DateTimeOffset>(nameof(LogEntry.Date));
 
-                        propertyChangeEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date));
-                        propertyChangeEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date), nameof(PropertyChange.Name));
-                    });
+                    propertyChangeEntityBuilder.WithOwner().HasForeignKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date));
+                    propertyChangeEntityBuilder.HasKey(nameof(WorkItem.ProjectCode), nameof(WorkItem.Id), nameof(LogEntry.Date), nameof(PropertyChange.Name));
                 });
-        }
-
-        public DbSet<WorkItem> WorkItems { get; set; }
+            });
     }
+
+    public DbSet<WorkItem> WorkItems { get; set; }
 }

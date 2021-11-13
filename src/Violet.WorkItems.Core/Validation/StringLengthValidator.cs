@@ -1,38 +1,37 @@
 using Violet.WorkItems.Types;
 
-namespace Violet.WorkItems.Validation
+namespace Violet.WorkItems.Validation;
+
+public class StringLengthValidator : PropertyWithValidatorDescriptorValidatorBase<StringLengthValidatorDescriptor>, IValidator
 {
-    public class StringLengthValidator : PropertyWithValidatorDescriptorValidatorBase<StringLengthValidatorDescriptor>, IValidator
+    public StringLengthValidator(PropertyDescriptor propertyDescriptor, StringLengthValidatorDescriptor validatorDescriptor)
+        : base(propertyDescriptor, validatorDescriptor, nameof(StringLengthValidator))
+    { }
+
+    protected override (bool success, string code, string message) ValidateProperty(PropertyValidationContext context)
     {
-        public StringLengthValidator(PropertyDescriptor propertyDescriptor, StringLengthValidatorDescriptor validatorDescriptor)
-            : base(propertyDescriptor, validatorDescriptor, nameof(StringLengthValidator))
-        { }
+        var code = string.Empty;
+        var message = string.Empty;
 
-        protected override (bool success, string code, string message) ValidateProperty(PropertyValidationContext context)
+        bool result = true;
+
+        var property = context.Property;
+
+        if (property.DataType == "String")
         {
-            var code = string.Empty;
-            var message = string.Empty;
+            property.Value(out string valueAsString);
 
-            bool result = true;
+            int length = valueAsString.Length;
 
-            var property = context.Property;
-
-            if (property.DataType == "String")
+            if (length < ValidatorDescriptor.Min || length > ValidatorDescriptor.Max)
             {
-                property.Value(out string valueAsString);
+                code = string.Empty;
+                message = $"Property {PropertyDescriptor.Name} cannot be empty";
 
-                int length = valueAsString.Length;
-
-                if (length < ValidatorDescriptor.Min || length > ValidatorDescriptor.Max)
-                {
-                    code = string.Empty;
-                    message = $"Property {PropertyDescriptor.Name} cannot be empty";
-
-                    result = false;
-                }
+                result = false;
             }
-
-            return (result, code, message);
         }
+
+        return (result, code, message);
     }
 }
