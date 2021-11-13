@@ -14,12 +14,10 @@ namespace Violet.WorkItems.Service.Controllers;
 public class WorkItemDescriptorController : ControllerBase
 {
     private readonly WorkItemManager _workItemManager;
-    private readonly ILogger<WorkItemDescriptorController> _logger;
 
-    public WorkItemDescriptorController(WorkItemManager workItemManager, ILogger<WorkItemDescriptorController> logger)
+    public WorkItemDescriptorController(WorkItemManager workItemManager)
     {
         _workItemManager = workItemManager;
-        _logger = logger;
     }
 
     [HttpGet("api/v1/projects/{projectCode}/workitems/{workItemId}/descriptor")]

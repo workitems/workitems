@@ -41,7 +41,7 @@ public class GitHubDataProvider : IDataProvider
     public Task SaveNewWorkItemAsync(WorkItem workItem) => throw new NotImplementedException();
     public Task SaveUpdatedWorkItemAsync(WorkItem workItem) => throw new NotImplementedException();
 
-    private WorkItem ConvertToWorkItem(string projectCode, Issue issue)
+    private static WorkItem ConvertToWorkItem(string projectCode, Issue issue)
     {
         if (issue is null)
         {
@@ -52,10 +52,8 @@ public class GitHubDataProvider : IDataProvider
                 new Property(TitleProperty, "string", issue.Title),
                 new Property(BodyProperty, "string", issue.Body),
                 new Property(StateProperty, "state", issue.State.StringValue),
-           },
-        new LogEntry[] {
-
-        });
+            },
+            Array.Empty<LogEntry>());
 
         return result;
     }

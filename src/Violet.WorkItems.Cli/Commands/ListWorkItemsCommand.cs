@@ -26,11 +26,9 @@ public static class ListWorkItemsCommand
 
         var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
 
-        var formatter = new WorkItemFormatter();
-
         foreach (var item in items)
         {
-            writer.WriteLine(formatter.FormatShortLine(item));
+            writer.WriteLine(WorkItemFormatter.FormatShortLine(item));
         }
 
         return 0;

@@ -31,24 +31,19 @@ public class WorkItemListController : ControllerBase
         {
             var list = await _workItemManager.DataProvider.ListWorkItemsAsync(projectCode);
 
-            if (list != null)
-            {
-                return Ok(new WorkItemListApiResponse()
+            return list != null
+                ? Ok(new WorkItemListApiResponse()
                 {
                     Success = true,
                     WorkItems = list,
-                });
-            }
-            else
-            {
-                return NotFound(new WorkItemApiResponse()
+                })
+                : NotFound(new WorkItemApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = null,
                     WorkItem = null,
                 });
-            }
         }
         catch (Exception e)
         {

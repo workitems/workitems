@@ -52,14 +52,9 @@ public class WorkItemManager
 
         var (success, propertyDescriptors) = DescriptorManager.GetAllPropertyDescriptors(workItemType);
 
-        if (success)
-        {
-            properties = propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue)).ToList();
-        }
-        else
-        {
-            properties = new List<Property>();
-        }
+        properties = success
+            ? propertyDescriptors.Select(pd => new Property(pd.Name, pd.DataType, pd.InitialValue ?? EmptyValue)).ToList()
+            : new List<Property>();
 
         var wi = new WorkItem(projectCode, "NEW", workItemType, properties, new List<LogEntry>());
 
@@ -92,7 +87,7 @@ public class WorkItemManager
 
         await InitAsync();
 
-        if (properties.Count() > 0)
+        if (properties.Any())
         {
             var newIdentifer = (await DataProvider.NextNumberAsync(projectCode)).ToString();
 
@@ -102,7 +97,7 @@ public class WorkItemManager
             var propertyChanges = properties.Where(p => p.Value != EmptyValue).Select(p => new PropertyChange(p.Name, EmptyValue, p.Value));
             var newProperties = properties;
 
-            if (template != null && template.Properties.Count() > 0)
+            if (template != null && template.Properties.Any())
             {
                 propertyChanges = AnalyzeChanges(template.Properties, properties);
                 newProperties = MergePropertySet(template.Properties, properties);
@@ -113,7 +108,7 @@ public class WorkItemManager
 
             var validationResult = await ValidationManager.ValidateAsync(wi, propertyChanges, false);
 
-            if (validationResult.Count() == 0)
+            if (!validationResult.Any())
             {
                 await DataProvider.SaveNewWorkItemAsync(wi);
 
@@ -187,14 +182,9 @@ public class WorkItemManager
 
             var (newWorkItem, errors) = await UpdateInternalAsync(workItem, newProperties, changes, false);
 
-            if (errors.Count() == 0)
-            {
-                result = new WorkItemUpdatedResult(true, newWorkItem, Array.Empty<ErrorMessage>());
-            }
-            else
-            {
-                result = new WorkItemUpdatedResult(false, newWorkItem, errors);
-            }
+            result = !errors.Any()
+                ? new WorkItemUpdatedResult(true, newWorkItem, Array.Empty<ErrorMessage>())
+                : new WorkItemUpdatedResult(false, newWorkItem, errors);
         }
         else
         {
@@ -216,7 +206,7 @@ public class WorkItemManager
 
         var errors = await ValidationManager.ValidateAsync(newWorkItem, changes, internalEdit);
 
-        if (errors.Count() == 0)
+        if (!errors.Any())
         {
             await DataProvider.SaveUpdatedWorkItemAsync(newWorkItem);
         }
@@ -224,7 +214,7 @@ public class WorkItemManager
         return (newWorkItem, errors);
     }
 
-    private IEnumerable<PropertyChange> AnalyzeChanges(IEnumerable<Property> properties, IEnumerable<Property> requested)
+    private static IEnumerable<PropertyChange> AnalyzeChanges(IEnumerable<Property> properties, IEnumerable<Property> requested)
         => requested
             .Select(r => (properties.FirstOrDefault(p => p.Name == r.Name), r))
             .Where(old_new => old_new.Item1.Value != old_new.r.Value)
@@ -234,14 +224,14 @@ public class WorkItemManager
                     (var oldProperty, var newProperty) => new PropertyChange(oldProperty.Name, oldProperty.Value, newProperty.Value),
                 });
 
-    private IEnumerable<Property> ApplyChangesToPropertySet(IEnumerable<Property> properties, IEnumerable<PropertyChange> changes)
+    private static IEnumerable<Property> ApplyChangesToPropertySet(IEnumerable<Property> properties, IEnumerable<PropertyChange> changes)
         => properties.Select(p => changes.FirstOrDefault(c => c.Name == p.Name) switch
         {
             PropertyChange change => new Property(p.Name, p.DataType, change.NewValue),
             null => p,
         });
 
-    private IEnumerable<Property> MergePropertySet(IEnumerable<Property> properties, IEnumerable<Property> requested)
+    private static IEnumerable<Property> MergePropertySet(IEnumerable<Property> properties, IEnumerable<Property> requested)
         => properties.Union(requested.Where(pr => !properties.Any(p => pr.Name == p.Name)));
 
     public async Task<WorkItemCommandExecutedResult> ExecuteCommandAsync(string projectCode, string id, string command)
@@ -260,7 +250,7 @@ public class WorkItemManager
 
                 var (newWorkItem, errors) = await UpdateInternalAsync(workItem, workItem.Properties, changes, true);
 
-                result = new WorkItemCommandExecutedResult(errors.Count() == 0, newWorkItem, errors);
+                result = new WorkItemCommandExecutedResult(!errors.Any(), newWorkItem, errors);
             }
             else
             {
@@ -279,12 +269,12 @@ public class WorkItemManager
         return result;
     }
 
-    private Task<IEnumerable<PropertyChange>> ExecutedCommandAsync(WorkItem workItem, CommandDescriptor commandDescriptor)
+    private static Task<IEnumerable<PropertyChange>> ExecutedCommandAsync(WorkItem workItem, CommandDescriptor commandDescriptor)
         => commandDescriptor switch
         {
             ChangePropertyValueCommandDescriptor cpvcd => Task.FromResult<IEnumerable<PropertyChange>>(new PropertyChange[] {
-                    new PropertyChange(cpvcd.PropertyName, workItem[cpvcd.PropertyName].Value, cpvcd.TargetValue),
+                new PropertyChange(cpvcd.PropertyName, workItem[cpvcd.PropertyName]?.Value ?? throw new InvalidOperationException("work item lost item meanwhile"), cpvcd.TargetValue),
             }),
-            _ => throw new ArgumentException(nameof(commandDescriptor)),
+            _ => throw new ArgumentException("Command not supported", nameof(commandDescriptor)),
         };
 }

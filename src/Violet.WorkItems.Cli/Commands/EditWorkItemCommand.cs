@@ -42,7 +42,7 @@ public static class EditWorkItemCommand
             {
                 var propertyDescriptor = propertyDescriptors.FirstOrDefault(wi => wi.Name == property.Name);
 
-                string value;
+                string? value;
                 if (propertyDescriptor is null)
                 {
                     Console.Write($"{property.Name} [{property.Value}]: ");

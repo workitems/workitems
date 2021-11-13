@@ -81,7 +81,7 @@ public class EnumValueProviderTest
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.NotNull(result.CreatedWorkItem);
-        Assert.Collection(result.Errors);
+        Assert.Empty(result.Errors);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class EnumValueProviderTest
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.NotNull(result.CreatedWorkItem);
-        Assert.Collection(result.Errors);
+        Assert.Empty(result.Errors);
     }
 
     [Fact]

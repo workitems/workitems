@@ -44,17 +44,9 @@ public static class NewWorkItemCommand
         }
 
         var properties = wi.Properties
-            .Select(property =>
-            {
-                if (propertiesDictionary.TryGetValue(property.Name, out var value))
-                {
-                    return new Property(property.Name, property.DataType, value);
-                }
-                else
-                {
-                    return property;
-                }
-            })
+            .Select(property => propertiesDictionary.TryGetValue(property.Name, out var value)
+                    ? new Property(property.Name, property.DataType, value)
+                    : property)
             .Where(p => p != null)
             .ToArray();
 

@@ -86,10 +86,10 @@ public class DescriptorManager
             ? EvaluateActiveStages(workItem, descriptor).SelectMany(stage => stage.Commands)
             : Array.Empty<CommandDescriptor>();
 
-    private IEnumerable<StageDescriptor> EvaluateActiveStages(WorkItem workItem, WorkItemDescriptor descriptor)
+    private static IEnumerable<StageDescriptor> EvaluateActiveStages(WorkItem workItem, WorkItemDescriptor descriptor)
         => descriptor.Stages.Where(stage => EvaluateStageCondition(workItem, stage.Condition));
 
-    private bool EvaluateStageCondition(WorkItem workItem, ConditionDescriptor condition)
+    private static bool EvaluateStageCondition(WorkItem workItem, ConditionDescriptor condition)
         => condition switch
         {
             PropertyValueConditionDescriptor pvcd => workItem.Properties.FirstOrDefault(p => p.Name == pvcd.PropertyName)?.Value == pvcd.ExpectedValue,

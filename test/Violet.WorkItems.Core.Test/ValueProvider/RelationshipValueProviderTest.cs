@@ -29,7 +29,7 @@ public class RelationshipValueProviderTest
         var result = await manager.CreateAsync("Foo", "Feature", feature.Properties);
 
         Assert.True(result.Success);
-        Assert.Collection(result.Errors);
+        Assert.Empty(result.Errors);
     }
 
     [Fact]
@@ -52,10 +52,7 @@ public class RelationshipValueProviderTest
 
         Assert.False(result.Success);
         Assert.Collection(result.Errors,
-            e =>
-            {
-                Assert.Equal(nameof(ValueProviderValidator), e.Source);
-            });
+            e => Assert.Equal(nameof(ValueProviderValidator), e.Source));
     }
 
     [Fact]
@@ -78,10 +75,7 @@ public class RelationshipValueProviderTest
 
         Assert.False(result.Success);
         Assert.Collection(result.Errors,
-            e =>
-            {
-                Assert.Equal(nameof(ValueProviderValidator), e.Source);
-            });
+            e => Assert.Equal(nameof(ValueProviderValidator), e.Source));
     }
 
     private static WorkItemManager BuildManager()

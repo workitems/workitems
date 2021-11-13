@@ -15,12 +15,10 @@ namespace Violet.WorkItems.Service.Controllers;
 public class ValueProviderController : ControllerBase
 {
     private readonly WorkItemManager _workItemManager;
-    private readonly ILogger<ValueProviderController> _logger;
 
-    public ValueProviderController(WorkItemManager workItemManager, ILogger<ValueProviderController> logger)
+    public ValueProviderController(WorkItemManager workItemManager)
     {
         _workItemManager = workItemManager;
-        _logger = logger;
     }
 
     [HttpGet("api/v1/projects/{projectCode}/types/{workItemType}/properties/{propertyName}/provider")]

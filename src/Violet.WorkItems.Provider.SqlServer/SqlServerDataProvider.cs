@@ -51,7 +51,7 @@ public class SqlServerDataProvider : IDataProvider
 
         var log = new HashSet<LogEntry>(trackedOne.Log);
 
-        var lastLogEntryDate = (log.Count() == 0) ? DateTimeOffset.MinValue : log.Max(l => l.Date);
+        var lastLogEntryDate = (log.Count == 0) ? DateTimeOffset.MinValue : log.Max(l => l.Date);
 
         foreach (var logEntry in workItem.Log.Where(l => l.Date > lastLogEntryDate))
         {

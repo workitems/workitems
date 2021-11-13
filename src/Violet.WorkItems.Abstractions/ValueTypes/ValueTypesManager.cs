@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Violet.WorkItems;
 
 public static class ValueTypesManager
 {
-    private static readonly Lazy<Dictionary<Type, Type>> s_lazyConverters = new Lazy<Dictionary<Type, Type>>(() => new Dictionary<Type, Type>
+    private static readonly Lazy<Dictionary<Type, Type>> s_lazyConverters = new(() => new Dictionary<Type, Type>
     {
         // Add the intrinsics
         //
@@ -41,11 +42,11 @@ public static class ValueTypesManager
             _ => dataTypeName == type.Name,
         };
 
-    private static bool TryGetConverterType(Func<KeyValuePair<Type, Type>, bool> predicate, out Type converterType)
+    private static bool TryGetConverterType(Func<KeyValuePair<Type, Type>, bool> predicate, [NotNullWhen(returnValue: true)] out Type? converterType)
     {
         converterType = s_lazyConverters.Value.Where(predicate).Select(kv => kv.Value).FirstOrDefault();
 
-        return !(converterType is null);
+        return converterType is not null;
     }
 
     private static TypeConverter? CreateConverter(Type converterType)

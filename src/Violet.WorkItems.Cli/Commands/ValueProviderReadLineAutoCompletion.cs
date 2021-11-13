@@ -24,7 +24,7 @@ public class ValueProviderReadLineAutoCompletion : IAutoCompleteHandler
 
     public string[] GetSuggestions(string text, int index)
     {
-        var prefix = text.Substring(0, index);
+        var prefix = text[..index];
 
         return _valueProvider.SuggestionsAsync(prefix).Result.Select(pv => pv.Value).ToArray();
     }

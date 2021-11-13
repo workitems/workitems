@@ -141,7 +141,7 @@ class Program
 
         if (configFile is null)
         {
-            throw new ArgumentException("configFile cannot be found", nameof(ArgumentException));
+            throw new ArgumentException("configFile cannot be found", nameof(configFile));
         }
 
         var configuration = new ConfigurationBuilder()

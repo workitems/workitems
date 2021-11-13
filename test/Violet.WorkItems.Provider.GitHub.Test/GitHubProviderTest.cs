@@ -17,7 +17,7 @@ public class GitHubProviderTest
         var workItems = await provider.ListWorkItemsAsync("workitems/workitems");
 
         // assert
-        Assert.True(workItems.Count() > 0);
+        Assert.NotEmpty(workItems);
         Assert.True(workItems.All(wi => wi.ProjectCode == "workitems/workitems"));
         Assert.True(workItems.All(wi => wi.WorkItemType == "Issue"));
 

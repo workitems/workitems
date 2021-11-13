@@ -21,7 +21,7 @@ public class ValidationManager
     public async Task<IEnumerable<ErrorMessage>> ValidateAsync(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges, bool internalEdit)
     {
         var errors = new List<ErrorMessage>();
-        var validators = CreateValidators(workItem, appliedChanges, errors);
+        var validators = CreateValidators(workItem);
 
         foreach (var validator in validators)
         {
@@ -33,7 +33,7 @@ public class ValidationManager
         return errors;
     }
 
-    private IEnumerable<IValidator> CreateValidators(WorkItem workItem, IEnumerable<PropertyChange> appliedChanges, List<ErrorMessage> errors)
+    private IEnumerable<IValidator> CreateValidators(WorkItem workItem)
     {
         var validators = new List<IValidator?>();
 
@@ -58,7 +58,7 @@ public class ValidationManager
         yield return new CompletenessValidator(_descriptorManager.GetCurrentPropertyDescriptors(workItem));
     }
 
-    private IEnumerable<IValidator> CreatePropertyValidatorByPropertyDescriptor(PropertyDescriptor propertyDescriptor)
+    private static IEnumerable<IValidator> CreatePropertyValidatorByPropertyDescriptor(PropertyDescriptor propertyDescriptor)
     {
         if (propertyDescriptor.IsEditable == false)
         {
@@ -70,7 +70,7 @@ public class ValidationManager
         }
     }
 
-    private IValidator? CreatePropertyValidatorByValidatorDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
+    private static IValidator? CreatePropertyValidatorByValidatorDescriptor(PropertyDescriptor propertyDescriptor, ValidatorDescriptor validatorDescriptor)
         => validatorDescriptor switch
         {
             MandatoryValidatorDescriptor mvd => new MandatoryValidator(propertyDescriptor, mvd),
@@ -85,8 +85,8 @@ public class ValidationManager
         => valueProviderDescriptor switch
         {
             EnumValueProviderDescriptor evpd => new EnumValueProvider(evpd),
-            ProjectCollectionValueProviderDescriptor pcvpd => throw new NotImplementedException(),
-            ProjectUserValueProviderDescriptor puvpd => throw new NotImplementedException(),
+            ProjectCollectionValueProviderDescriptor => throw new NotImplementedException(),
+            ProjectUserValueProviderDescriptor => throw new NotImplementedException(),
             RelationshipValueProviderDescriptor rvpd => new RelationshipValueProvider(rvpd, _workItemManager, workItem.ProjectCode),
             _ => throw new NotImplementedException(),
         };

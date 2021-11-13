@@ -37,9 +37,7 @@ public static class DetailWorkItemCommand
         }
         else
         {
-            var formatter = new WorkItemFormatter();
-
-            await formatter.FormatAsync(manager.DescriptorManager, workItem, writer);
+            await WorkItemFormatter.FormatAsync(manager.DescriptorManager, workItem, writer);
         }
 
         return (workItem != null) ? 0 : 1;

@@ -24,18 +24,18 @@ public class ImmutableValidator : IValidator
         }
         if (context.WorkItem is null)
         {
-            throw new ArgumentNullException(nameof(context.WorkItem));
+            throw new ArgumentNullException("missing WorkItem", nameof(context.WorkItem));
         }
         if (context.AppliedChanges is null)
         {
-            throw new ArgumentNullException(nameof(context.AppliedChanges));
+            throw new ArgumentNullException("missing applied changes", nameof(context.AppliedChanges));
         }
 
         var workItem = context.WorkItem;
         var errors = new List<ErrorMessage>();
         var propertyChange = context.AppliedChanges.FirstOrDefault(c => c.Name == PropertyDescriptor.Name);
 
-        if (!PropertyDescriptor.IsEditable && !(propertyChange is null) && !context.InternalEdit)
+        if (!PropertyDescriptor.IsEditable && propertyChange is not null && !context.InternalEdit)
         {
             errors.Add(new ErrorMessage(nameof(ImmutableValidator), string.Empty, "The field is currently not editable", workItem.ProjectCode, workItem.Id, PropertyDescriptor.Name));
         }

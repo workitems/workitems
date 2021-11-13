@@ -28,10 +28,10 @@ public static class CommonDataTypesExtensions
 
         var result = tc.ConvertToInvariantString(value);
 
-        property.Value = result;
+        property.Value = result ?? string.Empty;
     }
 
-    public static void Value<T>(this Property property, out T value)
+    public static void Value<T>(this Property property, out T? value)
     {
         if (property is null)
         {
@@ -55,7 +55,7 @@ public static class CommonDataTypesExtensions
         {
             var result = tc.ConvertFromInvariantString(property.Value);
 
-            value = (T)result;
+            value = (T?)result;
         }
         else
         {

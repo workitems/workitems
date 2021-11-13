@@ -28,7 +28,7 @@ public class WorkItemManagerTest
     public Task WorkItemManager_Create_SimpleWithoutDescriptor_OnSqlServerDataProvider()
         => WorkItemManager_Create_SimpleWithoutDescriptor(GetSqlServerDataProvider());
 
-    private async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
+    private static async Task WorkItemManager_Create_SimpleWithoutDescriptor(IDataProvider dataProvider)
     {
         // arrange
         var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
@@ -72,10 +72,7 @@ public class WorkItemManagerTest
         var manager = new WorkItemManager(null, new CommonSdlcDescriptorProvider());
 
         // act
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            await manager.CreateAsync(null, "FOO", new Property[] { });
-        });
+        await Assert.ThrowsAsync<ArgumentException>(async () => await manager.CreateAsync(null, "FOO", Array.Empty<Property>()));
     }
 
     [Fact]
@@ -85,10 +82,7 @@ public class WorkItemManagerTest
         var manager = new WorkItemManager(null, new CommonSdlcDescriptorProvider());
 
         // act
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            await manager.CreateAsync("FOO", null, new Property[] { });
-        });
+        await Assert.ThrowsAsync<ArgumentException>(async () => await manager.CreateAsync("FOO", null, Array.Empty<Property>()));
     }
 
     [Fact]
@@ -100,7 +94,7 @@ public class WorkItemManagerTest
         var manager = new WorkItemManager(providerMock.Object, new CommonSdlcDescriptorProvider());
 
         // act
-        var result = await manager.CreateAsync("FOO", "BAR", new Property[] { });
+        var result = await manager.CreateAsync("FOO", "BAR", Array.Empty<Property>());
 
         // assert
         Assert.False(result.Success);
@@ -118,7 +112,7 @@ public class WorkItemManagerTest
     public Task WorkItemManager_Update_SimpleWithoutDescriptor_OnSqlServerDataProvider()
         => WorkItemManager_Update_SimpleWithoutDescriptor(GetSqlServerDataProvider());
 
-    private async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
+    private static async Task WorkItemManager_Update_SimpleWithoutDescriptor(IDataProvider dataProvider)
     {
         // arrange
         var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
@@ -157,18 +151,14 @@ public class WorkItemManagerTest
         );
 
         Assert.Collection(result.UpdatedWorkItem.Log,
-            l =>
-            {
-                Assert.Collection(l.Changes,
+            l => Assert.Collection(l.Changes,
                     pc =>
                     {
                         Assert.Equal("A", pc.Name);
                         Assert.Equal("aa", pc.OldValue);
                         Assert.Equal("aab", pc.NewValue);
                     }
-                );
-            }
-        );
+                ));
     }
 
     [Fact]
@@ -180,7 +170,7 @@ public class WorkItemManagerTest
     public Task WorkItemManager_Update_TwoTimesWithoutDescriptor_OnSqlServerDataProvider()
         => WorkItemManager_Update_TwoTimesWithoutDescriptor(GetSqlServerDataProvider());
 
-    private async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
+    private static async Task WorkItemManager_Update_TwoTimesWithoutDescriptor(IDataProvider dataProvider)
     {
         // arrange
         var manager = new WorkItemManager(dataProvider, new CommonSdlcDescriptorProvider());
@@ -227,29 +217,22 @@ public class WorkItemManagerTest
         );
 
         Assert.Collection(result2.UpdatedWorkItem.Log,
-            l =>
-            {
-                Assert.Collection(l.Changes,
+            l => Assert.Collection(l.Changes,
                     pc =>
                     {
                         Assert.Equal("A", pc.Name);
                         Assert.Equal("aa", pc.OldValue);
                         Assert.Equal("aab", pc.NewValue);
                     }
-                );
-            },
-            l =>
-            {
-                Assert.Collection(l.Changes,
+                ),
+            l => Assert.Collection(l.Changes,
                     pc =>
                     {
                         Assert.Equal("A", pc.Name);
                         Assert.Equal("aab", pc.OldValue);
                         Assert.Equal("aabc", pc.NewValue);
                     }
-                );
-            }
-        );
+                ));
     }
 
     [Fact]

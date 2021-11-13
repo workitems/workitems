@@ -64,7 +64,7 @@ public class RelationshipValueProvider : IValueProvider
         if (colonSeparator != -1 && dashSeparator != -1)
         {
 
-            var relationshipType = value.Substring(0, colonSeparator);
+            var relationshipType = value[..colonSeparator];
             var projectCode = value.Substring(colonSeparator + 1, dashSeparator - colonSeparator - 1);
             var id = value.Substring(dashSeparator + 1, value.Length - dashSeparator - 1);
 

@@ -37,21 +37,11 @@ public class WorkItem
             throw new ArgumentException("null or empty", nameof(workItemType));
         }
 
-        if (properties == null)
-        {
-            throw new ArgumentNullException(nameof(properties));
-        }
-
-        if (log == null)
-        {
-            throw new ArgumentNullException(nameof(log));
-        }
-
         ProjectCode = projectCode;
         Id = id;
         WorkItemType = workItemType;
-        Properties = properties;
-        Log = log;
+        Properties = properties ?? throw new ArgumentNullException(nameof(properties));
+        Log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
     public Property? this[string propertyName]

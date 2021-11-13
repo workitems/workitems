@@ -49,15 +49,8 @@ public class ValueProviderValidator : PropertyWithPropertyDescriptorValidatorBas
         return (success, code, message);
     }
 
-    private IEnumerable<string> MultiValues(PropertyDescriptor propertyDescriptor, Property property)
-    {
-        if (propertyDescriptor.PropertyType == PropertyType.SingleValueFromProvider || propertyDescriptor.PropertyType == PropertyType.SingleRaw)
-        {
-            return new string[] { property.Value };
-        }
-        else
-        {
-            return property.Value.Split(',');
-        }
-    }
+    private static IEnumerable<string> MultiValues(PropertyDescriptor propertyDescriptor, Property property)
+        => propertyDescriptor.PropertyType == PropertyType.SingleValueFromProvider || propertyDescriptor.PropertyType == PropertyType.SingleRaw
+            ? (new string[] { property.Value })
+            : property.Value.Split(',');
 }

@@ -26,10 +26,7 @@ public class DescriptorManagerTest
             {
                 Assert.Equal("A", pd.Name);
                 Assert.Collection(pd.Validators,
-                    v =>
-                    {
-                        Assert.IsType<MandatoryValidatorDescriptor>(v);
-                    });
+                    v => Assert.IsType<MandatoryValidatorDescriptor>(v));
             },
             pd =>
             {

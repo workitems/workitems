@@ -33,7 +33,7 @@ public class CompletenessValidator : IValidator
                 errors.Add(new ErrorMessage(nameof(CompletenessValidator), string.Empty, $"WorkItem does not have property '{propertyDescriptor.Name}' as described in type '{workItem.WorkItemType}.", workItem.ProjectCode, workItem.Id, propertyDescriptor.Name));
             }
 
-            if (!(property is null) && property.DataType != propertyDescriptor.DataType)
+            if (property is not null && property.DataType != propertyDescriptor.DataType)
             {
                 errors.Add(new ErrorMessage(nameof(CompletenessValidator), string.Empty, $"DataType '{property.DataType}' on Property '{property.Name}' does not match description '{propertyDescriptor.DataType}'.", workItem.ProjectCode, workItem.Id, property.Name));
             }

@@ -9,17 +9,15 @@ public class InMemoryDataProvider : IDataProvider
     public bool Read => true;
     public bool Write => true;
 
-    private readonly Dictionary<string, WorkItem> _data = new Dictionary<string, WorkItem>();
+    private readonly Dictionary<string, WorkItem> _data = new();
     private string GetKey(string projectCode, string id)
         => $"{projectCode}-{id}";
 
     public Task<WorkItem?> GetAsync(string projectCode, string id)
     {
-        WorkItem? result = null;
+        _data.TryGetValue(GetKey(projectCode, id), out WorkItem? result);
 
-        _data.TryGetValue(GetKey(projectCode, id), out result);
-
-        return Task.FromResult<WorkItem?>(result);
+        return Task.FromResult(result);
     }
 
     public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? type = null)

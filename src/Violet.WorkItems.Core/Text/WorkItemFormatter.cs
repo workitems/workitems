@@ -9,7 +9,7 @@ namespace Violet.WorkItems.Text;
 
 public class WorkItemFormatter
 {
-    public async Task FormatAsync(DescriptorManager manager, WorkItem workItem, TextWriter writer)
+    public static async Task FormatAsync(DescriptorManager manager, WorkItem workItem, TextWriter writer)
     {
         var logEntryTypeDescriptors = manager.GetCurrentLogEntryTypeDescriptors(workItem);
         var commands = manager.GetCurrentCommands(workItem);
@@ -21,7 +21,7 @@ public class WorkItemFormatter
             await writer.WriteLineAsync($"> {FormatProperty(property)}");
         }
 
-        if (commands.Count() > 0)
+        if (commands.Any())
         {
             writer.WriteLine($"? Commands: {string.Join(", ", commands.Select(c => c.Label))}");
         }
@@ -44,7 +44,7 @@ public class WorkItemFormatter
         }
     }
 
-    private string GetFormatTemplate(IEnumerable<LogEntryTypeDescriptor> logEntryTypeDescriptors, LogEntry logEntry)
+    private static string GetFormatTemplate(IEnumerable<LogEntryTypeDescriptor> logEntryTypeDescriptors, LogEntry logEntry)
     {
         string result = "✍  Change at {date} by {user} with comment: {comment}";
 
@@ -61,30 +61,30 @@ public class WorkItemFormatter
         return result;
     }
 
-    private string CreateTemplate(LogEntryTypeDescriptor descriptor)
+    private static string CreateTemplate(LogEntryTypeDescriptor descriptor)
         => descriptor switch
         {
             PropertyChangeLogEntryTypeDescriptor pcletc => $"{pcletc.Emoji}  {pcletc.Message}",
             _ => string.Empty,
         };
 
-    private bool IsLogEntryTypeMatch(LogEntryTypeDescriptor descriptor, LogEntry logEntry)
+    private static bool IsLogEntryTypeMatch(LogEntryTypeDescriptor descriptor, LogEntry logEntry)
         => (descriptor, logEntry) switch
         {
             (PropertyChangeLogEntryTypeDescriptor pcletd, _) when (logEntry.Changes.Any(c => c.Name == pcletd.PropertyName && (pcletd.TargetValue == null || pcletd.TargetValue == c.NewValue))) => true,
             _ => false,
         };
 
-    public string FormatShortLine(WorkItem workItem)
+    public static string FormatShortLine(WorkItem workItem)
         => $"{FormatId(workItem)} ({workItem.WorkItemType}): {GetTitleProperty(workItem)}";
 
-    private string FormatProperty(Property property)
+    private static string FormatProperty(Property property)
         => $"{property.Name}: {property.Value}";
 
-    private string FormatPropertyChange(PropertyChange propertyChange)
+    private static string FormatPropertyChange(PropertyChange propertyChange)
         => $"{propertyChange.Name}: {propertyChange.OldValue} => {propertyChange.NewValue}";
 
-    private string GetTitleProperty(WorkItem workItem)
+    private static string GetTitleProperty(WorkItem workItem)
     {
         var result = string.Empty;
 
@@ -108,6 +108,6 @@ public class WorkItemFormatter
         return result;
     }
 
-    public string FormatId(WorkItem workItem)
+    public static string FormatId(WorkItem workItem)
         => $"{workItem.ProjectCode}-{workItem.Id}";
 }

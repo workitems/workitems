@@ -13,10 +13,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() =>
-        {
-            property.Value(x);
-        });
+        Assert.Throws<InvalidOperationException>(() => property.Value(x));
     }
 
     [Fact]
@@ -26,10 +23,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<InvalidOperationException>(() =>
-        {
-            property.Value(out long x);
-        });
+        Assert.Throws<InvalidOperationException>(() => property.Value(out long x));
     }
 
 
@@ -40,10 +34,7 @@ public class CommonTypeExtensionsTest
         var property = new Property("FOO", nameof(Int32), string.Empty);
 
         // act & assert
-        Assert.Throws<ArgumentException>(() =>
-        {
-            property.Value(out int result);
-        });
+        Assert.Throws<ArgumentException>(() => property.Value(out int result));
     }
     [Fact]
     public void CommonTypeExtensions_Value_Int32_NullableAllowed()
@@ -193,11 +184,10 @@ public class CommonTypeExtensionsTest
         property.Values(out int[] result);
         // assert
         Assert.Collection(result,
-            i => { Assert.Equal(1, i); },
-            i => { Assert.Equal(2, i); },
-            i => { Assert.Equal(3, i); },
-            i => { Assert.Equal(4, i); }
-        );
+            i => Assert.Equal(1, i),
+            i => Assert.Equal(2, i),
+            i => Assert.Equal(3, i),
+            i => Assert.Equal(4, i));
     }
     [Fact]
     public void CommonTypeExtensions_Values_InvalidData()
@@ -205,9 +195,6 @@ public class CommonTypeExtensionsTest
         // arrange
         var property = new Property("A", "Int32", "1,2,A,4");
         // act & assert
-        Assert.Throws<ArgumentException>(() =>
-        {
-            property.Values(out int[] result);
-        });
+        Assert.Throws<ArgumentException>(() => property.Values(out int[] result));
     }
 }

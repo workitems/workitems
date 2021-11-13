@@ -32,26 +32,21 @@ public class WorkItemController : ControllerBase
         {
             var item = await _workItemManager.CreateTemplateAsync(projectCode, workItemType);
 
-            if (item != null)
-            {
-                return Ok(new WorkItemApiResponse()
+            return item is not null
+                ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
                     ProjectCode = item.ProjectCode,
                     WorkItemId = null,
                     WorkItem = item,
-                });
-            }
-            else
-            {
-                return NotFound(new WorkItemApiResponse()
+                })
+                : NotFound(new WorkItemApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = null,
                     WorkItem = null,
                 });
-            }
         }
         catch (Exception e)
         {
@@ -76,26 +71,21 @@ public class WorkItemController : ControllerBase
         {
             var item = await _workItemManager.GetAsync(projectCode, workItemId);
 
-            if (item != null)
-            {
-                return Ok(new WorkItemApiResponse()
+            return item is not null
+                ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     WorkItem = item,
-                });
-            }
-            else
-            {
-                return NotFound(new WorkItemApiResponse()
+                })
+                : NotFound(new WorkItemApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     WorkItem = null,
                 });
-            }
         }
         catch (Exception e)
         {
@@ -119,25 +109,20 @@ public class WorkItemController : ControllerBase
         {
             var result = await _workItemManager.CreateAsync(request.ProjectCode, request.WorkItemType, request.Properties);
 
-            if (result is { Success: true })
-            {
-                return Ok(new WorkItemApiResponse()
+            return result is { Success: true }
+                ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
                     ProjectCode = result.CreatedWorkItem.ProjectCode,
                     WorkItemId = result.CreatedWorkItem.Id,
                     WorkItem = result.CreatedWorkItem,
-                });
-            }
-            else
-            {
-                return BadRequest(new WorkItemBadRequestApiResponse()
+                })
+                : BadRequest(new WorkItemBadRequestApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     Errors = result.Errors,
                 });
-            }
         }
         catch (Exception e)
         {
@@ -160,26 +145,21 @@ public class WorkItemController : ControllerBase
         {
             var result = await _workItemManager.UpdateAsync(request.ProjectCode, request.WorkItemId, request.Properties);
 
-            if (result is { Success: true })
-            {
-                return Ok(new WorkItemApiResponse()
+            return result is { Success: true }
+                ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     WorkItem = result.UpdatedWorkItem,
-                });
-            }
-            else
-            {
-                return BadRequest(new WorkItemBadRequestApiResponse()
+                })
+                : BadRequest(new WorkItemBadRequestApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     Errors = result.Errors,
                 });
-            }
         }
         catch (Exception e)
         {
@@ -203,26 +183,21 @@ public class WorkItemController : ControllerBase
         {
             var result = await _workItemManager.ExecuteCommandAsync(request.ProjectCode, request.WorkItemId, request.Command);
 
-            if (result is { Success: true })
-            {
-                return Ok(new WorkItemApiResponse()
+            return result is { Success: true }
+                ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     WorkItem = result.UpdatedWorkItem,
-                });
-            }
-            else
-            {
-                return BadRequest(new WorkItemBadRequestApiResponse()
+                })
+                : BadRequest(new WorkItemBadRequestApiResponse()
                 {
                     Success = false,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
                     Errors = result.Errors,
                 });
-            }
         }
         catch (Exception e)
         {
