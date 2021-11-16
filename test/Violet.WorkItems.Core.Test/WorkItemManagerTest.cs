@@ -86,7 +86,6 @@ public class WorkItemManagerTest
 
         // assert
         Assert.False(result.Success);
-        providerMock.VerifyGet(o => o.Write);
         providerMock.VerifyNoOtherCalls();
     }
 
