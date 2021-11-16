@@ -54,7 +54,7 @@ public static class NewWorkItemCommand
 
         if (result.Success)
         {
-            Console.WriteLine($"Created WorkItem in project {result.CreatedWorkItem?.ProjectCode} with id {result.Id}");
+            Console.WriteLine($"Created WorkItem in project {result.ChangedWorkItem?.ProjectCode} with id {result.ChangedWorkItem?.Id}");
         }
         else
         {

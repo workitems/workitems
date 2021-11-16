@@ -113,9 +113,9 @@ public class WorkItemController : ControllerBase
                 ? Ok(new WorkItemApiResponse()
                 {
                     Success = true,
-                    ProjectCode = result.CreatedWorkItem.ProjectCode,
-                    WorkItemId = result.CreatedWorkItem.Id,
-                    WorkItem = result.CreatedWorkItem,
+                    ProjectCode = result.ChangedWorkItem.ProjectCode,
+                    WorkItemId = result.ChangedWorkItem.Id,
+                    WorkItem = result.ChangedWorkItem,
                 })
                 : BadRequest(new WorkItemBadRequestApiResponse()
                 {
@@ -151,7 +151,7 @@ public class WorkItemController : ControllerBase
                     Success = true,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
-                    WorkItem = result.UpdatedWorkItem,
+                    WorkItem = result.ChangedWorkItem,
                 })
                 : BadRequest(new WorkItemBadRequestApiResponse()
                 {
@@ -189,7 +189,7 @@ public class WorkItemController : ControllerBase
                     Success = true,
                     ProjectCode = projectCode,
                     WorkItemId = workItemId,
-                    WorkItem = result.UpdatedWorkItem,
+                    WorkItem = result.ChangedWorkItem,
                 })
                 : BadRequest(new WorkItemBadRequestApiResponse()
                 {

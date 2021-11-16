@@ -2,7 +2,7 @@
 
 A WorkItem is found in a *Project* and has within this project an *Identifier*. Each WorkItem hosts a series of *Properties* which each have a *Value*. Any change to the properties of the WorkItem in addition to arbitrary comment is *logged*.
 
-### Why no State?
+### Why no WorkItem-level State?
 
 A state implies having a decided concept how to handle the state. Different specialization might need different models for the states. A issue might have a simple open/closed state. But a bug can already have multiple states depending on the amount of branches of a software in which the bug occurs. Compared to the project and identifier (the only static properties of WorkItem), the identifier is not standardized enough to be statically described.
 

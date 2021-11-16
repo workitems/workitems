@@ -32,12 +32,12 @@ public class WorkItemManagerTest
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.CreatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
 
-        Assert.Equal("FOO", result.CreatedWorkItem.ProjectCode);
-        Assert.Equal("BAR", result.CreatedWorkItem.WorkItemType);
+        Assert.Equal("FOO", result.ChangedWorkItem.ProjectCode);
+        Assert.Equal("BAR", result.ChangedWorkItem.WorkItemType);
 
-        Assert.Collection(result.CreatedWorkItem.Properties,
+        Assert.Collection(result.ChangedWorkItem.Properties,
             p =>
             {
                 Assert.Equal("A", p.Name);
@@ -86,7 +86,6 @@ public class WorkItemManagerTest
 
         // assert
         Assert.False(result.Success);
-        providerMock.VerifyGet(o => o.Write);
         providerMock.VerifyNoOtherCalls();
     }
 
@@ -106,19 +105,19 @@ public class WorkItemManagerTest
             });
 
         // act
-        var result = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+        var result = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aab"),
             });
 
         // assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.UpdatedWorkItem);
+        Assert.NotNull(result.ChangedWorkItem);
 
-        Assert.Equal("FOO", result.UpdatedWorkItem.ProjectCode);
-        Assert.Equal("BAR", result.UpdatedWorkItem.WorkItemType);
+        Assert.Equal("FOO", result.ChangedWorkItem.ProjectCode);
+        Assert.Equal("BAR", result.ChangedWorkItem.WorkItemType);
 
-        Assert.Collection(result.UpdatedWorkItem.Properties,
+        Assert.Collection(result.ChangedWorkItem.Properties,
             p =>
             {
                 Assert.Equal("A", p.Name);
@@ -133,7 +132,7 @@ public class WorkItemManagerTest
             }
         );
 
-        Assert.Collection(result.UpdatedWorkItem.Log,
+        Assert.Collection(result.ChangedWorkItem.Log,
             l => Assert.Collection(l.Changes,
                     pc =>
                     {
@@ -160,27 +159,27 @@ public class WorkItemManagerTest
             });
 
         // act
-        var result1 = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+        var result1 = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aab"),
             });
 
-        var result2 = await manager.UpdateAsync("FOO", issue.Id, new Property[] {
+        var result2 = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aabc"),
             });
 
         // assert
         Assert.NotNull(result1);
         Assert.True(result1.Success);
-        Assert.NotNull(result1.UpdatedWorkItem);
+        Assert.NotNull(result1.ChangedWorkItem);
 
         Assert.NotNull(result2);
         Assert.True(result2.Success);
-        Assert.NotNull(result2.UpdatedWorkItem);
+        Assert.NotNull(result2.ChangedWorkItem);
 
-        Assert.Equal("FOO", result2.UpdatedWorkItem.ProjectCode);
-        Assert.Equal("BAR", result2.UpdatedWorkItem.WorkItemType);
+        Assert.Equal("FOO", result2.ChangedWorkItem.ProjectCode);
+        Assert.Equal("BAR", result2.ChangedWorkItem.WorkItemType);
 
-        Assert.Collection(result2.UpdatedWorkItem.Properties,
+        Assert.Collection(result2.ChangedWorkItem.Properties,
             p =>
             {
                 Assert.Equal("A", p.Name);
@@ -195,7 +194,7 @@ public class WorkItemManagerTest
             }
         );
 
-        Assert.Collection(result2.UpdatedWorkItem.Log,
+        Assert.Collection(result2.ChangedWorkItem.Log,
             l => Assert.Collection(l.Changes,
                     pc =>
                     {
@@ -262,7 +261,7 @@ public class WorkItemManagerTest
             });
 
         // act
-        var result = await manager.ExecuteCommandAsync("FOO", issue.Id, "Close");
+        var result = await manager.ExecuteCommandAsync("FOO", issue.ChangedWorkItem.Id, "Close");
 
         // assert
         Assert.False(result.Success);
@@ -292,11 +291,11 @@ public class WorkItemManagerTest
             });
 
         // act
-        var result = await manager.ExecuteCommandAsync("FOO", issue.Id, "make-bb");
+        var result = await manager.ExecuteCommandAsync("FOO", issue.ChangedWorkItem.Id, "make-bb");
 
         // assert
         Assert.True(result.Success);
-        Assert.Collection(result.UpdatedWorkItem.Properties,
+        Assert.Collection(result.ChangedWorkItem.Properties,
             p => { Assert.Equal("aa", p.Value); Assert.Equal("A", p.Name); },
             p => { Assert.Equal("bbc", p.Value); Assert.Equal("B", p.Name); }
         );

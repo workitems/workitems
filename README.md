@@ -47,7 +47,6 @@ The WorkItems project follows an onion architecture with re-usable components.
 1. Violet.WorkItems.Abstractions
    - WorkItem, Property, LogEntry, PropertyChange
    - IDataProvider
-1. Violet.WorkItems.Types
    - WorkItemDescriptor, PropertyDescriptor
    - StageDescriptor, ...
 
