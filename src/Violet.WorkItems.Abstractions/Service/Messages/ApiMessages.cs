@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Violet.WorkItems.Types;
-using Violet.WorkItems.Validation;
 using Violet.WorkItems.ValueProvider;
+using Violet.WorkItems.Validation;
 
-namespace Violet.WorkItems.Service.Models;
-
+namespace Violet.WorkItems.Service.Messages;
 
 public class WorkItemApiResponseBase
 {

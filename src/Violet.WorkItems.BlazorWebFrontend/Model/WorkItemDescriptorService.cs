@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Violet.WorkItems.Service.Messages;
 
 namespace Violet.WorkItems.BlazorWebFrontend;
 

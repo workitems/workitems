@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Violet.WorkItems.Service.Messages;
 using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.BlazorWebFrontend.Shared.Widgets;
