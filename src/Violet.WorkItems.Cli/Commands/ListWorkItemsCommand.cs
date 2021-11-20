@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 using Violet.WorkItems.Text;
 
 namespace Violet.WorkItems.Cli;
@@ -24,7 +25,7 @@ public static class ListWorkItemsCommand
             throw new ArgumentNullException(nameof(writer));
         }
 
-        var items = await workItemManager.DataProvider.ListWorkItemsAsync(project, type);
+        var items = await workItemManager.DataProvider.ListWorkItemsAsync(new WorkItemsQuery(AndClause.Create(new ProjectClause(project), new WorkItemTypeClause(type))));
 
         foreach (var item in items)
         {

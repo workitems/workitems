@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Violet.WorkItems.Query;
 using Violet.WorkItems.Service.Messages;
 
 namespace Violet.WorkItems.Service.Controllers;
@@ -22,28 +23,38 @@ public class WorkItemListController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("api/v1/projects/{projectCode}/workitems")]
+    [HttpPost("api/v1/projects/{projectCode}/workitems/query")]
     [ProducesResponseType(typeof(WorkItemListApiResponse), 200)]
     [ProducesResponseType(typeof(WorkItemBadRequestApiResponse), 400)]
-    public async Task<ActionResult> GetAllProjectWorkItems(string projectCode)
+    public async Task<ActionResult> GetAllProjectWorkItems(string projectCode, [FromBody] WorkItemListApiRequest queryBody)
     {
         try
         {
-            var list = await _workItemManager.DataProvider.ListWorkItemsAsync(projectCode);
+            var query = queryBody.Query with
+            {
+                Clause = queryBody.Query.Clause.EnsureProjectCode(projectCode),
+            };
 
-            return list != null
-                ? Ok(new WorkItemListApiResponse()
-                {
-                    Success = true,
-                    WorkItems = list,
-                })
-                : NotFound(new WorkItemApiResponse()
-                {
-                    Success = false,
-                    ProjectCode = projectCode,
-                    WorkItemId = null,
-                    WorkItem = null,
-                });
+            var queryErrors = await _workItemManager.DataProvider.ValidateQueryAsync(query);
+
+            if (!queryErrors.Any())
+            {
+                var list = await _workItemManager.DataProvider.ListWorkItemsAsync(query);
+
+                return list != null
+                    ? Ok(new WorkItemListApiResponse(true, list, Array.Empty<QueryError>()))
+                    : NotFound(new WorkItemApiResponse()
+                    {
+                        Success = false,
+                        ProjectCode = projectCode,
+                        WorkItemId = null,
+                        WorkItem = null,
+                    });
+            }
+            else
+            {
+                return BadRequest(new WorkItemListApiResponse(false, Array.Empty<WorkItem>(), queryErrors));
+            }
         }
         catch (Exception e)
         {

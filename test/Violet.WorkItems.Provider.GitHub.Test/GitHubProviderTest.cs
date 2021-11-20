@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 using Xunit;
 
 namespace Violet.WorkItems.Provider.GitHub;
@@ -14,7 +15,7 @@ public class GitHubProviderTest
         var provider = new GitHubDataProvider("violet-workitems-github-unittest", null);
 
         // act
-        var workItems = await provider.ListWorkItemsAsync("workitems/workitems");
+        var workItems = await provider.ListWorkItemsAsync(CommonQueries.OfProjectCodeAndType("workitems/workitems", null));
 
         // assert
         Assert.NotEmpty(workItems);

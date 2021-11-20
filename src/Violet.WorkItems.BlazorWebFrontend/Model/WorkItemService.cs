@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Violet.WorkItems.Query;
 using Violet.WorkItems.Service.Messages;
 
 namespace Violet.WorkItems.BlazorWebFrontend;
@@ -19,8 +20,10 @@ public class WorkItemService : BaseService
 
     public async Task<IEnumerable<WorkItem>> GetAllWorkItems(string projectCode)
     {
-        var uri = $"{_baseUri}/projects/{projectCode}/workitems";
-        var result = await _httpClient.GetFromJsonAsync<WorkItemListApiResponse>(uri, _jsonOptions);
+        var uri = $"{_baseUri}/projects/{projectCode}/workitems/query";
+        var response = await _httpClient.PostAsJsonAsync<WorkItemListApiRequest>(uri, new WorkItemListApiRequest(CommonQueries.OfProjectCode(projectCode)), _jsonOptions);
+
+        var result = await response.Content.ReadFromJsonAsync<WorkItemListApiResponse>();
 
         return result.WorkItems;
     }

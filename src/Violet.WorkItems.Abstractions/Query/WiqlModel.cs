@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace Violet.WorkItems.Query;
 
-public record QueryClause();
+public abstract record QueryClause();
 
-public record BooleanMultiClause(ImmutableArray<QueryClause> SubClauses)
+public abstract record BooleanMultiClause(ImmutableArray<QueryClause> SubClauses)
     : QueryClause();
 public record ProjectClause(string ProjectCode)
     : QueryClause();
@@ -16,7 +16,12 @@ public record PropertyClause(string PropertyName)
     : QueryClause();
 
 public record AndClause(ImmutableArray<QueryClause> SubClauses)
-    : BooleanMultiClause(SubClauses);
+    : BooleanMultiClause(SubClauses)
+{
+    public static AndClause Create(params QueryClause[] subClauses)
+        => new AndClause(subClauses.ToImmutableArray());
+}
+
 public record OrClause(ImmutableArray<QueryClause> SubClauses)
     : BooleanMultiClause(SubClauses);
 public record NotClause(QueryClause SubClause)
@@ -29,18 +34,6 @@ public record ValueMatchClause(string PropertyName, string[] Values, bool Not)
 public record JoinClause(string PropertyName, QueryClause[] Clauses, bool ReturnData)
     : PropertyClause(PropertyName);
 
-public record WorkItemsQuery(ImmutableArray<QueryClause> Clauses)
-{
-    public WorkItemsQuery(params QueryClause[] Clauses)
-        : this(Clauses.ToImmutableArray())
-    { }
-}
+public record WorkItemsQuery(QueryClause Clause);
 
-public static class CommonQueries
-{
-    public static WorkItemsQuery OfProjectCodeAndType(string projectCode, string workItemType)
-        => new WorkItemsQuery(
-            new ProjectClause(projectCode),
-            new WorkItemTypeClause(workItemType)
-        );
-}
+public record QueryError(string Message, QueryClause? Clause);

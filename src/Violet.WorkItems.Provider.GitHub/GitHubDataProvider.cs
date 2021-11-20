@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Octokit;
+using Violet.WorkItems.Query;
 
 namespace Violet.WorkItems.Provider;
 
@@ -29,12 +30,41 @@ public class GitHubDataProvider : IDataProvider
     public bool Read => true;
     public bool Write => false;
 
-    public async Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string workItemType = null)
-        => (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
+    public Task<IEnumerable<QueryError>> ValidateQueryAsync(WorkItemsQuery query)
+    {
+        var errors = new List<QueryError>();
+
+        if (query.Clause.GetTopLevel<ProjectClause>() is ProjectClause pc && pc?.ProjectCode is null)
+        {
+            errors.Add(new QueryError("Project Code needs to be set", pc));
+        }
+
+        if (query.Clause is AndClause a)
+        {
+            errors.AddRange(a.SubClauses
+                .Where(c => !(c is ProjectClause))
+                .Select(c => new QueryError($"{nameof(GitHubDataProvider)} does not support clauses of type {c.GetType().Name}", c)));
+        }
+        else
+        {
+            errors.Add(new QueryError($"Top Level Query needs to be an {nameof(AndClause)}", query.Clause));
+        }
+
+        return Task.FromResult<IEnumerable<QueryError>>(errors);
+    }
+
+    public async Task<IEnumerable<WorkItem>> ListWorkItemsAsync(WorkItemsQuery query)
+    {
+        string projectCode = query.Clause.GetTopLevel<ProjectClause>()?.ProjectCode ?? throw new ArgumentException($"{nameof(GitHubDataProvider)} requires a top level project clause", nameof(query));
+        string? workItemType = query.Clause.GetTopLevel<WorkItemTypeClause>()?.WorkItemType;
+
+
+        return (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
         {
             State = ItemStateFilter.All
         }))
         .Select(i => ConvertToWorkItem(projectCode, i));
+    }
 
     public async Task<WorkItem> GetAsync(string projectCode, string id)
         => ConvertToWorkItem(projectCode, (await _client.Issue.Get(projectCode.Split('/')[0], projectCode.Split('/')[1], int.Parse(id))));

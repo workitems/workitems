@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 
 namespace Violet.WorkItems.Provider;
 
@@ -20,9 +22,35 @@ public class InMemoryDataProvider : IDataProvider
         return Task.FromResult(result);
     }
 
-    public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? type = null)
+    public Task<IEnumerable<QueryError>> ValidateQueryAsync(WorkItemsQuery query)
     {
-        var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (type is null || wi.WorkItemType == type));
+        var errors = new List<QueryError>();
+
+        if (query.Clause.GetTopLevel<ProjectClause>() is ProjectClause pc && pc?.ProjectCode is null)
+        {
+            errors.Add(new QueryError("Project Code needs to be set", pc));
+        }
+
+        if (query.Clause is AndClause a)
+        {
+            errors.AddRange(a.SubClauses
+                .Where(c => !(c is ProjectClause or WorkItemTypeClause or WorkItemIdClause))
+                .Select(c => new QueryError($"{nameof(InMemoryDataProvider)} does not support clauses of type {c.GetType().Name}", c)));
+        }
+        else
+        {
+            errors.Add(new QueryError($"Top Level Query needs to be an {nameof(AndClause)}", query.Clause));
+        }
+
+        return Task.FromResult<IEnumerable<QueryError>>(errors);
+    }
+
+    public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(WorkItemsQuery query)
+    {
+        string projectCode = query.Clause.GetTopLevel<ProjectClause>()?.ProjectCode ?? throw new ArgumentException($"{nameof(InMemoryDataProvider)} requires a top level project clause", nameof(query));
+        string? workItemType = query.Clause.GetTopLevel<WorkItemTypeClause>()?.WorkItemType;
+
+        var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (workItemType is null || wi.WorkItemType == workItemType));
 
         return Task.FromResult(result);
     }
