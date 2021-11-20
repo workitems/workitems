@@ -116,7 +116,7 @@ public partial class WorkItemManager
             var properties = ApplyChangesToPropertySet(changeProperties, changesFeature.Changes);
 
             var newLog = updateRequest is not null
-                ? changesFeature.OldWorkItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", "Comment", changesFeature.Changes.ToImmutableArray()) }).ToImmutableArray()
+                ? changesFeature.OldWorkItem.Log.Union(new LogEntry[] { new LogEntry(DateTimeOffset.Now, "ABC", updateRequest.Comment, changesFeature.Changes.ToImmutableArray()) }).ToImmutableArray()
                 : ImmutableArray<LogEntry>.Empty;
 
             var newWorkItem = changesFeature.OldWorkItem with

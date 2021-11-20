@@ -1,0 +1,17 @@
+<CascadingValue name="BladeStack" Value="this">
+    <div id="blade-stack-element" class="blade-stack-element" style="border:1px solid green">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public bool Immutable { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public void RemoveBlade(Blade blade)
+    {
+        Console.WriteLine(";)");
+    }
+}

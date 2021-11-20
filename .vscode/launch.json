@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "blazorwasm",
+            "name": "Launch and Debug Blazor WebAssembly Application",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src/Violet.WorkItems.BlazorWebFrontend",
+            "url": "https://localhost:7158",
+            "browser": "chrome"
+        },
+        {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",

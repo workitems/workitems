@@ -27,7 +27,7 @@ public partial class WorkItemManager
 
                 context = context
                     .With(new ChangesFeature(workItem, changes.ToImmutableArray(), false))
-                    .With(new UpdatePropertiesRequestFeature(executeFeature.ProjectCode, executeFeature.Id, workItem.Properties));
+                    .With(new UpdatePropertiesRequestFeature(executeFeature.ProjectCode, executeFeature.Id, workItem.Properties, $"Execute Command {commandDescriptor.Label}"));
             }
             else
             {

@@ -1,0 +1,128 @@
+@page "/wi/{ProjectCode}/{WorkItemId}"
+@inject HttpClient Http
+@inject WorkItemService WorkItemService
+@inject WorkItemDescriptorService WorkItemDescriptorService
+@inject NavigationManager NavigationManager
+@using Violet.WorkItems.Types
+@using Violet.WorkItems.BlazorWebFrontend.Shared.Widgets
+@using Violet.WorkItems.BlazorWebFrontend.Shared.RazorBlades
+
+<div style="position:absolute;width:100%; height:100%">
+    @if (WorkItemDescriptor is not null)
+    {
+        <BladeHost Immutable="true">
+            <BladeStack Immutable="true">
+                <Blade Immutable="true">
+                    <Title>
+                        @WorkItemId
+                        @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+                        {
+                            <span> - @titleProperty.Value</span>
+                        }
+                    </Title>
+                    <SubTitle>@ProjectCode - @WorkItem.WorkItemType</SubTitle>
+                    <Icon>🐞</Icon>
+                    <CommandBar>
+                        <button @onclick="OnSave">💾</button>
+                        <button @onclick="OnBack">Back</button>
+
+                        @foreach (var command in WorkItemDescriptor.Commands)
+                        {
+                            <button @onclick="@(e => OnCommand(command))">@command.Label</button>
+                        }
+                    </CommandBar>
+
+                    <Body>
+                        <h3>Properties</h3>
+                        @foreach (var property in WorkItemDescriptor.Properties)
+                        {
+                            <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
+                        }
+
+                        <h3>History</h3>
+                        @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
+                        {
+                            <div>
+                                <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
+                                <em>@logEntry.Comment</em>
+
+                                @foreach (var change in logEntry.Changes)
+                                {
+                                    <div>
+                                        &gt; @change.Name : @change.OldValue -> @change.NewValue
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </Body>
+                </Blade>
+            </BladeStack>
+        </BladeHost>
+    }
+</div>
+
+@code {
+    private string workItemType = "Bug";
+
+    [Parameter]
+    public string ProjectCode { get; set; }
+    [Parameter]
+    public string WorkItemId { get; set; }
+
+    public WorkItemDescriptorApiResponse WorkItemDescriptor;
+    public WorkItem WorkItem { get; set; }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (WorkItemId.ToLowerInvariant() == "new")
+        {
+            WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemType(ProjectCode, workItemType);
+
+            WorkItem = await WorkItemService.GetTemplateAsync(ProjectCode, workItemType);
+        }
+        else
+        {
+            WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemId(ProjectCode, WorkItemId);
+
+            WorkItem = await WorkItemService.GetWorkItemAsync(ProjectCode, WorkItemId);
+        }
+    }
+
+    public async Task OnPropertyUpdate(WorkItem workItem)
+    {
+        WorkItem = workItem;
+    }
+
+    public async Task OnCommand(CommandDescriptor command)
+    {
+        WorkItem = await WorkItemService.ExecuteCommandAsync(ProjectCode, WorkItem.Id, command.Name);
+
+        WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemId(ProjectCode, WorkItemId);
+    }
+
+    public async Task OnSave()
+    {
+        if (WorkItemId.ToLowerInvariant() == "new")
+        {
+            var result = await WorkItemService.CreateWorkItemAsync(ProjectCode, WorkItem.WorkItemType,
+            WorkItem.Properties);
+
+            NavigationManager.NavigateTo($"/wi/{result.ProjectCode}/{result.Id}");
+        }
+        else
+        {
+            var result = await WorkItemService.UpdateWorkItemAsync(WorkItem, "Awesome");
+
+            WorkItem = result;
+            WorkItemId = result.Id;
+
+            WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemId(ProjectCode, WorkItemId);
+        }
+    }
+
+    public async Task OnBack()
+    {
+        NavigationManager.NavigateTo($"/wi/{ProjectCode}");
+    }
+}

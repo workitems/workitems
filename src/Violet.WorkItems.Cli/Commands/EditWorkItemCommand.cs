@@ -59,7 +59,7 @@ public static class EditWorkItemCommand
                 }
             }
 
-            var result = await manager.UpdateAsync(workItem.ProjectCode, workItem.Id, changedProperties);
+            var result = await manager.UpdateAsync(workItem.ProjectCode, workItem.Id, changedProperties, "TODO: CLI Comment");
 
             if (result.Success)
             {

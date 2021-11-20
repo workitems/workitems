@@ -76,7 +76,7 @@ public class ImmutableValidatorTest
         var result1 = await manager.CreateAsync("FOO", "BAR", properties);
         var result = await manager.UpdateAsync("FOO", result1.ChangedWorkItem.Id, new Property[] {
                 new Property("B", "String", "bb")
-            });
+            }, string.Empty);
 
         // assert
         Assert.NotNull(result);

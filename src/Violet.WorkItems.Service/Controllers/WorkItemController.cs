@@ -143,7 +143,7 @@ public class WorkItemController : ControllerBase
     {
         try
         {
-            var result = await _workItemManager.UpdateAsync(request.ProjectCode, request.WorkItemId, request.Properties);
+            var result = await _workItemManager.UpdateAsync(request.ProjectCode, request.WorkItemId, request.Properties, request.Comment);
 
             return result is { Success: true }
                 ? Ok(new WorkItemApiResponse()

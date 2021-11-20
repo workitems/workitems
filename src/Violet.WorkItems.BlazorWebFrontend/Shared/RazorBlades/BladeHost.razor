@@ -1,0 +1,16 @@
+<CascadingValue name="BladeHost" Value="this">
+    <div id="blade-host-element" class="blade-host-element" style="border:1px solid red;">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public bool Immutable { get; set; }
+    [Parameter]
+    public bool ShowBreadCrumb { get; set; }
+    [Parameter]
+    public bool AllowMultipleStacks { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
