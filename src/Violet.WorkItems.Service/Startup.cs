@@ -42,7 +42,7 @@ public class Startup
 
         services.AddSwaggerGen();
 
-        services.AddSingleton<IDataProvider, InMemoryDataProvider>()
+        services.AddSingleton<IDataProvider>(new FileSystemDataProvider("./sample"))
                 .AddSingleton<IDescriptorProvider>(serviceProvider => new Violet.WorkItems.Types.CommonSdlc.CommonSdlcDescriptorProvider())
                 .AddSingleton<WorkItemManager>();
 
@@ -75,6 +75,10 @@ public class Startup
                 });
 
             services.AddAuthorization(options => options.AddPolicy("WorkItemPolicy", policy => policy.RequireClaim("scope", "workitems")));
+        }
+        else
+        {
+            services.AddAuthorization(options => options.AddPolicy("WorkItemPolicy", policy => policy.RequireAssertion(x => true)));
         }
     }
 

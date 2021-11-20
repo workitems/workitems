@@ -1,0 +1,36 @@
+@using Violet.WorkItems.Types
+@using System.Linq
+
+<DynamicComponent Type="@GetWidget(PropertyDescriptor)"
+    Parameters="GetWidgetParameters(PropertyDescriptor, WorkItem)" />
+
+@code
+{
+    [Parameter]
+    public WorkItemDescriptorApiResponse WorkItemDescriptor { get; set; }
+    [Parameter]
+    public PropertyDescriptor PropertyDescriptor { get; set; }
+    [Parameter]
+    public WorkItem WorkItem { get; set; }
+
+
+    [Parameter]
+    public EventCallback<WorkItem> WorkItemChanged { get; set; }
+
+    public Type GetWidget(PropertyDescriptor property)
+    => property switch
+    {
+        { DataType: "String" } => typeof(SingleLineTextWidget),
+        _ => typeof(SingleLineTextWidget),
+    };
+
+    public Dictionary<string, object?> GetWidgetParameters(PropertyDescriptor propertyDescriptor, WorkItem workItem)
+    => new Dictionary<string, object?>()
+    {
+        [nameof(WidgetBase.WorkItemDescriptor)] = WorkItemDescriptor,
+        [nameof(WidgetBase.PropertyDescriptor)] = propertyDescriptor,
+        [nameof(WidgetBase.WorkItem)] = workItem,
+        [nameof(WidgetBase.Property)] = workItem.Properties.FirstOrDefault(p => p.Name == propertyDescriptor.Name),
+        [nameof(WidgetBase.WorkItemChanged)] = WorkItemChanged,
+    };
+}

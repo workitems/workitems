@@ -1,0 +1,56 @@
+@page "/wi/{projectCode}"
+@inject WorkItemService WorkItemService
+@inject NavigationManager NavigationManager
+@using Violet.WorkItems.BlazorWebFrontend.Shared.RazorBlades
+
+@if (List is not null)
+{
+    <BladeHost Immutable="true">
+        <BladeStack Immutable="true">
+            <Blade Immutable="true">
+                <Title>@ProjectCode - All Work Items</Title>
+                <SubTitle></SubTitle>
+                <Icon>🧾</Icon>
+                <CommandBar>
+                    <button @onclick="NavigateToNewWorkItem">New</button>
+                </CommandBar>
+
+                <Body>
+                    <table style="width:100%">
+                        <tr>
+                            <th>#</th>
+                            <th>Type</th>
+                            <th>Title</th>
+                        </tr>
+                        @foreach (var workItem in List)
+                        {
+                            <tr @onclick="(e => NavigateToWorkItem(workItem))">
+                                <td>@workItem.Id</td>
+                                <td>@workItem.WorkItemType</td>
+                                <td>@workItem["Title"].Value</td>
+                            </tr>
+                        }
+                    </table>
+                </Body>
+            </Blade>
+        </BladeStack>
+    </BladeHost>
+}
+@code {
+    [Parameter]
+    public string ProjectCode { get; set; }
+    public IEnumerable<WorkItem> List = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        List = await WorkItemService.GetAllWorkItems(ProjectCode);
+    }
+
+    public void NavigateToNewWorkItem()
+    => NavigationManager.NavigateTo($"/wi/{ProjectCode}/new");
+
+    public void NavigateToWorkItem(WorkItem workItem)
+    {
+        NavigationManager.NavigateTo($"/wi/{workItem.ProjectCode}/{workItem.Id}");
+    }
+}

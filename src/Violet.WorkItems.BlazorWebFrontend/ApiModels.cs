@@ -1,10 +1,6 @@
-using System.Collections.Generic;
+using Violet.WorkItems;
 using Violet.WorkItems.Types;
-using Violet.WorkItems.Validation;
-using Violet.WorkItems.ValueProvider;
-
-namespace Violet.WorkItems.Service.Models;
-
+namespace Violet.WorkItems.BlazorWebFrontend;
 
 public class WorkItemApiResponseBase
 {
@@ -60,4 +56,39 @@ public class WorkItemListApiResponse
     public bool Success { get; set; }
 
     public IEnumerable<WorkItem> WorkItems { get; set; }
+}
+
+
+public class ProvidedValue
+{
+    public string Value { get; }
+    public string DisplayText { get; }
+    public bool IsAllowed { get; }
+
+    public ProvidedValue(string value, string displayText, bool isAllowed = true)
+    {
+        Value = value ?? throw new ArgumentNullException(nameof(value));
+        DisplayText = displayText ?? throw new ArgumentNullException(nameof(displayText));
+        IsAllowed = isAllowed;
+    }
+}
+
+public class ErrorMessage
+{
+    public ErrorMessage(string source, string errorCode, string message, string projectCode, string id, string property)
+    {
+        ProjectCode = projectCode;
+        Id = id;
+        Property = property;
+        Source = source;
+        ErrorCode = errorCode;
+        Message = message;
+    }
+
+    public string ProjectCode { get; }
+    public string Id { get; }
+    public string Property { get; }
+    public string Source { get; }
+    public string ErrorCode { get; }
+    public string Message { get; }
 }

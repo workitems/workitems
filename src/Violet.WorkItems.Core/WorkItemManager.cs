@@ -87,8 +87,8 @@ public partial class WorkItemManager
         return context;
     }
 
-    public async Task<WorkItemChangedResult> UpdateAsync(string projectCode, string id, IEnumerable<Property> properties)
-        => CreateChangedResult(await UpdateAsync(new Context(new UpdatePropertiesRequestFeature(projectCode, id, properties.ToImmutableArray()))));
+    public async Task<WorkItemChangedResult> UpdateAsync(string projectCode, string id, IEnumerable<Property> properties, string comment)
+        => CreateChangedResult(await UpdateAsync(new Context(new UpdatePropertiesRequestFeature(projectCode, id, properties.ToImmutableArray(), comment))));
     public async Task<Context> UpdateAsync(Context context)
     {
         context = await InitMiddelwareAsync(context);

@@ -107,7 +107,7 @@ public class WorkItemManagerTest
         // act
         var result = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aab"),
-            });
+            }, string.Empty);
 
         // assert
         Assert.NotNull(result);
@@ -161,11 +161,11 @@ public class WorkItemManagerTest
         // act
         var result1 = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aab"),
-            });
+            }, string.Empty);
 
         var result2 = await manager.UpdateAsync("FOO", issue.ChangedWorkItem.Id, new Property[] {
                 new Property("A", "String", "aabc"),
-            });
+            }, string.Empty);
 
         // assert
         Assert.NotNull(result1);

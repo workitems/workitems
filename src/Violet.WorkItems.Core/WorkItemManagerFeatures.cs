@@ -52,5 +52,5 @@ public record ErrorFeature(ImmutableArray<ErrorMessage> Errors);
 public record WorkItemFeature(WorkItem WorkItem);
 public record ChangesFeature(WorkItem OldWorkItem, ImmutableArray<PropertyChange> Changes, bool isNew);
 public record CreateRequestFeature(string ProjectCode, string WorkItemType, ImmutableArray<Property> Properties, bool AutoCompleteFromTemplate);
-public record UpdatePropertiesRequestFeature(string ProjectCode, string Id, ImmutableArray<Property> Properties);
+public record UpdatePropertiesRequestFeature(string ProjectCode, string Id, ImmutableArray<Property> Properties, string Comment);
 public record ExecuteCommandRequestFeature(string ProjectCode, string Id, string Command);
