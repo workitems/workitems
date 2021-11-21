@@ -82,7 +82,10 @@ public class FileSystemDataProvider : IDataProvider
             }
         }
 
-        return result;
+        // secondary filtering
+        var predicate = WiqlHelper.ConvertQueryClauseToPredicate(query.Clause);
+
+        return result.Where(predicate);
     }
 
     public Task<IEnumerable<QueryError>> ValidateQueryAsync(WorkItemsQuery query)
@@ -92,17 +95,6 @@ public class FileSystemDataProvider : IDataProvider
         if (query.Clause.GetTopLevel<ProjectClause>() is ProjectClause pc && pc?.ProjectCode is null)
         {
             errors.Add(new QueryError("Project Code needs to be set", pc));
-        }
-
-        if (query.Clause is AndClause a)
-        {
-            errors.AddRange(a.SubClauses
-                .Where(c => !(c is ProjectClause or WorkItemTypeClause or WorkItemIdClause))
-                .Select(c => new QueryError($"{nameof(FileSystemDataProvider)} does not support clauses of type {c.GetType().Name}", c)));
-        }
-        else
-        {
-            errors.Add(new QueryError($"Top Level Query needs to be an {nameof(AndClause)}", query.Clause));
         }
 
         return Task.FromResult<IEnumerable<QueryError>>(errors);

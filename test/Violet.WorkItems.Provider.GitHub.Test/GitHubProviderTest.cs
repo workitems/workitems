@@ -15,7 +15,7 @@ public class GitHubProviderTest
         var provider = new GitHubDataProvider("violet-workitems-github-unittest", null);
 
         // act
-        var workItems = await provider.ListWorkItemsAsync(CommonQueries.OfProjectCodeAndType("workitems/workitems", null));
+        var workItems = await provider.ListWorkItemsAsync(CommonQueries.OfProjectCode("workitems/workitems"));
 
         // assert
         Assert.NotEmpty(workItems);

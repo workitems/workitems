@@ -12,7 +12,7 @@ public record WorkItemIdClause(string WorkItemId)
     : QueryClause();
 public record WorkItemTypeClause(string WorkItemType)
     : QueryClause();
-public record PropertyClause(string PropertyName)
+public abstract record PropertyClause(string PropertyName)
     : QueryClause();
 
 public record AndClause(ImmutableArray<QueryClause> SubClauses)

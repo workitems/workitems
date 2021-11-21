@@ -31,17 +31,6 @@ public class InMemoryDataProvider : IDataProvider
             errors.Add(new QueryError("Project Code needs to be set", pc));
         }
 
-        if (query.Clause is AndClause a)
-        {
-            errors.AddRange(a.SubClauses
-                .Where(c => !(c is ProjectClause or WorkItemTypeClause or WorkItemIdClause))
-                .Select(c => new QueryError($"{nameof(InMemoryDataProvider)} does not support clauses of type {c.GetType().Name}", c)));
-        }
-        else
-        {
-            errors.Add(new QueryError($"Top Level Query needs to be an {nameof(AndClause)}", query.Clause));
-        }
-
         return Task.FromResult<IEnumerable<QueryError>>(errors);
     }
 
@@ -52,7 +41,10 @@ public class InMemoryDataProvider : IDataProvider
 
         var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (workItemType is null || wi.WorkItemType == workItemType));
 
-        return Task.FromResult(result);
+        // secondary filtering
+        var predicate = WiqlHelper.ConvertQueryClauseToPredicate(query.Clause);
+
+        return Task.FromResult(result.Where(predicate));
     }
 
     public Task<int> NextNumberAsync(string projectCode)

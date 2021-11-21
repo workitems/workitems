@@ -39,17 +39,6 @@ public class GitHubDataProvider : IDataProvider
             errors.Add(new QueryError("Project Code needs to be set", pc));
         }
 
-        if (query.Clause is AndClause a)
-        {
-            errors.AddRange(a.SubClauses
-                .Where(c => !(c is ProjectClause))
-                .Select(c => new QueryError($"{nameof(GitHubDataProvider)} does not support clauses of type {c.GetType().Name}", c)));
-        }
-        else
-        {
-            errors.Add(new QueryError($"Top Level Query needs to be an {nameof(AndClause)}", query.Clause));
-        }
-
         return Task.FromResult<IEnumerable<QueryError>>(errors);
     }
 
@@ -59,11 +48,16 @@ public class GitHubDataProvider : IDataProvider
         string? workItemType = query.Clause.GetTopLevel<WorkItemTypeClause>()?.WorkItemType;
 
 
-        return (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
+        var result = (await _client.Issue.GetAllForRepository(projectCode.Split('/')[0], projectCode.Split('/')[1], new RepositoryIssueRequest()
         {
             State = ItemStateFilter.All
         }))
         .Select(i => ConvertToWorkItem(projectCode, i));
+
+        // secondary filtering
+        var predicate = WiqlHelper.ConvertQueryClauseToPredicate(query.Clause);
+
+        return result.Where(predicate);
     }
 
     public async Task<WorkItem> GetAsync(string projectCode, string id)
