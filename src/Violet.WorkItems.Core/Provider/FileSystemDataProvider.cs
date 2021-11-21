@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 
 namespace Violet.WorkItems.Provider;
 
@@ -60,8 +61,11 @@ public class FileSystemDataProvider : IDataProvider
         stream.Close();
     }
 
-    public async Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? workItemType = null)
+    public async Task<IEnumerable<WorkItem>> ListWorkItemsAsync(WorkItemsQuery query)
     {
+        string projectCode = query.Clause.GetTopLevel<ProjectClause>()?.ProjectCode ?? throw new ArgumentException($"{nameof(FileSystemDataProvider)} requires a top level project clause", nameof(query));
+        string? workItemType = query.Clause.GetTopLevel<WorkItemTypeClause>()?.WorkItemType;
+
         EnsureProjectLocation(projectCode);
         var directoryInfo = new DirectoryInfo(GetProjectPath(projectCode));
 
@@ -78,7 +82,22 @@ public class FileSystemDataProvider : IDataProvider
             }
         }
 
-        return result;
+        // secondary filtering
+        var predicate = WiqlHelper.ConvertQueryClauseToPredicate(query.Clause);
+
+        return result.Where(predicate);
+    }
+
+    public Task<IEnumerable<QueryError>> ValidateQueryAsync(WorkItemsQuery query)
+    {
+        var errors = new List<QueryError>();
+
+        if (query.Clause.GetTopLevel<ProjectClause>() is ProjectClause pc && pc?.ProjectCode is null)
+        {
+            errors.Add(new QueryError("Project Code needs to be set", pc));
+        }
+
+        return Task.FromResult<IEnumerable<QueryError>>(errors);
     }
 
     public Task<int> NextNumberAsync(string projectCode)

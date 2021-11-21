@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Violet.WorkItems.Service.Models;
+using Violet.WorkItems.Service.Messages;
 using Violet.WorkItems.ValueProvider;
 
 namespace Violet.WorkItems.Service.Controllers;

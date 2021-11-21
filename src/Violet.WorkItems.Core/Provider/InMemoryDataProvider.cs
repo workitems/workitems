@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 
 namespace Violet.WorkItems.Provider;
 
@@ -20,11 +22,29 @@ public class InMemoryDataProvider : IDataProvider
         return Task.FromResult(result);
     }
 
-    public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(string projectCode, string? type = null)
+    public Task<IEnumerable<QueryError>> ValidateQueryAsync(WorkItemsQuery query)
     {
-        var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (type is null || wi.WorkItemType == type));
+        var errors = new List<QueryError>();
 
-        return Task.FromResult(result);
+        if (query.Clause.GetTopLevel<ProjectClause>() is ProjectClause pc && pc?.ProjectCode is null)
+        {
+            errors.Add(new QueryError("Project Code needs to be set", pc));
+        }
+
+        return Task.FromResult<IEnumerable<QueryError>>(errors);
+    }
+
+    public Task<IEnumerable<WorkItem>> ListWorkItemsAsync(WorkItemsQuery query)
+    {
+        string projectCode = query.Clause.GetTopLevel<ProjectClause>()?.ProjectCode ?? throw new ArgumentException($"{nameof(InMemoryDataProvider)} requires a top level project clause", nameof(query));
+        string? workItemType = query.Clause.GetTopLevel<WorkItemTypeClause>()?.WorkItemType;
+
+        var result = _data.Values.Where(wi => wi.ProjectCode == projectCode && (workItemType is null || wi.WorkItemType == workItemType));
+
+        // secondary filtering
+        var predicate = WiqlHelper.ConvertQueryClauseToPredicate(query.Clause);
+
+        return Task.FromResult(result.Where(predicate));
     }
 
     public Task<int> NextNumberAsync(string projectCode)

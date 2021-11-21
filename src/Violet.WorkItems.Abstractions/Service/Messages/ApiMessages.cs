@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Violet.WorkItems.Types;
-using Violet.WorkItems.Validation;
 using Violet.WorkItems.ValueProvider;
+using Violet.WorkItems.Validation;
+using Violet.WorkItems.Query;
 
-namespace Violet.WorkItems.Service.Models;
-
+namespace Violet.WorkItems.Service.Messages;
 
 public class WorkItemApiResponseBase
 {
@@ -55,9 +55,6 @@ public class WorkItemApiResponse : WorkItemApiResponseBase
     public WorkItem WorkItem { get; set; }
 }
 
-public class WorkItemListApiResponse
-{
-    public bool Success { get; set; }
 
-    public IEnumerable<WorkItem> WorkItems { get; set; }
-}
+public record WorkItemListApiRequest(WorkItemsQuery Query);
+public record WorkItemListApiResponse(bool Success, IEnumerable<WorkItem> WorkItems, IEnumerable<QueryError> Errors);

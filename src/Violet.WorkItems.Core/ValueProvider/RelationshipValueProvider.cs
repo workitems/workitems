@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Violet.WorkItems.Query;
 using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.ValueProvider;
@@ -26,7 +27,7 @@ public class RelationshipValueProvider : IValueProvider
 
     public async Task<IEnumerable<ProvidedValue>> SuggestionsAsync(string input)
     {
-        var collection = await _workItemManager.DataProvider.ListWorkItemsAsync(_projectCode, _descriptor.Type);
+        var collection = await _workItemManager.DataProvider.ListWorkItemsAsync(CommonQueries.OfProjectCodeAndType(_projectCode, _descriptor.Type));
 
         return collection.Where(wi => wi.Id.StartsWith(input)).Select(wi => new ProvidedValue(EncodeRelationship(_descriptor.RelationshipType, _projectCode, wi.Id), wi.Id));
     }

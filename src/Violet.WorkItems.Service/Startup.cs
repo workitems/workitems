@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Violet.WorkItems.Provider;
+using Violet.WorkItems.Query;
 using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Service;
@@ -37,7 +38,7 @@ public class Startup
         services.AddControllers()
                 .AddJsonOptions(opts =>
                 {
-                    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    QuerySerialization.ConfigureJsonOptions(opts.JsonSerializerOptions);
                 });
 
         services.AddSwaggerGen();
