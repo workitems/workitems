@@ -4,16 +4,17 @@
 ![license:MIT](https://img.shields.io/github/license/violetgrass/workitems?style=flat-square)
 ![Nuget](https://img.shields.io/nuget/v/Violet.WorkItems.Core?style=flat-square)
 
-This project is a work in progress.
+WorkItems intents 😀 to be a flexible work item management system.
 
 ## Project Goals
 
 Having Goals is the first step in achieving them 😀
 
 - 🏃‍♂️ Create a customizable work item management system for mid-size usage (> 10 projects, > 100 users, > 10k work items).
-- Create a framework for programmatically managing work items (e.g. check tracing completeness).
-- Create a set of standardized providers for common work item management systems (GitHub, GitLab, TFS, Jira, ...).
+- 🏃‍♂️ Create a compelling [user interface](docs/screenshots/README.md) and a API layer for customized applications.
 - 🏃‍♂️ Create proof of concepts applications covering ToDo Lists, Kanban Board and fixed property issue tracker.
+- 🔜 Create a framework for programmatically managing work items (e.g. check tracing completeness).
+- 🔜 Create a set of standardized providers for common work item management systems (GitHub, GitLab, TFS, Jira, ...).
 
 ## Command Line Interface
 ````sh
@@ -45,39 +46,38 @@ The WorkItems project follows an onion architecture with re-usable components.
 ### Domain Model
 
 1. Violet.WorkItems.Abstractions
-   - WorkItem, Property, LogEntry, PropertyChange
-   - IDataProvider
-   - WorkItemDescriptor, PropertyDescriptor
-   - StageDescriptor, ...
+   - ✅ WorkItem, Property, LogEntry, PropertyChange
+   - ✅ IDataProvider, Query
+   - ✅ WorkItemDescriptor, PropertyDescriptor, StageDescriptor
 
 ### Domain Services
 
 1. Violet.WorkItems.Core
-   - WorkItemManager (core audit, validation and storage logic)
-   - Core Validators (Mandatory, Completeness, Immutable)
-   - ValueProvider (Enum)
-   - InMemoryDataProvider (for testing and demonstration)
+   - ✅ WorkItemManager (core audit, validation and storage logic)
+   - ✅ Core Validators (Mandatory, Completeness, Immutable)
+   - ✅ ValueProvider (Enum)
+   - ✅ InMemoryDataProvider (for testing and demonstration)
+   - ✅ FileSystemDataProvider (for testing and demonstration)
+   - 🔜 Calculation Logic
 
 ### Application Services
 
 ### Infrastructure
 
-1. ⌛ Violet.WorkItems.Provider.SqlServer
-   - Traditional Relational Database Backend (read/write)
-1. ⌛ Violet.WorkItems.Provider.Git
-   - Persist WorkItems and related information in Git (read/write)
-1. ⌛ Violet.WorkItems.Provider.GitHub
-   - Proxy GitHub
-1. ⌛ VIolet.WorkItems.Provider.Sqlite
+1. ✅ Violet.WorkItems.Provider.InMemoryProviderDataProvider (transient for development)
+1. 🔜 Violet.WorkItems.Provider.Sqlite
+1. 🔜 Violet.WorkItems.Provider.SqlServer
+1. 🔜 Violet.WorkItems.Provider.Git (persists WorkItems and related information in Git)
+1. 🔜 Violet.WorkItems.Provider.GitHub (adapter to GitHub API)
 
 ### Applications
 
-1. Violet.WorkItems.Cli
+1. 🏃‍♂️ Violet.WorkItems.Cli
    - Command Line Application to manage work items (create, read, update, delete).
    - Starter for Violet.WorkItems.LocalWebHost
-1. ⌛ Violet.WorkItems.LocalWebHost
+1. 🔜 Violet.WorkItems.LocalWebFrontend
    - Locally starting web application to manage tickets (in browser)
-1. 🏃‍♂️ Violet.WorkItems.WebHost
+1. 🏃‍♂️ Violet.WorkItems.BlazorWebFrontend
    - Regular web application including authentication provider plugins
 
 # Community, Contributions, License
@@ -90,4 +90,4 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 ---
 
-Legend: 🏃‍♂️ In Progress, ⌛ Not Yet Available
+Legend: ✅ Done, 🏃‍♂️ In Progress, 🔜 Not Yet Available
