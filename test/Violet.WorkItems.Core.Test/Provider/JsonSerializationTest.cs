@@ -28,7 +28,7 @@ public class JsonSerializationTest
         Assert.Equal(workItem.ProjectCode, actual.ProjectCode);
         Assert.Equal(workItem.Id, actual.Id);
         Assert.Equal(workItem.WorkItemType, actual.WorkItemType);
-        Assert.Collection(workItem.Properties, workItem.Properties.Select(pExpected => ((Property pActual) => Assert.Equal(pExpected, pActual))).ToArray());
-        Assert.Collection(workItem.Log, workItem.Log.Select(pExpected => ((LogEntry pActual) => Assert.Equal(pExpected, pActual))).ToArray());
+        Assert.Collection(workItem.Properties, workItem.Properties.Select<Property, Action<Property>>(pExpected => ((Property pActual) => Assert.Equal(pExpected, pActual))).ToArray());
+        Assert.Collection(workItem.Log, workItem.Log.Select<LogEntry, Action<LogEntry>>(pExpected => ((LogEntry pActual) => Assert.Equal(pExpected, pActual))).ToArray());
     }
 }
