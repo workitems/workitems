@@ -2,9 +2,9 @@
 @using Violet.WorkItems.Types
 @using Violet.WorkItems.Service.Messages;
 
-<DynamicComponent Type="@GetWidget(PropertyDescriptor)"
-    Parameters="GetWidgetParameters(PropertyDescriptor, WorkItem)" />
-
+<div class="ma-4">
+    <DynamicComponent Type="@GetWidget(PropertyDescriptor)" Parameters="GetWidgetParameters(PropertyDescriptor, WorkItem)" />
+</div>
 @code
 {
     [Parameter]
@@ -27,11 +27,11 @@
 
     public Dictionary<string, object?> GetWidgetParameters(PropertyDescriptor propertyDescriptor, WorkItem workItem)
     => new Dictionary<string, object?>()
-    {
-        [nameof(WidgetBase.WorkItemDescriptor)] = WorkItemDescriptor,
-        [nameof(WidgetBase.PropertyDescriptor)] = propertyDescriptor,
-        [nameof(WidgetBase.WorkItem)] = workItem,
-        [nameof(WidgetBase.Property)] = workItem.Properties.FirstOrDefault(p => p.Name == propertyDescriptor.Name),
-        [nameof(WidgetBase.WorkItemChanged)] = WorkItemChanged,
-    };
+        {
+            [nameof(WidgetBase.WorkItemDescriptor)] = WorkItemDescriptor,
+            [nameof(WidgetBase.PropertyDescriptor)] = propertyDescriptor,
+            [nameof(WidgetBase.WorkItem)] = workItem,
+            [nameof(WidgetBase.Property)] = workItem.Properties.FirstOrDefault(p => p.Name == propertyDescriptor.Name),
+            [nameof(WidgetBase.WorkItemChanged)] = WorkItemChanged,
+        };
 }

@@ -1,3 +1,15 @@
 ﻿@inherits LayoutComponentBase
+<MudLayout>
+    <MudMainContent>
+        <strong>@X</strong>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-<main>@Body</main>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@code {
+    public RenderFragment? X { get; set; }
+}

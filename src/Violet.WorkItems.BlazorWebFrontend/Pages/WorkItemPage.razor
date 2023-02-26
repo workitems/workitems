@@ -6,61 +6,51 @@
 @using Violet.WorkItems.Service.Messages;
 @using Violet.WorkItems.Types
 @using Violet.WorkItems.BlazorWebFrontend.Shared.Widgets
-@using Violet.WorkItems.BlazorWebFrontend.Shared.RazorBlades
 
-<div style="position:absolute;width:100%; height:100%">
-    @if (WorkItemDescriptor is not null)
+@if (WorkItemDescriptor is not null)
+{
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" @onclick="OnBack"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Inherit" Edge="Edge.End" @onclick="OnSave"></MudIconButton>
+        <MudText Typo="Typo.body1">
+            @WorkItemId
+            @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+            {
+                <span> - @titleProperty.Value</span>
+            }
+            <text>@ProjectCode - @WorkItem.WorkItemType</text>
+        </MudText>
+        <MudSpacer />
+        @foreach (var command in WorkItemDescriptor.Commands)
+        {
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="Color.Inherit" @onclick="@(e => OnCommand(command))">@command.Label</MudButton>
+        }
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+
+    <h3 class="m-4">Properties</h3>
+    @foreach (var property in WorkItemDescriptor.Properties)
     {
-        <BladeHost Immutable="true">
-            <BladeStack Immutable="true">
-                <Blade Immutable="true">
-                    <Title>
-                        @WorkItemId
-                        @if (WorkItem.TryGetProperty("Title", out var titleProperty))
-                        {
-                            <span> - @titleProperty.Value</span>
-                        }
-                    </Title>
-                    <SubTitle>@ProjectCode - @WorkItem.WorkItemType</SubTitle>
-                    <Icon>🐞</Icon>
-                    <CommandBar>
-                        <button @onclick="OnSave">💾</button>
-                        <button @onclick="OnBack">Back</button>
-
-                        @foreach (var command in WorkItemDescriptor.Commands)
-                        {
-                            <button @onclick="@(e => OnCommand(command))">@command.Label</button>
-                        }
-                    </CommandBar>
-
-                    <Body>
-                        <h3>Properties</h3>
-                        @foreach (var property in WorkItemDescriptor.Properties)
-                        {
-                            <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
-                        }
-
-                        <h3>History</h3>
-                        @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
-                        {
-                            <div>
-                                <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
-                                <em>@logEntry.Comment</em>
-
-                                @foreach (var change in logEntry.Changes)
-                                {
-                                    <div>
-                                        &gt; @change.Name : @change.OldValue -> @change.NewValue
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </Body>
-                </Blade>
-            </BladeStack>
-        </BladeHost>
+        <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
     }
-</div>
+
+    <h3 class="m-4">History</h3>
+    @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
+    {
+        <div class="mx-4 my-1">
+            <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
+            <em>@logEntry.Comment</em>
+
+            @foreach (var change in logEntry.Changes)
+            {
+                <div>
+                    &gt; @change.Name : @change.OldValue -> @change.NewValue
+                </div>
+            }
+        </div>
+    }
+
+}
 
 @code {
     private string workItemType = "Bug";
