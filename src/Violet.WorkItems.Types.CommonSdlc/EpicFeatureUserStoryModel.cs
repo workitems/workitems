@@ -5,7 +5,7 @@ namespace Violet.WorkItems.Types.CommonSdlc;
 public static class EpicFeatureUserStoryModel
 {
     public static WorkItemDescriptor Epic
-        => WorkItemDescriptor.Create("Epic",
+        => WorkItemDescriptor.Create("Epic", "Epic",
             new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
@@ -16,7 +16,7 @@ public static class EpicFeatureUserStoryModel
             }
         );
     public static WorkItemDescriptor Feature
-        => WorkItemDescriptor.Create("Feature",
+        => WorkItemDescriptor.Create("Feature", "Feature",
             new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
@@ -36,7 +36,7 @@ public static class EpicFeatureUserStoryModel
             }
         );
     public static WorkItemDescriptor UserStory
-        => WorkItemDescriptor.Create("UserStory",
+        => WorkItemDescriptor.Create("UserStory", "User Story",
             new PropertyDescriptor[] {
                     PropertyDescriptor.Create("Title", "String", validators:  new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),

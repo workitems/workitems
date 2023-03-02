@@ -2,9 +2,7 @@
 @using Violet.WorkItems.Types
 @using Violet.WorkItems.Service.Messages;
 
-<div class="ma-4">
-    <DynamicComponent Type="@GetWidget(PropertyDescriptor)" Parameters="GetWidgetParameters(PropertyDescriptor, WorkItem)" />
-</div>
+<DynamicComponent Type="@GetWidget(PropertyDescriptor)" Parameters="GetWidgetParameters(PropertyDescriptor, WorkItem)" />
 @code
 {
     [Parameter]

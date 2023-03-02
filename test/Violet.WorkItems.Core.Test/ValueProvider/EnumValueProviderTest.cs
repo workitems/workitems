@@ -141,7 +141,7 @@ public class EnumValueProviderTest
     private static WorkItemManager BuildManager()
     {
         return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-            WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+            WorkItemDescriptor.Create("BAR", "BAR", new PropertyDescriptor[] {
                     PropertyDescriptor.Create("A", "String", validators: new ValidatorDescriptor[] {
                         new MandatoryValidatorDescriptor(),
                     }),

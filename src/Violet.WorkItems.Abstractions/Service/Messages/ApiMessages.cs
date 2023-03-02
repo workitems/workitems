@@ -22,6 +22,10 @@ public class WorkItemDescriptorApiResponse : WorkItemApiResponseBase
     public IEnumerable<PropertyDescriptor> Properties { get; set; }
     public IEnumerable<CommandDescriptor> Commands { get; set; }
 }
+public class WorkItemTypesApiResponse : WorkItemApiResponseBase
+{
+    public IEnumerable<WorkItemType> Types { get; set; }
+}
 
 public class ValueProviderApiResponse : WorkItemApiResponseBase
 {

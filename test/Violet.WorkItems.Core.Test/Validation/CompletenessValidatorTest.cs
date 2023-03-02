@@ -92,7 +92,7 @@ public class CompletenessValidatorTest
     private static WorkItemManager BuildManager()
     {
         return new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-            WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+            WorkItemDescriptor.Create("BAR", "BAR", new PropertyDescriptor[] {
                     PropertyDescriptor.Create("A", "String"),
                     PropertyDescriptor.Create("B", "String"),
             })

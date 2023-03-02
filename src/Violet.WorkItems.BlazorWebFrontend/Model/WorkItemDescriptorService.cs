@@ -24,4 +24,12 @@ public class WorkItemDescriptorService : BaseService
 
         return result;
     }
+
+    public async Task<WorkItemTypesApiResponse> GetWorkItemTypes(string projectCode)
+    {
+        var uri = $"{_baseUri}/projects/{projectCode}/types";
+        var result = await _httpClient.GetFromJsonAsync<WorkItemTypesApiResponse>(uri, _jsonOptions);
+
+        return result;
+    }
 }

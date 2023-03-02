@@ -5,7 +5,7 @@ namespace Violet.WorkItems.Types.CommonSdlc;
 public static class BugTaskModel
 {
     public static WorkItemDescriptor Bug
-        => WorkItemDescriptor.Create("Bug", new PropertyDescriptor[] {
+        => WorkItemDescriptor.Create("Bug", "Bug", new PropertyDescriptor[] {
                 PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
                 }),
@@ -26,7 +26,7 @@ public static class BugTaskModel
         });
 
     public static WorkItemDescriptor Task
-        => WorkItemDescriptor.Create("Task", new PropertyDescriptor[] {
+        => WorkItemDescriptor.Create("Task", "Task", new PropertyDescriptor[] {
                 PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {
                     new MandatoryValidatorDescriptor(),
                 }),

@@ -95,4 +95,7 @@ public class DescriptorManager
             PropertyValueConditionDescriptor pvcd => workItem.Properties.FirstOrDefault(p => p.Name == pvcd.PropertyName)?.Value == pvcd.ExpectedValue,
             _ => true,
         };
+
+    public WorkItemType[] GetAllWorkItemTypes(string projectCode)
+        => _descriptors.Values.Select(d => new WorkItemType(d.Name, d.DisplayName)).ToArray();
 }

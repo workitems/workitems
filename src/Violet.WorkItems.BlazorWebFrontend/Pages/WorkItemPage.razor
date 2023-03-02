@@ -9,51 +9,77 @@
 
 @if (WorkItemDescriptor is not null)
 {
-    <MudAppBar Elevation="1">
+    <MudAppBar Elevation="4">
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" @onclick="OnBack"></MudIconButton>
-        <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Inherit" Edge="Edge.End" @onclick="OnSave"></MudIconButton>
         <MudText Typo="Typo.body1">
             @WorkItemId
             @if (WorkItem.TryGetProperty("Title", out var titleProperty))
             {
                 <span> - @titleProperty.Value</span>
             }
-            <text>@ProjectCode - @WorkItem.WorkItemType</text>
         </MudText>
+        <MudIcon Icon="@Icons.Material.Filled.Book" />
+        <MudText> @ProjectCode</MudText>
+        <MudIcon Icon="@Icons.Material.Filled.Category" />
+        <MudText> @WorkItem.WorkItemType</MudText>
         <MudSpacer />
-        @foreach (var command in WorkItemDescriptor.Commands)
-        {
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="Color.Inherit" @onclick="@(e => OnCommand(command))">@command.Label</MudButton>
-        }
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
-
-    <h3 class="m-4">Properties</h3>
-    @foreach (var property in WorkItemDescriptor.Properties)
-    {
-        <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
-    }
-
-    <h3 class="m-4">History</h3>
-    @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
-    {
-        <div class="mx-4 my-1">
-            <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
-            <em>@logEntry.Comment</em>
-
-            @foreach (var change in logEntry.Changes)
+    <MudPaper Elevation="2" Square="true">
+        <MudToolBar Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Inherit" Edge="Edge.End" @onclick="OnSave"></MudIconButton>
+            <MudSpacer />
+            @foreach (var command in WorkItemDescriptor.Commands)
             {
-                <div>
-                    &gt; @change.Name : @change.OldValue -> @change.NewValue
-                </div>
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="Color.Inherit" @onclick="@(e => OnCommand(command))">@command.Label</MudButton>
             }
-        </div>
-    }
+        </MudToolBar>
+    </MudPaper>
 
+    <MudCard Class="ma-4">
+        <MudCardHeader>
+            <MudText Typo="@Typo.h6">Properties</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            @foreach (var property in WorkItemDescriptor.Properties)
+            {
+                <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
+            }
+
+        </MudCardContent>
+    </MudCard>
+
+    <MudCard Class="ma-4">
+        <MudCardHeader>
+            <MudText Typo="@Typo.h6">History</MudText>
+        </MudCardHeader>
+        <MudCardContent Class="pa-0">
+            <MudTimeline TimelineAlign="TimelineAlign.Start" TimelinePosition="TimelinePosition.Start">
+                @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
+                {
+                    <MudTimelineItem Elevation="0" Variant="Variant.Filled">
+                        <ItemContent>
+                            <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
+                            <em>@logEntry.Comment</em>
+
+                            @foreach (var change in logEntry.Changes)
+                            {
+                                <div>
+                                    &gt; @change.Name : @change.OldValue -> @change.NewValue
+                                </div>
+                            }
+                        </ItemContent>
+                    </MudTimelineItem>
+                }
+            </MudTimeline>
+        </MudCardContent>
+    </MudCard>
 }
 
 @code {
-    private string workItemType = "Bug";
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "type")]
+    public string WorkItemType { get; set; } = "Bug";
 
     [Parameter]
     public string ProjectCode { get; set; }
@@ -68,9 +94,9 @@
     {
         if (WorkItemId.ToLowerInvariant() == "new")
         {
-            WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemType(ProjectCode, workItemType);
+            WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemType(ProjectCode, WorkItemType);
 
-            WorkItem = await WorkItemService.GetTemplateAsync(ProjectCode, workItemType);
+            WorkItem = await WorkItemService.GetTemplateAsync(ProjectCode, WorkItemType);
         }
         else
         {

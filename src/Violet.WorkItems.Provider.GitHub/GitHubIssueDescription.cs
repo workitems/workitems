@@ -6,7 +6,7 @@ namespace Violet.WorkItems.Provider;
 internal class GitHubIssueDescription
 {
     public static WorkItemDescriptor Model
-        => new("GitHubIssues",
+        => new("GitHubIssues", "Issue",
             new PropertyDescriptor[] {
                     PropertyDescriptor.Create("State", "String", propertyType: PropertyType.SingleValueFromProvider, isEditable: false, initialValue: "Open", valueProvider: new EnumValueProviderDescriptor(new EnumValue("Open", "Open"), new EnumValue("Closed", "Closed"))),
                     PropertyDescriptor.Create("Title", "String", validators: new ValidatorDescriptor[] {

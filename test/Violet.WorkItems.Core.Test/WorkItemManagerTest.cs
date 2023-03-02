@@ -218,7 +218,7 @@ public class WorkItemManagerTest
     {
         // arrange
         var workItemManager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-            WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+            WorkItemDescriptor.Create("BAR", "BAR", new PropertyDescriptor[] {
                     PropertyDescriptor.Create("A", "String", initialValue: "a"),
                     PropertyDescriptor.Create("B", "String"),
             })
@@ -249,7 +249,7 @@ public class WorkItemManagerTest
     {
         // arrange
         var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-            WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+            WorkItemDescriptor.Create("BAR", "BAR", new PropertyDescriptor[] {
                     PropertyDescriptor.Create("A", "String", initialValue: "a"),
                     PropertyDescriptor.Create("B", "String"),
             })
@@ -272,7 +272,7 @@ public class WorkItemManagerTest
     {
         // arrange
         var manager = new WorkItemManager(new InMemoryDataProvider(), new InMemoryDescriptorProvider(
-            WorkItemDescriptor.Create("BAR", new PropertyDescriptor[] {
+            WorkItemDescriptor.Create("BAR", "BAR", new PropertyDescriptor[] {
                     PropertyDescriptor.Create("A", "String", initialValue: "a"),
                     PropertyDescriptor.Create("B", "String"),
             },

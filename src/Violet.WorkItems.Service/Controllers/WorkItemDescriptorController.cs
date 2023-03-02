@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Violet.WorkItems.Service.Messages;
+using Violet.WorkItems.Types;
 
 namespace Violet.WorkItems.Service.Controllers;
 
@@ -42,6 +39,18 @@ public class WorkItemDescriptorController : ControllerBase
             WorkItemId = item.Id,
             Properties = properties,
             Commands = commands,
+        });
+    }
+
+    [HttpGet("api/v1/projects/{projectCode}/types")]
+    [ProducesResponseType(typeof(WorkItemTypesApiResponse), 200)]
+    public async Task<ActionResult> GetAllWorkItemTypes(string projectCode)
+    {
+        return Ok(new WorkItemTypesApiResponse()
+        {
+            Success = true,
+            ProjectCode = projectCode,
+            Types = _workItemManager.DescriptorManager.GetAllWorkItemTypes(projectCode),
         });
     }
 }

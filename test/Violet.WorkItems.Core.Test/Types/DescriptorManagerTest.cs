@@ -91,7 +91,7 @@ public class DescriptorManagerTest
 
     private static async Task<DescriptorManager> LoadExampleDescriptorManagerAsync()
     {
-        var manager = new DescriptorManager(new InMemoryDescriptorProvider(WorkItemDescriptor.Create("Foo", new PropertyDescriptor[] {
+        var manager = new DescriptorManager(new InMemoryDescriptorProvider(WorkItemDescriptor.Create("Foo", "Foo", new PropertyDescriptor[] {
                 PropertyDescriptor.Create("A", "String"),
                 PropertyDescriptor.Create("State", "String"),
             }, new StageDescriptor[] {

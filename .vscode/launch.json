@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Frontend",
             "type": "blazorwasm",
-            "name": "Launch and Debug Blazor WebAssembly Application",
             "request": "launch",
             "cwd": "${workspaceFolder}/src/Violet.WorkItems.BlazorWebFrontend",
             "url": "https://localhost:7158",
-            "browser": "chrome"
+            "browser": "chrome",
         },
         {
             "name": ".NET Core Launch (console)",
@@ -28,11 +28,11 @@
             "stopAtEntry": false
         },
         {
-            "name": ".NET Core Launch (service)",
+            "name": "Service",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Violet.WorkItems.Service/bin/Debug/net5.0/Violet.WorkItems.Service.dll",
+            "program": "${workspaceFolder}/src/Violet.WorkItems.Service/bin/Debug/net7.0/Violet.WorkItems.Service.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Violet.WorkItems.Service",
             "console": "integratedTerminal",
@@ -46,6 +46,15 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start Blazor and Service",
+            "configurations": [
+                "Service",
+                "Frontend"
+            ]
         }
     ]
 }

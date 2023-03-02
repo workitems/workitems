@@ -3,10 +3,12 @@ using System.Collections.Generic;
 
 namespace Violet.WorkItems.Types;
 
-public record WorkItemDescriptor(string Name, IEnumerable<PropertyDescriptor> Properties, IEnumerable<StageDescriptor> Stages, LogDescriptor Log)
+public record WorkItemType(string Name, string DisplayName);
+
+public record WorkItemDescriptor(string Name, string DisplayName, IEnumerable<PropertyDescriptor> Properties, IEnumerable<StageDescriptor> Stages, LogDescriptor Log)
 {
-    public static WorkItemDescriptor Create(string name, IEnumerable<PropertyDescriptor> properties, IEnumerable<StageDescriptor>? stages = null, LogDescriptor? log = null)
-        => new(name, properties, stages ?? Array.Empty<StageDescriptor>(), log ?? new LogDescriptor(Array.Empty<LogEntryTypeDescriptor>()));
+    public static WorkItemDescriptor Create(string name, string displayName, IEnumerable<PropertyDescriptor> properties, IEnumerable<StageDescriptor>? stages = null, LogDescriptor? log = null)
+        => new(name, displayName, properties, stages ?? Array.Empty<StageDescriptor>(), log ?? new LogDescriptor(Array.Empty<LogEntryTypeDescriptor>()));
 }
 
 public record LogDescriptor(IEnumerable<LogEntryTypeDescriptor> Types);
