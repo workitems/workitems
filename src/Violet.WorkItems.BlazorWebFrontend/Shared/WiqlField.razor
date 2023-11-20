@@ -1,0 +1,192 @@
+@using Violet.WorkItems.Query
+@inject WorkItemDescriptorService WorkItemDescriptorService
+
+@if (Query?.Clause is not null)
+{
+    @RenderClause(Query.Clause)
+}
+else
+{
+    <text></text>
+}
+@if (IsEditable)
+{
+    <MudChip Label="true" Size="Size.Medium" Variant="Variant.Text">
+        <MudIcon Icon="@Icons.Material.Filled.Add" @onclick="(() => EditorOpen = !EditorOpen)"></MudIcon>
+        <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@EditorOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            <MudPaper MinWidth="400px" MaxHeight="200px" Elevation="0">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudList Clickable="true" Dense="true">
+                            @if (WorkItemTypes is not null && WorkItemDescriptor is null)
+                            {
+                                <MudListSubheader>WorkItem Types</MudListSubheader>
+                                @foreach (var type in WorkItemTypes)
+                                {
+                                    <MudListItem @onclick="@(async _ => await AddWorkItemTypeClauseAsync(ProjectCode, type.Name))">@type.DisplayName</MudListItem>
+                                }
+                            }
+                            @if (WorkItemDescriptor is not null)
+                            {
+                                <MudListSubheader>Properties</MudListSubheader>
+                                @foreach (var property in WorkItemDescriptor.Properties)
+                                {
+                                    <MudListItem @onclick="@(async _ => await AddPropertyClauseAsync(property.Name, ""))">@property.Label</MudListItem>
+                                }
+                            }
+                        </MudList>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudList Clickable="true" Dense="true">
+                            <MudListSubheader>Recent</MudListSubheader>
+                            <MudListItem>🚧 Upcoming (#48) </MudListItem>
+                        </MudList>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudPopover>
+    </MudChip>
+}
+@code {
+    [Parameter]
+    public WorkItemsQuery? Query { get; set; } = null;
+    [Parameter]
+    public bool IsEditable { get; set; } = true;
+
+    public bool EditorOpen { get; set; } = false;
+    public string? ProjectCode { get; set; } = null;
+    public string? WorkItemType { get; set; } = null;
+
+    private IEnumerable<Violet.WorkItems.Types.WorkItemType>? WorkItemTypes { get; set; }
+    private Service.Messages.WorkItemDescriptorApiResponse? WorkItemDescriptor { get; set; } = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ReloadMetadata();
+    }
+
+    private async Task ReloadMetadata()
+    {
+        ProjectCode = null;
+        WorkItemType = null;
+        if (Query is { Clause: AndClause andClause })
+        {
+            if (andClause.SubClauses.FirstOrDefault(sc => sc is ProjectClause) is ProjectClause projectClause)
+            {
+                ProjectCode = projectClause.ProjectCode;
+            }
+
+            if (andClause.SubClauses.FirstOrDefault(sc => sc is WorkItemTypeClause) is WorkItemTypeClause workItemTypeClause)
+            {
+                WorkItemType = workItemTypeClause.WorkItemType;
+            }
+        }
+
+        if (ProjectCode is not null)
+        {
+            WorkItemTypes = (await WorkItemDescriptorService.GetWorkItemTypes(ProjectCode)).Types;
+        }
+        else
+        {
+            WorkItemTypes = null;
+        }
+
+        if (ProjectCode is not null && WorkItemType is not null)
+        {
+            WorkItemDescriptor = (await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemType(ProjectCode, WorkItemType));
+        }
+        else
+        {
+            WorkItemDescriptor = null;
+        }
+    }
+
+
+    private async Task ClosedChipAsync(MudChip chip)
+    {
+        await RemoveClauseAsync(chip.Tag as QueryClause ?? throw new ArgumentException("chip not tagged"));
+    }
+
+    private Task AddPropertyClauseAsync(string propertyName, string? value)
+        => AddClauseAsync(new ValueMatchClause(propertyName, value is null ? Array.Empty<string>() : new[] { value }, true));
+    private Task AddWorkItemTypeClauseAsync(string projectCode, string workItemType)
+        => AddClauseAsync(new WorkItemTypeClause(workItemType));
+
+    private async Task AddClauseAsync(QueryClause clause)
+    {
+        Query = Query switch
+        {
+            null => new WorkItemsQuery(AndClause.Create(clause)),
+            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Add(clause))),
+            { Clause: var anyClause } => new WorkItemsQuery(AndClause.Create(anyClause, clause)),
+        };
+
+        await ReloadMetadata();
+        EditorOpen = false;
+    }
+    private async Task RemoveClauseAsync(QueryClause clause)
+    {
+        Query = Query switch
+        {
+            null => new WorkItemsQuery(AndClause.Create(clause)),
+            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Remove(clause))),
+            _ => Query,
+        };
+
+        await ReloadMetadata();
+    }
+
+
+    private RenderFragment RenderClause(QueryClause clause, bool isNegative = false)
+    {
+        var callback = ClosedChipAsync;
+
+        if (IsEditable == false)
+        {
+            callback = null;
+        }
+
+        switch (clause)
+        {
+            case ProjectClause projectClause:
+                return
+    @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" Tag="clause">
+        <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Small" /> @projectClause.ProjectCode
+    </MudChip>;
+            case WorkItemIdClause idClause:
+                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause"># @idClause.WorkItemId</MudChip>;
+            case WorkItemTypeClause typeClause:
+                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">
+        <MudIcon Icon="@Icons.Material.Filled.Category" /> @typeClause.WorkItemType
+    </MudChip>;
+            case AndClause andClause:
+                return
+    @<text>
+        @foreach (var subClause in andClause.SubClauses)
+            {
+        @RenderClause(subClause, isNegative)
+            }
+    </text>;
+            case OrClause orClause:
+                return
+    @<text>
+        OR (
+        @foreach (var subClause in orClause.SubClauses)
+            {
+        @RenderClause(subClause, isNegative)
+            }
+        )
+    </text>;
+            case NotClause notClause:
+                return RenderClause(notClause.SubClause, !isNegative);
+            case StringMatchClause stringMatch:
+                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">@stringMatch.PropertyName | @stringMatch.Match</MudChip>;
+            case ValueMatchClause valueMatch:
+                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">@valueMatch.PropertyName | @string.Join(", ", valueMatch.Values)</MudChip>;
+            default:
+                return @<text>Fooo</text>;
+        }
+
+        return null;
+    }
+}

@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @using Violet.WorkItems.Service.Messages;
 @using Violet.WorkItems.Types
+@using Violet.WorkItems.Query
 @using Violet.WorkItems.BlazorWebFrontend.Shared.Widgets
 
 @if (WorkItemDescriptor is not null)
@@ -12,16 +13,12 @@
     <MudAppBar Elevation="4">
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" @onclick="OnBack"></MudIconButton>
         <MudText Typo="Typo.body1">
-            @WorkItemId
             @if (WorkItem.TryGetProperty("Title", out var titleProperty))
             {
-                <span> - @titleProperty.Value</span>
+                <span>@titleProperty.Value</span>
             }
         </MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Book" />
-        <MudText> @ProjectCode</MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Category" />
-        <MudText> @WorkItem.WorkItemType</MudText>
+        <WiqlField Query="@PseudoQuery" IsEditable="false"></WiqlField>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
@@ -86,6 +83,8 @@
     [Parameter]
     public string WorkItemId { get; set; }
 
+    public WorkItemsQuery PseudoQuery { get; set; } = null;
+
     public WorkItemDescriptorApiResponse WorkItemDescriptor;
     public WorkItem WorkItem { get; set; }
 
@@ -104,6 +103,8 @@
 
             WorkItem = await WorkItemService.GetWorkItemAsync(ProjectCode, WorkItemId);
         }
+
+        PseudoQuery = new WorkItemsQuery(AndClause.Create(new WorkItemIdClause(WorkItem.Id), new ProjectClause(WorkItem.ProjectCode), new WorkItemTypeClause(WorkItem.WorkItemType)));
     }
 
     public async Task OnPropertyUpdate(WorkItem workItem)

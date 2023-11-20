@@ -3,20 +3,23 @@
 @inject WorkItemDescriptorService WorkItemDescriptorService
 @inject NavigationManager NavigationManager
 @using WorkItems.Types;
+@using WorkItems.Query;
 
 @if (List is not null)
 {
     <MudAppBar Elevation="1">
-        <MudText Typo="Typo.body1">@ProjectCode <text>- All Work Items</text></MudText>
+        @* <MudText Typo="Typo.body1">@ProjectCode <text>- All Work Items</text></MudText> *@
+        <WiqlField Query="@Query"></WiqlField>
         <MudSpacer />
         <MudMenu Icon="@Icons.Material.Filled.Add" Color="Color.Inherit">
             @foreach (var type in Types)
             {
                 <MudMenuItem @onclick="(() => NavigateToNewWorkItem(type.Name))">@type.DisplayName</MudMenuItem>
-
             }
         </MudMenu>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit">
+            <MudMenuItem>Violet WorkItems vX.Y</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
 
     <MudTable Items="@List" T="WorkItem" OnRowClick="@OnRowClickCommand" Hover="true" SelectOnRowClick="true">
@@ -34,7 +37,9 @@
 }
 @code {
     [Parameter]
-    public string ProjectCode { get; set; }
+    public string ProjectCode { get; set; } = null;
+    [Parameter]
+    public WorkItemsQuery Query { get; set; } = null;
     public IEnumerable<WorkItem> List = null;
     public IEnumerable<WorkItemType> Types = null;
 
@@ -42,6 +47,11 @@
     {
         List = await WorkItemService.GetAllWorkItems(ProjectCode);
         Types = (await WorkItemDescriptorService.GetWorkItemTypes(ProjectCode)).Types;
+
+        if (Query is null && ProjectCode is not null)
+        {
+            Query = new WorkItemsQuery(AndClause.Create(new ProjectClause(ProjectCode)));
+        }
     }
 
     public void NavigateToNewWorkItem(string type)
