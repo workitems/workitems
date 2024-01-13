@@ -3,6 +3,7 @@
 
 @if (Query?.Clause is not null)
 {
+    <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
     @RenderClause(Query.Clause)
 }
 else
@@ -11,47 +12,48 @@ else
 }
 @if (IsEditable)
 {
-    <MudChip Label="true" Size="Size.Medium" Variant="Variant.Text">
-        <MudIcon Icon="@Icons.Material.Filled.Add" @onclick="(() => EditorOpen = !EditorOpen)"></MudIcon>
-        <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@EditorOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <MudPaper MinWidth="400px" MaxHeight="200px" Elevation="0">
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudList Clickable="true" Dense="true">
-                            @if (WorkItemTypes is not null && WorkItemDescriptor is null)
-                            {
-                                <MudListSubheader>WorkItem Types</MudListSubheader>
-                                @foreach (var type in WorkItemTypes)
-                                {
-                                    <MudListItem @onclick="@(async _ => await AddWorkItemTypeClauseAsync(ProjectCode, type.Name))">@type.DisplayName</MudListItem>
-                                }
-                            }
-                            @if (WorkItemDescriptor is not null)
-                            {
-                                <MudListSubheader>Properties</MudListSubheader>
-                                @foreach (var property in WorkItemDescriptor.Properties)
-                                {
-                                    <MudListItem @onclick="@(async _ => await AddPropertyClauseAsync(property.Name, ""))">@property.Label</MudListItem>
-                                }
-                            }
-                        </MudList>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudList Clickable="true" Dense="true">
-                            <MudListSubheader>Recent</MudListSubheader>
-                            <MudListItem>🚧 Upcoming (#48) </MudListItem>
-                        </MudList>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudPopover>
-    </MudChip>
+    @* <MudChip Label="true" Size="Size.Medium" Variant="Variant.Text">
+<MudIcon Icon="@Icons.Material.Filled.Add" @onclick="(() => EditorOpen = !EditorOpen)"></MudIcon>
+<MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@EditorOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+<MudPaper MinWidth="400px" MaxHeight="200px" Elevation="0">
+<MudGrid>
+<MudItem xs="6">
+<MudList Clickable="true" Dense="true">
+@if (WorkItemTypes is not null && WorkItemDescriptor is null)
+{
+<MudListSubheader>WorkItem Types</MudListSubheader>
+@foreach (var type in WorkItemTypes)
+{
+<MudListItem @onclick="@(async _ => await AddWorkItemTypeClauseAsync(ProjectCode, type.Name))">@type.DisplayName</MudListItem>
+}
+}
+@if (WorkItemDescriptor is not null)
+{
+<MudListSubheader>Properties</MudListSubheader>
+@foreach (var property in WorkItemDescriptor.Properties)
+{
+<MudListItem @onclick="@(async _ => await AddPropertyClauseAsync(property.Name, ""))">@property.Label</MudListItem>
+}
+}
+</MudList>
+</MudItem>
+<MudItem xs="6">
+<MudList Clickable="true" Dense="true">
+<MudListSubheader>Recent</MudListSubheader>
+<MudListItem>🚧 Upcoming (#48) </MudListItem>
+</MudList>
+</MudItem>
+</MudGrid>
+</MudPaper>
+</MudPopover>
+</MudChip> *@
 }
 @code {
     [Parameter]
     public WorkItemsQuery? Query { get; set; } = null;
     [Parameter]
     public bool IsEditable { get; set; } = true;
+
 
     public bool EditorOpen { get; set; } = false;
     public string? ProjectCode { get; set; } = null;
@@ -102,9 +104,9 @@ else
     }
 
 
-    private async Task ClosedChipAsync(MudChip chip)
+    private async Task ClosedChipAsync(FluentButton chip)
     {
-        await RemoveClauseAsync(chip.Tag as QueryClause ?? throw new ArgumentException("chip not tagged"));
+    //await RemoveClauseAsync(chip.Tag as QueryClause ?? throw new ArgumentException("chip not tagged"));
     }
 
     private Task AddPropertyClauseAsync(string propertyName, string? value)
@@ -141,48 +143,46 @@ else
     {
         var callback = ClosedChipAsync;
 
+        var appearance = Appearance.Neutral;
+
         if (IsEditable == false)
         {
             callback = null;
+            appearance = Appearance.Outline;
         }
 
         switch (clause)
         {
             case ProjectClause projectClause:
-                return
-    @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" Tag="clause">
-        <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Small" /> @projectClause.ProjectCode
-    </MudChip>;
+                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause" Appearance="@appearance">Project: @projectClause.ProjectCode</FluentButton>;
             case WorkItemIdClause idClause:
-                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause"># @idClause.WorkItemId</MudChip>;
+                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause" Appearance="@appearance"># @idClause.WorkItemId</FluentButton>;
             case WorkItemTypeClause typeClause:
-                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">
-        <MudIcon Icon="@Icons.Material.Filled.Category" /> @typeClause.WorkItemType
-    </MudChip>;
+                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" OnClose="callback" Tag="clause" Appearance="@appearance">@typeClause.WorkItemType</FluentButton>;
             case AndClause andClause:
                 return
     @<text>
         @foreach (var subClause in andClause.SubClauses)
-            {
+    {
         @RenderClause(subClause, isNegative)
-            }
+    }
     </text>;
             case OrClause orClause:
                 return
     @<text>
         OR (
         @foreach (var subClause in orClause.SubClauses)
-            {
+    {
         @RenderClause(subClause, isNegative)
-            }
+    }
         )
     </text>;
             case NotClause notClause:
                 return RenderClause(notClause.SubClause, !isNegative);
             case StringMatchClause stringMatch:
-                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">@stringMatch.PropertyName | @stringMatch.Match</MudChip>;
+                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause">@stringMatch.PropertyName | @stringMatch.Match</FluentButton>;
             case ValueMatchClause valueMatch:
-                return @<MudChip Label="true" Size="Size.Medium" Color="Color.Secondary" OnClose="callback" Tag="clause">@valueMatch.PropertyName | @string.Join(", ", valueMatch.Values)</MudChip>;
+                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause">@valueMatch.PropertyName | @string.Join(", ", valueMatch.Values)</FluentButton>;
             default:
                 return @<text>Fooo</text>;
         }

@@ -22,16 +22,18 @@
             <FluentButton IconEnd="@(new Icons.Regular.Size16.Save())"
                 Title="Save"
                 OnClick="OnSave" />
-        @foreach (var command in WorkItemDescriptor.Commands)
-        {
-                    <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowRight())" OnClick="@(e => OnCommand(command))">@command.Label</FluentButton>
-        }
-            <FluentLabel Typo="Typography.Subject">
-            @WorkItemId
-            @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+            @foreach (var command in WorkItemDescriptor.Commands)
             {
-                        <span>@titleProperty.Value</span>
+                <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowRight())" OnClick="@(e => OnCommand(command))">@command.Label</FluentButton>
             }
+
+            <WiqlField Query="@PseudoQuery" IsEditable="false"></WiqlField>
+            <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
+            <FluentLabel Typo="Typography.Subject">
+                @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+                {
+                    <span>@titleProperty.Value</span>
+                }
             </FluentLabel>
 
             <FluentSpacer />

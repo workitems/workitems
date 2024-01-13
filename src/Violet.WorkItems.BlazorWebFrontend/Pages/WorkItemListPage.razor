@@ -9,7 +9,7 @@
 {
     <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
         <FluentButton IconEnd="@(new Icons.Regular.Size16.Home())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/"))" />
-        <FluentLabel Typo="Typography.Subject">@ProjectCode <text>- All Work Items</text></FluentLabel>
+        <WiqlField Query="@Query"></WiqlField>
         <FluentSpacer />
         <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
             Title="Add"
