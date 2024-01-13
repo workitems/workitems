@@ -1,15 +1,12 @@
 ﻿@inherits LayoutComponentBase
-<MudLayout>
-    <MudMainContent>
-        <strong>@X</strong>
+
+<FluentLayout style="background-color: var(--neutral-layer-1);height:100vh">
+    <FluentBodyContent>
         @Body
-    </MudMainContent>
-</MudLayout>
+    </FluentBodyContent>
+</FluentLayout>
 
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-@code {
-    public RenderFragment? X { get; set; }
-}
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />

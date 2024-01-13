@@ -9,74 +9,74 @@
 
 @if (WorkItemDescriptor is not null)
 {
-    <MudAppBar Elevation="4">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" Edge="Edge.Start" @onclick="OnBack"></MudIconButton>
-        <MudText Typo="Typo.body1">
+    <PageTitle>
+        @WorkItemId
+        @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+        {
+            <text> - @titleProperty.Value</text>
+        }
+    </PageTitle>
+    <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
+        <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/wi/{ProjectCode}"))" />
+        <FluentButton IconEnd="@(new Icons.Regular.Size16.Save())"
+            Title="Save"
+            OnClick="OnSave" />
+        @foreach (var command in WorkItemDescriptor.Commands)
+        {
+            <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowRight())" OnClick="@(e => OnCommand(command))">@command.Label</FluentButton>
+        }
+        <FluentLabel Typo="Typography.Subject">
             @WorkItemId
             @if (WorkItem.TryGetProperty("Title", out var titleProperty))
             {
                 <span> - @titleProperty.Value</span>
             }
-        </MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Book" />
-        <MudText> @ProjectCode</MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Category" />
-        <MudText> @WorkItem.WorkItemType</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-    </MudAppBar>
-    <MudPaper Elevation="2" Square="true">
-        <MudToolBar Dense="true">
-            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Inherit" Edge="Edge.End" @onclick="OnSave"></MudIconButton>
-            <MudSpacer />
-            @foreach (var command in WorkItemDescriptor.Commands)
-            {
-                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="Color.Inherit" @onclick="@(e => OnCommand(command))">@command.Label</MudButton>
-            }
-        </MudToolBar>
-    </MudPaper>
+        </FluentLabel>
 
-    <MudCard Class="ma-4">
-        <MudCardHeader>
-            <MudText Typo="@Typo.h6">Properties</MudText>
-        </MudCardHeader>
-        <MudCardContent>
-            @foreach (var property in WorkItemDescriptor.Properties)
-            {
-                <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
-            }
+        <FluentSpacer />
+        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.MoreVertical())"
+            Title="Add"
+            OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
+    </FluentToolbar>
 
-        </MudCardContent>
-    </MudCard>
+    <FluentTabs>
+        <FluentTab Label="Properties" style="border:calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-rest);border-radius:calc(var(--control-corner-radius) * 1px);padding:1rem 1rem;margin:0 6px 0 6px">
+            <FluentStack Orientation="Orientation.Vertical">
+                @foreach (var property in WorkItemDescriptor.Properties)
+                {
+                    <div>
+                        <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
+                    </div>
+                }
+            </FluentStack>
+        </FluentTab>
 
-    <MudCard Class="ma-4">
-        <MudCardHeader>
-            <MudText Typo="@Typo.h6">History</MudText>
-        </MudCardHeader>
-        <MudCardContent Class="pa-0">
-            <MudTimeline TimelineAlign="TimelineAlign.Start" TimelinePosition="TimelinePosition.Start">
+        <FluentTab Label="History">
+            <FluentStack Orientation="Orientation.Vertical">
                 @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
                 {
-                    <MudTimelineItem Elevation="0" Variant="Variant.Filled">
-                        <ItemContent>
-                            <strong>@logEntry.Date.ToString("s")</strong> by @logEntry.User<br />
-                            <em>@logEntry.Comment</em>
+                    <strong>@logEntry.Date.ToString("s")</strong>
+                    <text>by</text>
+                    @logEntry.User
+                    <br />
+                    <em>@logEntry.Comment</em>
 
-                            @foreach (var change in logEntry.Changes)
-                            {
-                                <div>
-                                    &gt; @change.Name : @change.OldValue -> @change.NewValue
-                                </div>
-                            }
-                        </ItemContent>
-                    </MudTimelineItem>
+                    @foreach (var change in logEntry.Changes)
+                    {
+                        <div>
+                            &gt; @change.Name : @change.OldValue -> @change.NewValue
+                        </div>
+                    }
+                    <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
                 }
-            </MudTimeline>
-        </MudCardContent>
-    </MudCard>
+            </FluentStack>
+        </FluentTab>
+    </FluentTabs>
+
 }
 
 @code {
+    private bool addNewWorkItemMenuOpen = false;
     [Parameter]
     [SupplyParameterFromQuery(Name = "type")]
     public string WorkItemType { get; set; } = "Bug";
@@ -136,10 +136,5 @@
 
             WorkItemDescriptor = await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemId(ProjectCode, WorkItemId);
         }
-    }
-
-    public async Task OnBack()
-    {
-        NavigationManager.NavigateTo($"/wi/{ProjectCode}");
     }
 }

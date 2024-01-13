@@ -6,33 +6,30 @@
 
 @if (List is not null)
 {
-    <MudAppBar Elevation="1">
-        <MudText Typo="Typo.body1">@ProjectCode <text>- All Work Items</text></MudText>
-        <MudSpacer />
-        <MudMenu Icon="@Icons.Material.Filled.Add" Color="Color.Inherit">
+    <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
+        <FluentButton IconEnd="@(new Icons.Regular.Size16.Home())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/"))" />
+        <FluentLabel Typo="Typography.Subject">@ProjectCode <text>- All Work Items</text></FluentLabel>
+        <FluentSpacer />
+        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
+            Title="Add"
+            OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
+        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.MoreVertical())"
+            Title="Add" />
+        <FluentMenu Anchor="AddNewWorkItemButton" @bind-Open="addNewWorkItemMenuOpen">
             @foreach (var type in Types)
             {
-                <MudMenuItem @onclick="(() => NavigateToNewWorkItem(type.Name))">@type.DisplayName</MudMenuItem>
-
+                <FluentMenuItem OnClick="(() => NavigateToNewWorkItem(type.Name))">@type.DisplayName</FluentMenuItem>
             }
-        </MudMenu>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-    </MudAppBar>
-
-    <MudTable Items="@List" T="WorkItem" OnRowClick="@OnRowClickCommand" Hover="true" SelectOnRowClick="true">
-        <HeaderContent>
-            <MudTh>Id</MudTh>
-            <MudTh>Type</MudTh>
-            <MudTh>Title</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Type">@context.WorkItemType</MudTd>
-            <MudTd DataLabel="Title">@context["Title"].Value</MudTd>
-        </RowTemplate>
-    </MudTable>
+        </FluentMenu>
+    </FluentToolbar>
+    <FluentDataGrid Items="@(List.AsQueryable())" TGridItem="WorkItem" OnRowFocus="OnRowFocusExecute">
+        <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi=> wi.Id)" Title="Id" Sortable="true" />
+        <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi => wi.WorkItemType)" Title="Type" Sortable="true" />
+        <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi => wi["Title"].Value)" Title="Title" Sortable="true" />
+    </FluentDataGrid>
 }
 @code {
+    private bool addNewWorkItemMenuOpen = false;
     [Parameter]
     public string ProjectCode { get; set; }
     public IEnumerable<WorkItem> List = null;
@@ -47,7 +44,7 @@
     public void NavigateToNewWorkItem(string type)
     => NavigationManager.NavigateTo($"/wi/{ProjectCode}/new?type={type}");
 
-    public void OnRowClickCommand(TableRowClickEventArgs<WorkItem> e)
+    public void OnRowFocusExecute(FluentDataGridRow<WorkItem> e)
     => NavigateToWorkItem(e.Item);
 
     public void NavigateToWorkItem(WorkItem workItem)
