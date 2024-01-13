@@ -1,5 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>wi</ToolCommandName>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Violet.WorkItems.Provider.GitHub\Violet.WorkItems.Provider.GitHub.csproj" />
     <ProjectReference Include="..\Violet.WorkItems.Core\Violet.WorkItems.Core.csproj" />
@@ -7,18 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Readline" Version="2.0.1" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>wi</ToolCommandName>
-  </PropertyGroup>
 
 </Project>
