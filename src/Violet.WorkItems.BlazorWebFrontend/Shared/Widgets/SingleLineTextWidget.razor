@@ -1,4 +1,4 @@
 @inherits WidgetBase
 @using Violet.WorkItems.Types
 
-<MudTextField T="string" Label="@PropertyDescriptor.Label" Value="@Property.Value" Disabled="@(!PropertyDescriptor.IsEditable)" HelperText="@PropertyDescriptor.Description" HelperTextOnFocus="true" Placeholder="@PropertyDescriptor.Hint" ValueChanged="@(e => OnChange(e))" />
+<FluentTextField T="string" Label="@PropertyDescriptor.Label" Value="@Property.Value" Disabled="@(!PropertyDescriptor.IsEditable)" HelperText="@PropertyDescriptor.Description" HelperTextOnFocus="true" Placeholder="@PropertyDescriptor.Hint" ValueChanged="@(e => OnChange(e))" />
