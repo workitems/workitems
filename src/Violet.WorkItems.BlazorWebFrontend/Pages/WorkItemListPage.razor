@@ -10,7 +10,7 @@
     <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
         <FluentButton IconEnd="@(new Icons.Regular.Size16.Home())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/"))" />
         <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical" ></FluentDivider>
-        <WiqlField Query="@Query"></WiqlField>
+        <WiqlField Query="@Query" QueryChanged="@QueryChangedAsync"></WiqlField>
         <FluentSpacer />
         <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
             Title="Add"
@@ -49,8 +49,24 @@
         {
             Query = new WorkItemsQuery(AndClause.Create(new ProjectClause(ProjectCode)));
         }
-        
-        List = await WorkItemService.GetAllWorkItems(ProjectCode);
+
+        await RefreshData();
+    }
+    private async Task QueryChangedAsync(WorkItemsQuery query)
+    {
+        Query = query;
+
+        var data = System.Text.Json.JsonSerializer.Serialize(query, QuerySerialization.GetOptions());
+
+        Console.WriteLine("Updated Query" + data);
+
+        RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        List = await WorkItemService.GetAllWorkItems(Query);
+        StateHasChanged();
     }
 
     public void NavigateToNewWorkItem(string type)

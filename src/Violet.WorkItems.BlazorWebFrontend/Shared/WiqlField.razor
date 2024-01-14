@@ -20,6 +20,8 @@ else
     [Parameter]
     public WorkItemsQuery? Query { get; set; } = null;
     [Parameter]
+    public EventCallback<WorkItemsQuery> QueryChanged { get; set; } = default!;
+    [Parameter]
     public bool IsEditable { get; set; } = true;
 
     private async Task OpenEditorAsync()
@@ -41,7 +43,8 @@ else
         if (result.Data is WorkItemsQuery updatedQuery)
         {
             Query = updatedQuery;
-            Console.WriteLine(Query);
+
+            await QueryChanged.InvokeAsync(Query);
         }
     }
 

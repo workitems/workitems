@@ -18,14 +18,24 @@ public class WorkItemService : BaseService
         return result.WorkItem;
     }
 
-    public async Task<IEnumerable<WorkItem>> GetAllWorkItems(string projectCode)
+
+    public Task<IEnumerable<WorkItem>> GetAllWorkItems(string projectCode)
+        => GetAllWorkItems(CommonQueries.OfProjectCode(projectCode));
+
+    public async Task<IEnumerable<WorkItem>> GetAllWorkItems(WorkItemsQuery query)
     {
-        var uri = $"{_baseUri}/projects/{projectCode}/workitems/query";
-        var response = await _httpClient.PostAsJsonAsync<WorkItemListApiRequest>(uri, new WorkItemListApiRequest(CommonQueries.OfProjectCode(projectCode)), _jsonOptions);
+        var projectClause = query.Clause.GetTopLevel<ProjectClause>();
 
-        var result = await response.Content.ReadFromJsonAsync<WorkItemListApiResponse>();
+        if (projectClause is { ProjectCode: var projectCode })
+        {
+            var uri = $"{_baseUri}/projects/{projectCode}/workitems/query";
+            var response = await _httpClient.PostAsJsonAsync<WorkItemListApiRequest>(uri, new WorkItemListApiRequest(query), _jsonOptions);
 
-        return result.WorkItems;
+            var result = await response.Content.ReadFromJsonAsync<WorkItemListApiResponse>();
+
+            return result.WorkItems;
+        }
+        return [];
     }
 
     public async Task<WorkItem> GetWorkItemAsync(string projectCode, string workItemId)
