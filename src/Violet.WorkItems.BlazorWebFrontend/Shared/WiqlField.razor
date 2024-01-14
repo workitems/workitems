@@ -1,170 +1,74 @@
 @using Violet.WorkItems.Query
-@inject WorkItemDescriptorService WorkItemDescriptorService
+@inject IDialogService DialogService
 
 @if (Query?.Clause is not null)
 {
-    <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
-    @RenderClause(Query.Clause)
+    <FluentTextField Value="" ReadOnly="@(!IsEditable)">
+        @RenderClause(Query.Clause, IsEditable)
+        @if (IsEditable)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.Add())" Slot="start" OnClick="OpenEditorAsync"/>
+        }
+    </FluentTextField>
 }
 else
 {
     <text></text>
 }
-@if (IsEditable)
-{
-    @* <MudChip Label="true" Size="Size.Medium" Variant="Variant.Text">
-<MudIcon Icon="@Icons.Material.Filled.Add" @onclick="(() => EditorOpen = !EditorOpen)"></MudIcon>
-<MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@EditorOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-<MudPaper MinWidth="400px" MaxHeight="200px" Elevation="0">
-<MudGrid>
-<MudItem xs="6">
-<MudList Clickable="true" Dense="true">
-@if (WorkItemTypes is not null && WorkItemDescriptor is null)
-{
-<MudListSubheader>WorkItem Types</MudListSubheader>
-@foreach (var type in WorkItemTypes)
-{
-<MudListItem @onclick="@(async _ => await AddWorkItemTypeClauseAsync(ProjectCode, type.Name))">@type.DisplayName</MudListItem>
-}
-}
-@if (WorkItemDescriptor is not null)
-{
-<MudListSubheader>Properties</MudListSubheader>
-@foreach (var property in WorkItemDescriptor.Properties)
-{
-<MudListItem @onclick="@(async _ => await AddPropertyClauseAsync(property.Name, ""))">@property.Label</MudListItem>
-}
-}
-</MudList>
-</MudItem>
-<MudItem xs="6">
-<MudList Clickable="true" Dense="true">
-<MudListSubheader>Recent</MudListSubheader>
-<MudListItem>🚧 Upcoming (#48) </MudListItem>
-</MudList>
-</MudItem>
-</MudGrid>
-</MudPaper>
-</MudPopover>
-</MudChip> *@
-}
+
 @code {
     [Parameter]
     public WorkItemsQuery? Query { get; set; } = null;
     [Parameter]
     public bool IsEditable { get; set; } = true;
 
-
-    public bool EditorOpen { get; set; } = false;
-    public string? ProjectCode { get; set; } = null;
-    public string? WorkItemType { get; set; } = null;
-
-    private IEnumerable<Violet.WorkItems.Types.WorkItemType>? WorkItemTypes { get; set; }
-    private Service.Messages.WorkItemDescriptorApiResponse? WorkItemDescriptor { get; set; } = null;
-
-    protected override async Task OnParametersSetAsync()
+    private async Task OpenEditorAsync()
     {
-        await ReloadMetadata();
-    }
-
-    private async Task ReloadMetadata()
-    {
-        ProjectCode = null;
-        WorkItemType = null;
-        if (Query is { Clause: AndClause andClause })
+        DialogParameters<WorkItemsQuery> parameters = new()
         {
-            if (andClause.SubClauses.FirstOrDefault(sc => sc is ProjectClause) is ProjectClause projectClause)
-            {
-                ProjectCode = projectClause.ProjectCode;
-            }
-
-            if (andClause.SubClauses.FirstOrDefault(sc => sc is WorkItemTypeClause) is WorkItemTypeClause workItemTypeClause)
-            {
-                WorkItemType = workItemTypeClause.WorkItemType;
-            }
-        }
-
-        if (ProjectCode is not null)
-        {
-            WorkItemTypes = (await WorkItemDescriptorService.GetWorkItemTypes(ProjectCode)).Types;
-        }
-        else
-        {
-            WorkItemTypes = null;
-        }
-
-        if (ProjectCode is not null && WorkItemType is not null)
-        {
-            WorkItemDescriptor = (await WorkItemDescriptorService.GetWorkItemDescriptorByWorkItemType(ProjectCode, WorkItemType));
-        }
-        else
-        {
-            WorkItemDescriptor = null;
-        }
-    }
-
-
-    private async Task ClosedChipAsync(FluentButton chip)
-    {
-    //await RemoveClauseAsync(chip.Tag as QueryClause ?? throw new ArgumentException("chip not tagged"));
-    }
-
-    private Task AddPropertyClauseAsync(string propertyName, string? value)
-        => AddClauseAsync(new ValueMatchClause(propertyName, value is null ? Array.Empty<string>() : new[] { value }, true));
-    private Task AddWorkItemTypeClauseAsync(string projectCode, string workItemType)
-        => AddClauseAsync(new WorkItemTypeClause(workItemType));
-
-    private async Task AddClauseAsync(QueryClause clause)
-    {
-        Query = Query switch
-        {
-            null => new WorkItemsQuery(AndClause.Create(clause)),
-            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Add(clause))),
-            { Clause: var anyClause } => new WorkItemsQuery(AndClause.Create(anyClause, clause)),
+            Content = Query,
+            Title = $"Edit Query",
+            Alignment = HorizontalAlignment.Right,
+            Modal = true,
+            ShowDismiss = true,
+            PrimaryAction = "Update",
+            SecondaryAction = "Cancel",
+            Width = "350px",
         };
+        var dialog = await DialogService.ShowPanelAsync<WiqlPanel>(Query, parameters);
+        var result = await dialog.Result;
 
-        await ReloadMetadata();
-        EditorOpen = false;
-    }
-    private async Task RemoveClauseAsync(QueryClause clause)
-    {
-        Query = Query switch
+        if (result.Data is WorkItemsQuery updatedQuery)
         {
-            null => new WorkItemsQuery(AndClause.Create(clause)),
-            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Remove(clause))),
-            _ => Query,
-        };
-
-        await ReloadMetadata();
+            Query = updatedQuery;
+            Console.WriteLine(Query);
+        }
     }
 
 
-    private RenderFragment RenderClause(QueryClause clause, bool isNegative = false)
+    public static RenderFragment RenderClause(QueryClause clause, bool isEditable = false, bool isNegative = false)
     {
-        var callback = ClosedChipAsync;
-
         var appearance = Appearance.Neutral;
 
-        if (IsEditable == false)
+        if (isEditable == false)
         {
-            callback = null;
-            appearance = Appearance.Outline;
+            appearance = Appearance.Lightweight;
         }
 
         switch (clause)
         {
             case ProjectClause projectClause:
-                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause" Appearance="@appearance">Project: @projectClause.ProjectCode</FluentButton>;
+                return @<FluentBadge Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance">Project: @projectClause.ProjectCode</FluentBadge>;
             case WorkItemIdClause idClause:
-                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause" Appearance="@appearance"># @idClause.WorkItemId</FluentButton>;
+                return @<FluentBadge Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance"># @idClause.WorkItemId</FluentBadge>;
             case WorkItemTypeClause typeClause:
-                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" OnClose="callback" Tag="clause" Appearance="@appearance">@typeClause.WorkItemType</FluentButton>;
+                return @<FluentBadge Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance">Type: @typeClause.WorkItemType</FluentBadge>;
             case AndClause andClause:
                 return
     @<text>
         @foreach (var subClause in andClause.SubClauses)
     {
-        @RenderClause(subClause, isNegative)
+        @RenderClause(subClause, isEditable, isNegative)
     }
     </text>;
             case OrClause orClause:
@@ -173,16 +77,16 @@ else
         OR (
         @foreach (var subClause in orClause.SubClauses)
     {
-        @RenderClause(subClause, isNegative)
+        @RenderClause(subClause, isEditable, isNegative)
     }
         )
     </text>;
             case NotClause notClause:
                 return RenderClause(notClause.SubClause, !isNegative);
             case StringMatchClause stringMatch:
-                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause">@stringMatch.PropertyName | @stringMatch.Match</FluentButton>;
+                return @<FluentBadge Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance">@stringMatch.PropertyName | @stringMatch.Match</FluentBadge>;
             case ValueMatchClause valueMatch:
-                return @<FluentButton IconStart="@(new Icons.Regular.Size16.Filter())" Tag="clause">@valueMatch.PropertyName | @string.Join(", ", valueMatch.Values)</FluentButton>;
+                return @<FluentBadge Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance">@valueMatch.PropertyName | @string.Join(", ", valueMatch.Values)</FluentBadge>;
             default:
                 return @<text>Fooo</text>;
         }
