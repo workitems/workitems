@@ -24,6 +24,39 @@ public class WiqlTest
             w => Assert.Equal("T4", w.Id)
         );
     }
+
+    [Fact]
+    public async Task WiqlHelper_ValueMatchClause_Any()
+    {
+        // arrange
+        var dataProvider = TestData.GetDataProvider();
+        var query = new WorkItemsQuery(AndClause.Create(new ProjectClause("TestProj2"), new ValueMatchClause("A", [], true)));
+
+        // act
+        var actual = await dataProvider.ListWorkItemsAsync(query);
+
+        // assert
+        Assert.Collection(actual,
+            w => Assert.Equal("T1", w.Id),
+            w => Assert.Equal("T2", w.Id)
+        );
+    }
+    [Fact]
+    public async Task WiqlHelper_ValueMatchClause_OneOf()
+    {
+        // arrange
+        var dataProvider = TestData.GetDataProvider();
+        var query = new WorkItemsQuery(AndClause.Create(new ProjectClause("TestProj2"), new ValueMatchClause("A", ["A3", "B2"], false)));
+
+        // act
+        var actual = await dataProvider.ListWorkItemsAsync(query);
+
+        // assert
+        Assert.Collection(actual,
+            w => Assert.Equal("T1", w.Id),
+            w => Assert.Equal("T2", w.Id)
+        );
+    }
 }
 
 

@@ -9,7 +9,7 @@
 {
     <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
         <FluentButton IconEnd="@(new Icons.Regular.Size16.Home())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/"))" />
-        <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical" ></FluentDivider>
+        <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
         <WiqlField Query="@Query" QueryChanged="@QueryChangedAsync"></WiqlField>
         <FluentSpacer />
         <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
@@ -33,12 +33,12 @@
 @code {
     private bool addNewWorkItemMenuOpen = false;
     [Parameter]
-    public string ProjectCode { get; set; } = null;
+    public string ProjectCode { get; set; } = default!;
     [Parameter]
-    public WorkItemsQuery Query { get; set; } = null;
+    public WorkItemsQuery Query { get; set; } = default!;
 
 
-    public IEnumerable<WorkItem> List = null;
+    public IEnumerable<WorkItem>? List = null;
     public IEnumerable<WorkItemType> Types = null;
 
     protected override async Task OnParametersSetAsync()
@@ -60,7 +60,7 @@
 
         Console.WriteLine("Updated Query" + data);
 
-        RefreshData();
+        await RefreshData();
     }
 
     private async Task RefreshData()

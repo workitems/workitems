@@ -1,0 +1,17 @@
+@using Violet.WorkItems.Query
+@inherits ValueSelectorBaseComponent<WorkItemTypeClause>
+
+@if (IsValidClause && ProjectCode is not null && WorkItemTypes is not null)
+{
+    <FluentListbox TOption="string">
+        @foreach (var type in WorkItemTypes)
+        {
+            <FluentOption Selected="@(TypedClause.WorkItemType == type.Name)" TOption="string" @onclick="@(async _ => await UpdateClauseAsync(Clause, TypedClause with { WorkItemType = type.Name }))" Value="@("type:" + type.Name)">@type.DisplayName</FluentOption>
+        }
+    </FluentListbox>
+}
+
+<FluentToolbar>
+    <FluentSpacer />
+    <FluentIcon Value="@(new Icons.Regular.Size20.Delete())" OnClick="@(async _ => await RemoveClauseAsync(Clause))" />
+</FluentToolbar>
