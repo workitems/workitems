@@ -28,7 +28,7 @@ public record OrClause(ImmutableArray<QueryClause> SubClauses)
 public record NotClause(QueryClause SubClause)
     : QueryClause(Guid.NewGuid());
 
-public record StringMatchClause(string PropertyName, string Match)
+public record StringMatchClause(string PropertyName, string? Match, bool Not)
     : PropertyClause(PropertyName);
 public record ValueMatchClause(string PropertyName, string[] Values, bool Not)
     : PropertyClause(PropertyName);

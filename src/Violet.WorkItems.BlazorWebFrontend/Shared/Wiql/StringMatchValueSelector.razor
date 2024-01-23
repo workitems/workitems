@@ -1,0 +1,36 @@
+@inherits ValueSelectorBaseComponent<StringMatchClause>
+@using Violet.WorkItems.Query
+
+@if (IsValidClause)
+{
+    <FluentTextField Placeholder="contains ..." Immediate="true" Value="@(SearchText ?? TypedClause.Match)" ValueChanged="OnValueChangedAsync"></FluentTextField>
+}
+
+<FluentToolbar>
+    <FluentSpacer />
+    <FluentIcon Value="@(new Icons.Regular.Size20.Delete())" OnClick="@(async _ => await RemoveClauseAsync(Clause))" />
+</FluentToolbar>
+
+@code {
+    private CancellationTokenSource? _cts = null;
+    private string? SearchText = null;
+
+    private async Task OnValueChangedAsync(string value)
+    {
+        SearchText = value;
+        _cts?.Cancel();
+        _cts = new();
+        await Task.Delay(200, _cts.Token).ContinueWith(async _ =>
+        {
+            await UpdateClauseAsync(Clause, TypedClause with
+                {
+                    Match = value,
+                });
+        }, _cts.Token);
+    }
+
+    public void Dispose()
+    {
+        _cts?.Dispose();
+    }
+}

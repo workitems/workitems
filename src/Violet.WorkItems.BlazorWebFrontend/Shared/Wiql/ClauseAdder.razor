@@ -10,7 +10,14 @@
     {
         @foreach (var property in WorkItemDescriptor.Properties)
         {
-            <FluentOption @onclick="@(async _ => await AddValueMatchClauseAsync(property.Name))" Value="@("property:" + property.Name)">@property.Label</FluentOption>
+            if (property.ValueProvider is not null)
+            {
+                <FluentOption @onclick="@(async _ => await AddValueMatchClauseAsync(property.Name))" Value="@("property:" + property.Name)">@property.Label</FluentOption>
+            }
+            else
+            {
+                <FluentOption @onclick="@(async _ => await AddStringMatchClauseAsync(property.Name))" Value="@("property:" + property.Name)">@property.Label</FluentOption>
+            }
         }
     }
 </FluentListbox>
@@ -20,6 +27,8 @@
     => AddClauseAsync(new WorkItemTypeClause(null));
     protected Task AddValueMatchClauseAsync(string propertyName)
     => AddClauseAsync(new ValueMatchClause(propertyName, [], true));
+    protected Task AddStringMatchClauseAsync(string propertyName)
+        => AddClauseAsync(new StringMatchClause(propertyName, null, false));
 
     protected Task AddPropertyClauseAsync(string propertyName, string? value)
     => AddClauseAsync(new ValueMatchClause(propertyName, value is null ? Array.Empty<string>() : new[] { value }, true));

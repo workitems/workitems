@@ -12,7 +12,9 @@ public static class WiqlHelper
             WorkItemTypeClause c => (WorkItem wi) => c.WorkItemType is null || wi.WorkItemType == c.WorkItemType,
             WorkItemIdClause c => (WorkItem wi) => wi.Id == c.WorkItemId,
 
-            StringMatchClause c => (WorkItem wi) => wi[c.PropertyName]?.Value?.Contains(c.Match) ?? false,
+            StringMatchClause c => (WorkItem wi) => c.Match is null || (c.Not
+                ? !(wi[c.PropertyName]?.Value?.Contains(c.Match) ?? false)
+                : wi[c.PropertyName]?.Value?.Contains(c.Match) ?? false),
             ValueMatchClause c => (WorkItem wi) => c.Not
                 ? c.Values.All(v => wi[c.PropertyName]?.Value != v)
                 : c.Values.Any(v => wi[c.PropertyName]?.Value == v),

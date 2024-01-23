@@ -110,7 +110,7 @@
             case NotClause notClause:
                 return RenderClause(notClause.SubClause, !isNegative);
             case StringMatchClause stringMatch:
-                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@stringMatch.PropertyName | @stringMatch.Match</FluentBadge>;
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@stringMatch.PropertyName ~ @stringMatch.Match</FluentBadge>;
             case ValueMatchClause valueMatch:
                 return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@valueMatch.PropertyName : @(valueMatch is { Values: [], Not: true} ? "Any" : string.Join(", ", valueMatch.Values))</FluentBadge>;
             default:

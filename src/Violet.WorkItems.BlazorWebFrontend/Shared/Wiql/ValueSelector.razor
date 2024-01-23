@@ -8,6 +8,10 @@ else if (Clause is ValueMatchClause)
 {
     <ValueMatchClauseValueSelector Query="Query" QueryChanged="QueryChanged" Clause="Clause" ClauseChanged="ClauseChanged" OnClose="OnClose" />
 }
+else if (Clause is StringMatchClause)
+{
+    <StringMatchValueSelector  Query="Query" QueryChanged="QueryChanged" Clause="Clause" ClauseChanged="ClauseChanged" OnClose="OnClose" />
+}
 else if (Clause is null)
 {
     <ClauseAdder Query="Query" QueryChanged="QueryChanged" OnClose="OnClose" />
