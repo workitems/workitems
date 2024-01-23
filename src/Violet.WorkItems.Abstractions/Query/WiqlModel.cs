@@ -13,6 +13,9 @@ public record WorkItemIdClause(string WorkItemId)
     : QueryClause(Guid.NewGuid());
 public record WorkItemTypeClause(string? WorkItemType)
     : QueryClause(Guid.NewGuid());
+public record FullTextSearchClause(string? Text)
+    : QueryClause(Guid.NewGuid());
+
 public abstract record PropertyClause(string PropertyName)
     : QueryClause(Guid.NewGuid());
 

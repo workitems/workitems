@@ -4,7 +4,7 @@
 
 @if (Query?.Clause is not null)
 {
-    <FluentTextField Value="" ReadOnly="@(!IsEditable)">
+    <FluentTextField Value="@(FullTextSearch ?? FullTextSearchClause?.Text ?? string.Empty)" Immediate="true" ImmediateDelay="200" ValueChanged="OnValueChangedAsync" ReadOnly="@(!IsEditable)">
         @RenderClause(Query.Clause, IsEditable)
         @if (IsEditable)
         {
@@ -31,11 +31,35 @@
     private string _popoverAnchorId = string.Empty;
     private QueryClause? _popoverClause = null;
 
+    public string? FullTextSearch { get; set; } = null;
+    public FullTextSearchClause? FullTextSearchClause { get; set; } = null;
+
     private async Task OnQueryChanged(WorkItemsQuery query)
     {
         Query = query;
 
+        FullTextSearchClause = Query.Clause.GetTopLevel<FullTextSearchClause>();
+
         await QueryChanged.InvokeAsync(Query);
+    }
+
+    private async Task OnValueChangedAsync(string value)
+    {
+        FullTextSearch = value;
+        var query = Query;
+
+        if (!string.IsNullOrWhiteSpace(FullTextSearch)) {
+            query = Query
+                .RemoveTopLevelClause(FullTextSearchClause)
+                .AddTopLevelClause(new FullTextSearchClause(value));
+        }
+        else
+        {
+            query = Query
+                .RemoveTopLevelClause(FullTextSearchClause);
+        }
+
+        await OnQueryChanged(query);
     }
 
     public Task OnClauseClickAsync(QueryClause clause)
@@ -114,9 +138,10 @@
             case ValueMatchClause valueMatch:
                 return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@valueMatch.PropertyName : @(valueMatch is { Values: [], Not: true} ? "Any" : string.Join(", ", valueMatch.Values))</FluentBadge>;
             default:
-                return @<text>Fooo</text>;
+                return @<text></text>;
         }
 
         return null;
     }
+
 }

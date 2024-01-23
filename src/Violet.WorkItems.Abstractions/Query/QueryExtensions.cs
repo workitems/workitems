@@ -25,9 +25,23 @@ public static class QueryExtensions
             _ => null
         };
     public static QueryClause? GetTopLevel(this QueryClause self, Guid id)
-    => self switch
-    {
-        AndClause a => a.SubClauses.FirstOrDefault(c => c.Id == id),
-        _ => null
-    };
+        => self switch
+        {
+            AndClause a => a.SubClauses.FirstOrDefault(c => c.Id == id),
+            _ => null
+        };
+    public static WorkItemsQuery AddTopLevelClause(this WorkItemsQuery self, QueryClause clause)
+        => self switch
+        {
+            null => new WorkItemsQuery(AndClause.Create(clause)),
+            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Add(clause))),
+            { Clause: var anyClause } => new WorkItemsQuery(AndClause.Create(anyClause, clause)),
+        };
+
+    public static WorkItemsQuery RemoveTopLevelClause(this WorkItemsQuery self, QueryClause? clause)
+        => self switch
+        {
+            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.RemoveAll(sc => sc.Id == clause?.Id))),
+            _ => self,
+        };
 }

@@ -18,6 +18,7 @@ public static class QuerySerialization
                     typeof(WorkItemIdClause),
                     typeof(WorkItemTypeClause),
                     typeof(PropertyClause),
+                    typeof(FullTextSearchClause),
 
                     typeof(AndClause),
                     typeof(OrClause),

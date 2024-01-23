@@ -114,12 +114,7 @@ public class WiqlBaseComponent : ComponentBase
 
     protected async Task AddClauseAsync(QueryClause clause)
     {
-        Query = Query switch
-        {
-            null => new WorkItemsQuery(AndClause.Create(clause)),
-            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.Add(clause))),
-            { Clause: var anyClause } => new WorkItemsQuery(AndClause.Create(anyClause, clause)),
-        };
+        Query = Query.AddTopLevelClause(clause);
 
         await ReloadMetadataAsync();
 
@@ -129,12 +124,7 @@ public class WiqlBaseComponent : ComponentBase
     }
     protected async Task RemoveClauseAsync(QueryClause clause)
     {
-        Query = Query switch
-        {
-            null => new WorkItemsQuery(AndClause.Create(clause)),
-            { Clause: AndClause andClause } => new WorkItemsQuery(new AndClause(andClause.SubClauses.RemoveAll(sc => sc.Id == clause.Id))),
-            _ => Query,
-        };
+        Query = Query.RemoveTopLevelClause(clause);
 
         await ReloadMetadataAsync();
 

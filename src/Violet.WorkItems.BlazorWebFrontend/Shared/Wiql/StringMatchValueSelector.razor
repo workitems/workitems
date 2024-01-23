@@ -3,7 +3,7 @@
 
 @if (IsValidClause)
 {
-    <FluentTextField Placeholder="contains ..." Immediate="true" Value="@(SearchText ?? TypedClause.Match)" ValueChanged="OnValueChangedAsync"></FluentTextField>
+    <FluentTextField Placeholder="contains ..." Immediate="true" ImmediateDelay="200" Value="@(SearchText ?? TypedClause.Match)" ValueChanged="OnValueChangedAsync"></FluentTextField>
 }
 
 <FluentToolbar>
@@ -12,25 +12,15 @@
 </FluentToolbar>
 
 @code {
-    private CancellationTokenSource? _cts = null;
     private string? SearchText = null;
 
     private async Task OnValueChangedAsync(string value)
     {
         SearchText = value;
-        _cts?.Cancel();
-        _cts = new();
-        await Task.Delay(200, _cts.Token).ContinueWith(async _ =>
-        {
-            await UpdateClauseAsync(Clause, TypedClause with
-                {
-                    Match = value,
-                });
-        }, _cts.Token);
-    }
-
-    public void Dispose()
-    {
-        _cts?.Dispose();
+        
+        await UpdateClauseAsync(Clause, TypedClause with
+            {
+                Match = value,
+            });
     }
 }
