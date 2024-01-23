@@ -1,0 +1,147 @@
+@using Violet.WorkItems.Query
+@using Violet.WorkItems.BlazorWebFrontend.Shared.Wiql;
+@inject IDialogService DialogService
+
+@if (Query?.Clause is not null)
+{
+    <FluentTextField Value="@(FullTextSearch ?? FullTextSearchClause?.Text ?? string.Empty)" Immediate="true" ImmediateDelay="200" ValueChanged="OnValueChangedAsync" ReadOnly="@(!IsEditable)">
+        @RenderClause(Query.Clause, IsEditable)
+        @if (IsEditable)
+        {
+            <FluentIcon id="wiql_add" Value="@(new Icons.Regular.Size16.Add())" Slot="start" OnClick="OnClauseAddClickAsync" />
+        }
+    </FluentTextField>
+    <FluentPopover @bind-Open="_popoverOpen" Style="width:300px" AnchorId="@_popoverAnchorId">
+
+        <Body>
+            <ValueSelector Query="@Query" QueryChanged="@OnQueryChanged" Clause="@_popoverClause" OnClose="OnValueSelectorClosed" />
+        </Body>
+    </FluentPopover>
+}
+
+@code {
+    [Parameter]
+    public WorkItemsQuery? Query { get; set; } = null;
+    [Parameter]
+    public EventCallback<WorkItemsQuery> QueryChanged { get; set; }
+    [Parameter]
+    public bool IsEditable { get; set; } = true;
+
+    private bool _popoverOpen = false;
+    private string _popoverAnchorId = string.Empty;
+    private QueryClause? _popoverClause = null;
+
+    public string? FullTextSearch { get; set; } = null;
+    public FullTextSearchClause? FullTextSearchClause { get; set; } = null;
+
+    private async Task OnQueryChanged(WorkItemsQuery query)
+    {
+        Query = query;
+
+        FullTextSearchClause = Query.Clause.GetTopLevel<FullTextSearchClause>();
+
+        await QueryChanged.InvokeAsync(Query);
+    }
+
+    private async Task OnValueChangedAsync(string value)
+    {
+        FullTextSearch = value;
+        var query = Query;
+
+        if (!string.IsNullOrWhiteSpace(FullTextSearch)) {
+            query = Query
+                .RemoveTopLevelClause(FullTextSearchClause)
+                .AddTopLevelClause(new FullTextSearchClause(value));
+        }
+        else
+        {
+            query = Query
+                .RemoveTopLevelClause(FullTextSearchClause);
+        }
+
+        await OnQueryChanged(query);
+    }
+
+    public Task OnClauseClickAsync(QueryClause clause)
+    {
+        _popoverOpen = true;
+        _popoverClause = clause;
+        _popoverAnchorId = clause.Id.ToString();
+
+        return Task.CompletedTask;
+    }
+    public Task OnClauseAddClickAsync()
+    {
+        _popoverOpen = true;
+        _popoverClause = null;
+        _popoverAnchorId = "wiql_add";
+
+        return Task.CompletedTask;
+    }
+    public Task OnValueSelectorClosed(string info)
+    {
+        _popoverOpen = false;
+
+        if (info.StartsWith("AddClause:") && Query is not null)
+        {
+            var id = info.Substring("AddClause:".Length);
+
+            var clause = Query.Clause.GetTopLevel(Guid.Parse(id));
+
+            _popoverOpen = true;
+            _popoverClause = clause;
+            _popoverAnchorId = id;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public RenderFragment RenderClause(QueryClause clause, bool isEditable = false, bool isNegative = false)
+    {
+        var appearance = Appearance.Neutral;
+
+        if (isEditable == false)
+        {
+            appearance = Appearance.Lightweight;
+        }
+
+        switch (clause)
+        {
+            case ProjectClause projectClause:
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">Project: @projectClause.ProjectCode</FluentBadge>;
+            case WorkItemIdClause idClause:
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))"># @idClause.WorkItemId</FluentBadge>;
+            case WorkItemTypeClause typeClause:
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@(typeClause.WorkItemType ?? "Any Type")</FluentBadge>;
+            case AndClause andClause:
+                return
+    @<text>
+        @foreach (var subClause in andClause.SubClauses)
+    {
+        @RenderClause(subClause, isEditable, isNegative)
+    }
+    </text>;
+            case OrClause orClause:
+                return
+    @<text>
+        OR (
+        @foreach (var subClause in orClause.SubClauses)
+    {
+        @RenderClause(subClause, isEditable, isNegative)
+    }
+        )
+    </text>;
+            case NotClause notClause:
+                return RenderClause(notClause.SubClause, !isNegative);
+            case StringMatchClause stringMatch:
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@stringMatch.PropertyName ~ @stringMatch.Match</FluentBadge>;
+            case ValueMatchClause valueMatch:
+                return @<FluentBadge id="@clause.Id.ToString()" Tag="clause" Slot="start" style="margin-right:4px" Appearance="@appearance" @onclick="@(async (MouseEventArgs _) => await OnClauseClickAsync(clause))">@valueMatch.PropertyName : @(valueMatch is { Values: [], Not: true} ? "Any" : string.Join(", ", valueMatch.Values))</FluentBadge>;
+            default:
+                return @<text></text>;
+        }
+
+        return null;
+    }
+
+}

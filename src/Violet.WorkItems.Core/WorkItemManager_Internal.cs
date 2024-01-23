@@ -17,7 +17,7 @@ public partial class WorkItemManager
         return context;
     }
 
-    private async Task InitAsync()
+    public async Task InitAsync()
     {
         if (!_initialized) //TODO: make it thread-safe
         {

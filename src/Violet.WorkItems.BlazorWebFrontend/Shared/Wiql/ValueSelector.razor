@@ -1,0 +1,35 @@
+@using Violet.WorkItems.Query;
+
+@if (Clause is WorkItemTypeClause)
+{
+    <TypeClauseValueSelector Query="Query" QueryChanged="QueryChanged" Clause="Clause" ClauseChanged="ClauseChanged" OnClose="OnClose" />
+}
+else if (Clause is ValueMatchClause)
+{
+    <ValueMatchClauseValueSelector Query="Query" QueryChanged="QueryChanged" Clause="Clause" ClauseChanged="ClauseChanged" OnClose="OnClose" />
+}
+else if (Clause is StringMatchClause)
+{
+    <StringMatchValueSelector  Query="Query" QueryChanged="QueryChanged" Clause="Clause" ClauseChanged="ClauseChanged" OnClose="OnClose" />
+}
+else if (Clause is null)
+{
+    <ClauseAdder Query="Query" QueryChanged="QueryChanged" OnClose="OnClose" />
+}
+
+@code {
+    [Parameter]
+    public WorkItemsQuery Query { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<WorkItemsQuery> QueryChanged { get; set; } = default!;
+
+    [Parameter]
+    public QueryClause Clause { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<QueryClause> ClauseChanged { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<string> OnClose { get; set; } = default!;
+}

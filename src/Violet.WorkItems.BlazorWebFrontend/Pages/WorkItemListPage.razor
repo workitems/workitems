@@ -3,12 +3,14 @@
 @inject WorkItemDescriptorService WorkItemDescriptorService
 @inject NavigationManager NavigationManager
 @using WorkItems.Types;
+@using WorkItems.Query;
 
 @if (List is not null)
 {
     <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
         <FluentButton IconEnd="@(new Icons.Regular.Size16.Home())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/"))" />
-        <FluentLabel Typo="Typography.Subject">@ProjectCode <text>- All Work Items</text></FluentLabel>
+        <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
+        <WiqlField Query="@Query" QueryChanged="@QueryChangedAsync"></WiqlField>
         <FluentSpacer />
         <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
             Title="Add"
@@ -31,14 +33,40 @@
 @code {
     private bool addNewWorkItemMenuOpen = false;
     [Parameter]
-    public string ProjectCode { get; set; }
-    public IEnumerable<WorkItem> List = null;
+    public string ProjectCode { get; set; } = default!;
+    [Parameter]
+    public WorkItemsQuery Query { get; set; } = default!;
+
+
+    public IEnumerable<WorkItem>? List = null;
     public IEnumerable<WorkItemType> Types = null;
 
     protected override async Task OnParametersSetAsync()
     {
-        List = await WorkItemService.GetAllWorkItems(ProjectCode);
         Types = (await WorkItemDescriptorService.GetWorkItemTypes(ProjectCode)).Types;
+
+        if (Query is null && ProjectCode is not null)
+        {
+            Query = new WorkItemsQuery(AndClause.Create(new ProjectClause(ProjectCode)));
+        }
+
+        await RefreshData();
+    }
+    private async Task QueryChangedAsync(WorkItemsQuery query)
+    {
+        Query = query;
+
+        var data = System.Text.Json.JsonSerializer.Serialize(query, QuerySerialization.GetOptions());
+
+        Console.WriteLine("Updated Query" + data);
+
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        List = await WorkItemService.GetAllWorkItems(Query);
+        StateHasChanged();
     }
 
     public void NavigateToNewWorkItem(string type)

@@ -5,73 +5,76 @@
 @inject NavigationManager NavigationManager
 @using Violet.WorkItems.Service.Messages;
 @using Violet.WorkItems.Types
+@using Violet.WorkItems.Query
 @using Violet.WorkItems.BlazorWebFrontend.Shared.Widgets
 
 @if (WorkItemDescriptor is not null)
 {
-    <PageTitle>
+        <PageTitle>
         @WorkItemId
         @if (WorkItem.TryGetProperty("Title", out var titleProperty))
         {
             <text> - @titleProperty.Value</text>
         }
-    </PageTitle>
-    <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
-        <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/wi/{ProjectCode}"))" />
-        <FluentButton IconEnd="@(new Icons.Regular.Size16.Save())"
-            Title="Save"
-            OnClick="OnSave" />
-        @foreach (var command in WorkItemDescriptor.Commands)
-        {
-            <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowRight())" OnClick="@(e => OnCommand(command))">@command.Label</FluentButton>
-        }
-        <FluentLabel Typo="Typography.Subject">
-            @WorkItemId
-            @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+        </PageTitle>
+        <FluentToolbar style="width:100%;background-color: var(--neutral-layer-2);">
+            <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowLeft())" Title="Back" OnClick="@(_ => NavigationManager.NavigateTo($"/wi/{ProjectCode}"))" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size16.Save())"
+                Title="Save"
+                OnClick="OnSave" />
+            @foreach (var command in WorkItemDescriptor.Commands)
             {
-                <span> - @titleProperty.Value</span>
+                <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowRight())" OnClick="@(e => OnCommand(command))">@command.Label</FluentButton>
             }
-        </FluentLabel>
+            <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical" ></FluentDivider>
+            <WiqlField Query="@PseudoQuery" IsEditable="false"></WiqlField>
+            <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
+            <FluentLabel Typo="Typography.Subject">
+                @if (WorkItem.TryGetProperty("Title", out var titleProperty))
+                {
+                    <span>@titleProperty.Value</span>
+                }
+            </FluentLabel>
 
-        <FluentSpacer />
-        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.MoreVertical())"
-            Title="Add"
-            OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
-    </FluentToolbar>
+            <FluentSpacer />
+            <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.MoreVertical())"
+                Title="Add"
+                OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
+        </FluentToolbar>
 
-    <FluentTabs>
-        <FluentTab Label="Properties" style="border:calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-rest);border-radius:calc(var(--control-corner-radius) * 1px);padding:1rem 1rem;margin:0 6px 0 6px">
-            <FluentStack Orientation="Orientation.Vertical">
+        <FluentTabs>
+            <FluentTab Label="Properties" style="border:calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-rest);border-radius:calc(var(--control-corner-radius) * 1px);padding:1rem 1rem;margin:0 6px 0 6px">
+                <FluentStack Orientation="Orientation.Vertical">
                 @foreach (var property in WorkItemDescriptor.Properties)
                 {
-                    <div>
-                        <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
-                    </div>
+                            <div>
+                                <PropertyWidget WorkItem="@WorkItem" WorkItemDescriptor="@WorkItemDescriptor" PropertyDescriptor="@property" WorkItemChanged="@(e => OnPropertyUpdate(e))" />
+                            </div>
                 }
-            </FluentStack>
-        </FluentTab>
+                </FluentStack>
+            </FluentTab>
 
-        <FluentTab Label="History">
-            <FluentStack Orientation="Orientation.Vertical">
+            <FluentTab Label="History">
+                <FluentStack Orientation="Orientation.Vertical">
                 @foreach (var logEntry in WorkItem.Log.OrderByDescending(l => l.Date))
                 {
-                    <strong>@logEntry.Date.ToString("s")</strong>
+                            <strong>@logEntry.Date.ToString("s")</strong>
                     <text>by</text>
                     @logEntry.User
-                    <br />
-                    <em>@logEntry.Comment</em>
+                            <br />
+                            <em>@logEntry.Comment</em>
 
                     @foreach (var change in logEntry.Changes)
                     {
-                        <div>
-                            &gt; @change.Name : @change.OldValue -> @change.NewValue
-                        </div>
+                                    <div>
+                                        &gt; @change.Name : @change.OldValue -> @change.NewValue
+                                    </div>
                     }
-                    <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
                 }
-            </FluentStack>
-        </FluentTab>
-    </FluentTabs>
+                </FluentStack>
+            </FluentTab>
+        </FluentTabs>
 
 }
 
@@ -85,6 +88,8 @@
     public string ProjectCode { get; set; }
     [Parameter]
     public string WorkItemId { get; set; }
+
+    public WorkItemsQuery PseudoQuery { get; set; } = null;
 
     public WorkItemDescriptorApiResponse WorkItemDescriptor;
     public WorkItem WorkItem { get; set; }
@@ -104,6 +109,8 @@
 
             WorkItem = await WorkItemService.GetWorkItemAsync(ProjectCode, WorkItemId);
         }
+
+        PseudoQuery = new WorkItemsQuery(AndClause.Create(new WorkItemIdClause(WorkItem.Id), new ProjectClause(WorkItem.ProjectCode), new WorkItemTypeClause(WorkItem.WorkItemType)));
     }
 
     public async Task OnPropertyUpdate(WorkItem workItem)

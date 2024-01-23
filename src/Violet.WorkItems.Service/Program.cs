@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Violet.WorkItems.Service;
 using Violet.WorkItems;
 using Violet.WorkItems.Provider;
 using Violet.WorkItems.Query;
@@ -23,7 +24,8 @@ builder.Services.AddControllers()
     });
 builder.Services.AddSingleton<IDataProvider>(new FileSystemDataProvider("./sample"))
                 .AddSingleton<IDescriptorProvider>(serviceProvider => new Violet.WorkItems.Types.CommonSdlc.CommonSdlcDescriptorProvider())
-                .AddSingleton<WorkItemManager>();
+                .AddSingleton<WorkItemManager>()
+                .AddHostedService<WorkItemHost>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
