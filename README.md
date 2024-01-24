@@ -6,6 +6,8 @@
 
 WorkItems intents 😀 to be a flexible work item management system.
 
+![Screenshot](docs/screenshots/ad.png)
+
 ## Project Goals
 
 Having Goals is the first step in achieving them 😀
@@ -15,29 +17,6 @@ Having Goals is the first step in achieving them 😀
 - 🏃‍♂️ Create proof of concepts applications covering ToDo Lists, Kanban Board and fixed property issue tracker.
 - 🔜 Create a framework for programmatically managing work items (e.g. check tracing completeness).
 - 🔜 Create a set of standardized providers for common work item management systems (GitHub, GitLab, TFS, Jira, ...).
-
-## Command Line Interface
-````sh
-# Installation
-dotnet tool install -g Violet.WorkItems.Cli
-````
-
-````sh
-# Setup Project (⚠ this is target state not yet achieved)
-wi init
-
-# Create Work Item
-wi new PROJECT Bug
-
-# Edit Work Item
-wi edit PROJECT 1234
-
-# List Work Items
-wi list PROJECT
-
-# Show Details (including audit history)
-wi detail PROJECT 1234
-````
 
 ## Class Libraries
 
@@ -66,19 +45,22 @@ The WorkItems project follows an onion architecture with re-usable components.
 
 1. ✅ Violet.WorkItems.Provider.InMemoryProviderDataProvider (transient for development)
 1. 🔜 Violet.WorkItems.Provider.Sqlite
-1. 🔜 Violet.WorkItems.Provider.SqlServer
+1. 🔜 Violet.WorkItems.Provider.PostgreSQL
 1. 🔜 Violet.WorkItems.Provider.Git (persists WorkItems and related information in Git)
 1. 🔜 Violet.WorkItems.Provider.GitHub (adapter to GitHub API)
 
 ### Applications
 
-1. 🏃‍♂️ Violet.WorkItems.Cli
-   - Command Line Application to manage work items (create, read, update, delete).
-   - Starter for Violet.WorkItems.LocalWebHost
-1. 🔜 Violet.WorkItems.LocalWebFrontend
-   - Locally starting web application to manage tickets (in browser)
 1. 🏃‍♂️ Violet.WorkItems.BlazorWebFrontend
-   - Regular web application including authentication provider plugins
+1. 🔜 Violet.WorkItems.MobileApp (Blazor Hybrid Mobile App; offline capable)
+1. 🔜 Violet.WorkItems.DesktopApp (Blazor Hybrid Windows/macOS App; offline capable)
+
+### WorkItem Descriptors Packages
+
+Usage either off-the-shelf or as a customization foundation
+
+1. 🔜 Github
+1. 🔜 SAFe
 
 # Community, Contributions, License
 
