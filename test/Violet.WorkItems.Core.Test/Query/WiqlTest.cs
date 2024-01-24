@@ -12,7 +12,7 @@ public class WiqlTest
     {
         // arrange
         var dataProvider = TestData.GetDataProvider();
-        var query = new WorkItemsQuery(AndClause.Create(new ProjectClause("TestProj"), new WorkItemTypeClause("Bug"), new StringMatchClause("A", "A")));
+        var query = new WorkItemsQuery(AndClause.Create(new ProjectClause("TestProj"), new WorkItemTypeClause("Bug"), new StringMatchClause("A", "A", false)));
 
         // act
         var actual = await dataProvider.ListWorkItemsAsync(query);
