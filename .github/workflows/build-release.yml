@@ -17,7 +17,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Build Version
-      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
+      run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
     - name: Build Violet WorkItems
       run: dotnet build --configuration Release -p:Version=$RELEASE_VERSION
     - name: Test Violet WorkItems
