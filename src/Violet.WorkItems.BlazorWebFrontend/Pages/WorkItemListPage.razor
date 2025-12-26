@@ -12,26 +12,42 @@
         <FluentDivider Style="height: 16px;" Role="DividerRole.Presentation" Orientation="Orientation.Vertical"></FluentDivider>
         <WiqlField Query="@Query" QueryChanged="@QueryChangedAsync"></WiqlField>
         <FluentSpacer />
-        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())"
-            Title="Add"
-            OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
-        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.MoreVertical())"
-            Title="Add" />
+        <FluentButton id="AddNewWorkItemButton" IconEnd="@(new Icons.Regular.Size16.Add())" Title="Add" OnClick="@(() => addNewWorkItemMenuOpen = !addNewWorkItemMenuOpen)" />
         <FluentMenu Anchor="AddNewWorkItemButton" @bind-Open="addNewWorkItemMenuOpen">
             @foreach (var type in Types)
             {
-                <FluentMenuItem OnClick="(() => NavigateToNewWorkItem(type.Name))">@type.DisplayName</FluentMenuItem>
+                <FluentMenuItem OnClick="@(ea => NavigateToNewWorkItem(type.Name))">@type.DisplayName</FluentMenuItem>
             }
         </FluentMenu>
+        <FluentButton id="VerticalMenu" IconEnd="@(new Icons.Regular.Size16.MoreVertical())" Title="More" OnClick="@(() => verticalMenuOpen = !verticalMenuOpen)" />
+        <FluentMenu Anchor="VerticalMenu" @bind-Open="verticalMenuOpen">
+            <FluentMenuItem OnClick="NavigateToProjects">
+                Projects
+            </FluentMenuItem>
+            <FluentDivider Role="DividerRole.Presentation" />
+            <FluentMenuItem>
+                Settings
+                <span slot="start">
+                    <FluentIcon Icon="Icons.Regular.Size16.Settings" Slot="start" Color="Color.Neutral" />
+                </span>
+            </FluentMenuItem>
+            <FluentMenuItem>
+                Logout
+                <span slot="start">
+                    <FluentIcon Icon="Icons.Regular.Size16.ArrowEnter" Slot="start" Color="Color.Neutral" />
+                </span>
+            </FluentMenuItem>
+        </FluentMenu>
     </FluentToolbar>
-    <FluentDataGrid Items="@(List.AsQueryable())" TGridItem="WorkItem" OnRowFocus="OnRowFocusExecute">
-        <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi=> wi.Id)" Title="Id" Sortable="true" />
+    <FluentDataGrid Items="@(List.AsQueryable())" TGridItem="WorkItem" OnRowClick="OnRowClick">
+        <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi => wi.ProjectCode + "-" + wi.Id)" Title="Id" Sortable="true" />
         <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi => wi.WorkItemType)" Title="Type" Sortable="true" />
         <PropertyColumn TGridItem="WorkItem" TProp="string" Property="@(wi => wi["Title"].Value)" Title="Title" Sortable="true" />
     </FluentDataGrid>
 }
 @code {
     private bool addNewWorkItemMenuOpen = false;
+    private bool verticalMenuOpen = false;
     [Parameter]
     public string ProjectCode { get; set; } = default!;
     [Parameter]
@@ -69,14 +85,8 @@
         StateHasChanged();
     }
 
-    public void NavigateToNewWorkItem(string type)
-    => NavigationManager.NavigateTo($"/wi/{ProjectCode}/new?type={type}");
-
-    public void OnRowFocusExecute(FluentDataGridRow<WorkItem> e)
-    => NavigateToWorkItem(e.Item);
-
-    public void NavigateToWorkItem(WorkItem workItem)
-    {
-        NavigationManager.NavigateTo($"/wi/{workItem.ProjectCode}/{workItem.Id}");
-    }
+    public void NavigateToNewWorkItem(string type) => NavigationManager.NavigateTo($"/wi/{ProjectCode}-new?type={type}");
+    public void OnRowClick(FluentDataGridRow<WorkItem> e) => NavigateToWorkItem(e.Item);
+    public void NavigateToWorkItem(WorkItem workItem) => NavigationManager.NavigateTo($"/wi/{workItem.ProjectCode}-{workItem.Id}");
+    public void NavigateToProjects() => NavigationManager.NavigateTo("/wi/projects");
 }
